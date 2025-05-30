@@ -1,0 +1,45 @@
+name: 機能実装
+description: 新機能の実装タスク
+title: '[feat]: '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 機能実装タスク
+        このテンプレートは新機能の実装タスクを作成するためのものです。
+  - type: dropdown
+    id: category
+    attributes:
+      label: カテゴリ
+      options:
+        - FE (フロントエンド)
+        - BE (バックエンド)
+        - DevOps
+        - CI
+        - Cloud
+        - Blockchain
+        - PM
+    validations:
+      required: true
+  - type: input
+    id: task-number
+    attributes:
+      label: タスク番号
+      description: MVPタスク一覧の番号（例：1-3）
+      placeholder: '例: 1-3'
+  - type: textarea
+    id: description
+    attributes:
+      label: 詳細説明
+      description: 実装する機能の詳細を記述してください
+    validations:
+      required: true
+  - type: textarea
+    id: completion-criteria
+    attributes:
+      label: 完了条件
+      description: このタスクが完了したと判断するための条件
+      placeholder: '例: ユーザードキュメント `{uid, githubId, email}` が保存される'
+    validations:
+      required: true
