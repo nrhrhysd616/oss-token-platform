@@ -1,0 +1,13 @@
+# clinerules
+
+## 各種ドキュメントについて
+
+- 仕様書は`/docs/Specification.md`に配置
+- MVPの実装方針は`/docs/MVP.md`に配置
+- ADR(Architecture Decision Record)は`/docs/adr`に配置
+- ADRのテンプレートは`/docs/adr/Template.md`に配置
+- READMEは`/README.md`に配置
+
+## 利用するコマンドについて
+
+基本的に`bun`を利用するため、`package.json`のスクリプト類も`bun`を利用する
