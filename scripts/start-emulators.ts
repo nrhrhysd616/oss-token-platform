@@ -26,7 +26,7 @@ function findFirebaseEmulatorPids(): number[] {
   try {
     // macOSとLinuxの場合
     // psコマンドでプロセスを検索し、grepでfirebase emulators:startを含むものをフィルタリング
-    const cmd = `ps aux | grep "oss-token-platform" | grep -v grep | awk '{print $2}'`
+    const cmd = `ps aux | grep "oss-token-platform-preview" | grep -v grep | awk '{print $2}'`
     const result = execSync(cmd).toString().trim()
 
     if (result) {
