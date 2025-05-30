@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "oss-token-platform-preview",
+    "production": "oss-token-platform"
+  },
+  "targets": {},
+  "etags": {}
+}
