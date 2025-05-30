@@ -1,0 +1,7 @@
+# Bun configuration file
+# Bunの設定ファイル
+
+[test]
+# テストカバレッジを有効化
+coverage = true
+coverageReporter  = ["text", "lcov"]
