@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // システム管理者かどうかを判定するヘルパー関数
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Cloud Functionsからのリクエストかどうかを判定するヘルパー関数
+    function isFromCloudFunction() {
+      return request.auth.token.firebase.sign_in_provider == 'custom';
+    }
+
+    // ユーザーコレクション
+    match /users/{userId} {
+      // 自分のデータのみ読み書き可能
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // 作成・更新は自分自身のみ可能、ただし管理者とCloud Functionsは例外
+      allow create, update: if request.auth != null && 
+                             (request.auth.uid == userId || isAdmin() || isFromCloudFunction());
+      
+      // 削除は管理者のみ可能
+      allow delete: if isAdmin();
+      
+      // ウォレット情報の更新に関する特別なセキュリティルール
+      // 1. ウォレット関連フィールド（wallet, linkedAt）が変更されない場合は通常の更新ルールを適用
+      // 2. ウォレット関連フィールドが変更される場合は以下の条件を全て満たす必要がある：
+      //    - 認証済みユーザーであること
+      //    - 自分自身のデータであること
+      //    - walletフィールドが文字列型であること（有効なXRPLアドレス形式）
+      //    - linkedAtフィールドがタイムスタンプ型であること（連携日時の記録）
+      // これにより、ウォレット連携プロセスの整合性と安全性を確保する
+      allow update: if request.auth != null && 
+                     request.auth.uid == userId && 
+                     (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['wallet', 'linkedAt']) || 
+                      (request.resource.data.wallet is string && 
+                       request.resource.data.linkedAt is timestamp));
+    }
+    
+    // プロジェクトコレクション
+    match /projects/{projectId} {
+      // 読み取りは全ユーザー可能
+      allow read: if true;
+      
+      // 書き込みは認証済みユーザーのみ
+      allow create: if request.auth != null;
+      
+      // 更新と削除はプロジェクトオーナーのみ、ただし管理者とCloud Functionsは例外
+      allow update, delete: if request.auth != null && 
+                             (resource.data.ownerUid == request.auth.uid || 
+                              isAdmin() || 
+                              isFromCloudFunction());
+      
+      // トークン発行関連フィールドの更新はCloud Functionsのみ許可
+      allow update: if isFromCloudFunction() && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasAny(['tokenCode', 'tokenIssued', 'issuerAddress']);
+    }
+    
+    // 寄付コレクション
+    match /donations/{donationId} {
+      // 読み取りは関連プロジェクトのオーナーとドナー自身、および管理者が可能
+      allow read: if request.auth != null && 
+                   (resource.data.donorUid == request.auth.uid || 
+                    exists(/databases/$(database)/documents/projects/$(resource.data.projectId)) && 
+                    get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.ownerUid == request.auth.uid || 
+                    isAdmin());
+      
+      // 作成は認証済みユーザー（寄付者）のみ
+      allow create: if request.auth != null && 
+                     request.resource.data.donorUid == request.auth.uid;
+      
+      // 更新と削除はCloud Functionsと管理者のみ
+      allow update, delete: if isAdmin() || isFromCloudFunction();
+    }
+    
+    // トークン統計コレクション
+    match /tokenStats/{tokenId} {
+      // 読み取りは全ユーザー可能（公開情報）
+      allow read: if true;
+      
+      // 更新はCloud Functionsのみ許可
+      allow create, update: if isFromCloudFunction();
+      
+      // 削除は管理者のみ
+      allow delete: if isAdmin();
+    }
+    
+    // 開発環境用のテストコレクション
+    match /test/{document=**} {
+      // 開発中は全アクセス可能（本番環境では無効化する）
+      allow read, write: if request.auth != null;
+    }
+    
+    // その他のコレクション
+    match /{document=**} {
+      // デフォルトでは認証済みユーザーのみ読み取り可能、書き込みは管理者のみ
+      allow read: if request.auth != null;
+      allow write: if isAdmin() || isFromCloudFunction();
+    }
+  }
+}

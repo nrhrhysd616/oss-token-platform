@@ -181,3 +181,4 @@ dist
 .DS_Store
 
 *storybook.log
+test-results/.last-run.json

@@ -1,0 +1,68 @@
+{
+  "compilerOptions": {
+    // Enable latest features
+    // 最新の機能を有効化
+    // 利用可能なライブラリ定義（ESNextは最新のECMAScript機能、DOMはブラウザDOM API）
+    "lib": ["ESNext", "DOM"],
+    // コンパイル先のJavaScriptバージョン（ESNextは最新のECMAScript仕様）
+    "target": "ESNext",
+    // モジュールコード生成方式（ESNextは最新のECMAScriptモジュール仕様）
+    "module": "ESNext",
+    // モジュール検出方法（forceは全てのファイルをモジュールとして扱う）
+    "moduleDetection": "force",
+    // JSXコードの変換方法（react-jsxはReact 17以降の新しいJSX変換）
+    "jsx": "preserve",
+    // JavaScriptファイルのコンパイルを許可
+    "allowJs": true,
+    // Bundler mode
+    // バンドラーモード設定
+    // モジュール解決戦略（nodeはNode.js向けの解決方法）
+    "moduleResolution": "node",
+    // .tsや.tsxなどの拡張子を持つファイルの直接インポートを許可しない（Next.jsでは通常不要）
+    "allowImportingTsExtensions": false,
+    // モジュール構文をそのまま保持しない（Next.jsでは通常不要）
+    "verbatimModuleSyntax": false,
+    // JavaScriptファイルを出力しない（バンドラーが処理するため）
+    "noEmit": true,
+    // Best practices
+    // ベストプラクティス設定
+    // 厳格な型チェックを有効化（null/undefined厳格チェックなど複数のオプションを一括で有効化）
+    "strict": true,
+    // ライブラリファイルの型チェックをスキップ（ビルド時間短縮のため）
+    "skipLibCheck": true,
+    // switch文でのフォールスルーケースをエラーとして報告
+    "noFallthroughCasesInSwitch": true,
+    // Some stricter flags (disabled by default)
+    // より厳格なフラグ（デフォルトでは無効）
+    // 未使用のローカル変数をエラーとして報告しない
+    "noUnusedLocals": false,
+    // 未使用の関数パラメータをエラーとして報告しない
+    "noUnusedParameters": false,
+    // インデックスシグネチャからのプロパティアクセスを制限しない
+    "noPropertyAccessFromIndexSignature": false,
+    // Next.js specific settings
+    // Next.js固有の設定
+    // ベースURLを設定（パスエイリアスの基準点）
+    "baseUrl": ".",
+    // パスエイリアスの設定（@/でsrcディレクトリを参照可能に）
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    // ES Modulesの相互運用性を有効化
+    "esModuleInterop": true,
+    // CommonJSモジュールをデフォルトインポートで扱えるようにする
+    "allowSyntheticDefaultImports": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  // コンパイル対象のファイル
+  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
+  // コンパイル対象から除外するファイル
+  "exclude": ["node_modules"]
+}

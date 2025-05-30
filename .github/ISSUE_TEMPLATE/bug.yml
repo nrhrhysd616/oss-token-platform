@@ -1,0 +1,41 @@
+name: バグ報告
+description: バグの報告と修正タスク
+title: '[bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## バグ報告
+        このテンプレートはバグの報告と修正タスクを作成するためのものです。
+  - type: textarea
+    id: description
+    attributes:
+      label: バグの説明
+      description: バグの内容を詳しく説明してください
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 再現手順
+      description: バグを再現するための手順
+      placeholder: '1. ... へ移動\n2. ... をクリック\n3. ... を入力\n4. エラーが発生'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待される動作
+      description: 正常に動作した場合の期待される結果
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 重要度
+      options:
+        - 低（機能に影響なし）
+        - 中（一部機能に影響）
+        - 高（主要機能に影響）
+        - 致命的（システム全体に影響）
+    validations:
+      required: true
