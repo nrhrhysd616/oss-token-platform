@@ -1,0 +1,70 @@
+{
+  "name": "oss-token-platform",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "lint": "bun run lint:eslint && bun run lint:prettier && bun run lint:stylelint",
+    "lint:eslint": "eslint --ext .js,.ts,.jsx,.tsx .",
+    "lint:prettier": "prettier --check .",
+    "lint:stylelint": "stylelint \"**/*.{css,scss}\"",
+    "firebase:emulators": "firebase emulators:start",
+    "firebase:emulators:firestore": "firebase emulators:start --only firestore",
+    "firebase:emulators:start": "bun run scripts/start-emulators.ts",
+    "firebase:emulators:stop": "bun run scripts/stop-emulators.ts",
+    "firebase:emulators:status": "bun run scripts/status-emulators.ts",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "e2e-test": "playwright test",
+    "e2e-test:ui": "playwright test --ui",
+    "e2e-test:headed": "playwright test --headed",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "@playwright/test": "^1.52.0",
+    "@tailwindcss/postcss": "^4.1.7",
+    "@types/bun": "latest",
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.5",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "firebase-tools": "^14.4.0",
+    "husky": "^9.1.7",
+    "playwright": "^1.52.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-standard": "^38.0.0",
+    "tailwindcss": "^4.1.7"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "firebase": "^11.7.3",
+    "firebase-admin": "^13.4.0",
+    "next": "^15.3.2"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "bracketSpacing": true,
+    "arrowParens": "avoid",
+    "endOfLine": "lf"
+  }
+}
