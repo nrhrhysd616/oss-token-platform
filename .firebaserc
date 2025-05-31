@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "oss-token-platform-preview",
+    "default": "oss-token-platform-development",
+    "preview": "oss-token-platform-preview",
     "production": "oss-token-platform"
   },
   "targets": {},

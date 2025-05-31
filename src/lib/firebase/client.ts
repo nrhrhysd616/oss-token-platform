@@ -13,10 +13,3 @@ export const db = getFirestore(firebaseApp)
 
 // Firebase Authインスタンスの取得（追加）
 export const auth = getAuth(firebaseApp)
-
-// 開発環境の場合のみエミュレータに接続
-if (process.env.NODE_ENV !== 'production') {
-  import('./emulator').then(({ connectToEmulators }) => {
-    connectToEmulators()
-  })
-}

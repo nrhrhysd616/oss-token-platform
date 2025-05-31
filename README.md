@@ -49,7 +49,23 @@ cp .env.example .env
    - `FIREBASE_CLIENT_EMAIL`
    - `FIREBASE_PRIVATE_KEY`
 
-### 3. Xaman API設定
+### 3. GitHub App設定
+
+1. [GitHub Developer Settings](https://github.com/settings/apps)でGitHub Appを作成
+2. 以下の権限を設定：
+   - Repository metadata: Read
+   - Repository contents: Read
+   - Issues: Read
+   - Pull requests: Read
+3. Private keyを生成・ダウンロード
+4. `.env`ファイルに設定：
+   - `GITHUB_APP_ID`
+   - `GITHUB_APP_PRIVATE_KEY`
+   - `GITHUB_APP_CLIENT_ID`
+   - `GITHUB_APP_CLIENT_SECRET`
+   - `GITHUB_WEBHOOK_SECRET`
+
+### 4. Xaman API設定
 
 1. [Xaman Developer Portal](https://apps.xaman.dev/)でアプリを作成
 2. API KeyとAPI Secretを取得
@@ -58,7 +74,7 @@ cp .env.example .env
    - `XAMAN_API_SECRET`
    - `XAMAN_WEBHOOK_URL`
 
-### 4. 開発サーバーの起動
+### 5. 開発サーバーの起動
 
 ```bash
 # 依存関係のインストール

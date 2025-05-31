@@ -12,13 +12,12 @@
 | 0‑4  | DevOps     | Commitlint + Husky 設定                           | FE    | PR で Conventional Commit 強制                |
 | 0‑5  | CI         | GitHub Actions: **Lint / Unit / Build** Workflow  | BE    | main への PR で全ジョブ成功                   |
 | 0‑6  | CI         | GitHub Actions: **Vercel Preview** Workflow       | BE    | PR に Preview URL が自動コメント              |
-| 0‑7  | FE         | Storybook 初期化 & Vercel Static Deploy           | FE    | `/storybook` で動作                           |
-| 0‑8  | Cloud      | Firebase プロジェクト作成 & Firestore 有効化      | Infra | Emulator Suite 起動 & read/write OK           |
-| 0‑9  | Cloud      | Firestore セキュリティルール v0                   | BE    | `firebase deploy --only firestore:rules` 成功 |
-| 0‑10 | Cloud      | Vercel プロジェクト作成                           | Infra | Preview & Prod 環境 URL 発行                  |
-| 0‑11 | Blockchain | XRPL Testnet **Issuer / Treasury** ウォレット生成 | BE    | 残高取得 & 秘密鍵を 1Password 登録            |
-| 0‑12 | PM         | GitHub Projects ボード & Issue テンプレ作成       | PM    | テンプレートが選択可能                        |
-| 0‑13 | PM         | すべての Week0 タスクを Issue 化 & アサイン       | PM    | Projects カンバンに反映                       |
+| 0‑7  | Cloud      | Firebase プロジェクト作成 & Firestore 有効化      | Infra | Emulator Suite 起動 & read/write OK           |
+| 0‑8  | Cloud      | Firestore セキュリティルール v0                   | BE    | `firebase deploy --only firestore:rules` 成功 |
+| 0‑9  | Cloud      | Vercel プロジェクト作成                           | Infra | Preview & Prod 環境 URL 発行                  |
+| 0‑10 | Blockchain | XRPL Testnet **Issuer / Treasury** ウォレット生成 | BE    | 残高取得 & 秘密鍵を 1Password 登録            |
+| 0‑11 | PM         | GitHub Projects ボード & Issue テンプレ作成       | PM    | テンプレートが選択可能                        |
+| 0‑12 | PM         | すべての Week0 タスクを Issue 化 & アサイン       | PM    | Projects カンバンに反映                       |
 
 ## Week 1 ─ 認証 & ウォレット連携
 
@@ -104,17 +103,16 @@
 | --- | ---------------------------------------------- | ------------------------------ |
 | 4‑1 | ダッシュボード: 残高 / 寄付履歴 / 価格チャート | Recharts で表示 & モバイル対応 |
 | 4‑2 | プロジェクト公開ページ: 寄付ボタン & Stats     | SEO meta & OG 設定             |
-| 4‑3 | Storybook Docs 追加 (Button, Card, Charts)     | npm script `storybook` pass    |
 
 ### QA & リリース
 
 | No. | タスク                              | 完了条件                                                              |
 | --- | ----------------------------------- | --------------------------------------------------------------------- |
-| 4‑4 | Cypress 全シナリオ E2E (Smoke)      | CI pass                                                               |
-| 4‑5 | Lighthouse Performance Audit (>85)  | レポート添付                                                          |
-| 4‑6 | Vercel Prod デプロイ & 独自ドメイン | [https://oss-token.example.com](https://oss-token.example.com) で稼働 |
-| 4‑7 | README + Architecture 図 (Mermaid)  | `docs/architecture.md` 完成                                           |
-| 4‑8 | Git タグ v0.1.0 + GitHub Release    | Changelog 追加                                                        |
+| 4‑3 | Cypress 全シナリオ E2E (Smoke)      | CI pass                                                               |
+| 4‑4 | Lighthouse Performance Audit (>85)  | レポート添付                                                          |
+| 4‑5 | Vercel Prod デプロイ & 独自ドメイン | [https://oss-token.example.com](https://oss-token.example.com) で稼働 |
+| 4‑6 | README + Architecture 図 (Mermaid)  | `docs/architecture.md` 完成                                           |
+| 4‑7 | Git タグ v0.1.0 + GitHub Release    | Changelog 追加                                                        |
 
 ## クロスカッティング / 継続タスク
 
@@ -126,6 +124,6 @@
 
 > **次アクション**
 >
-> 1. チームメンバーへタスク割当 (0‑13)。
+> 1. チームメンバーへタスク割当 (0‑12)。
 > 2. 価格決定ロジック詳細は別スレッドで要件整理 → 3‑4 を確定化。
 > 3. Week 0 タスク実行を直ちに開始。
