@@ -1,3 +1,9 @@
+# 個別追加分
+
+test-results/.last-run.json
+.env.preview
+.env.production
+
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
 .firebase-emulator.pid
@@ -181,4 +187,3 @@ dist
 .DS_Store
 
 *storybook.log
-test-results/.last-run.json
