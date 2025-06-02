@@ -1,0 +1,6 @@
+{
+  "workspace": {
+    "uuid": "version 4 UUID here. example: 9c40c00c-f559-4e1d-9e46-0e965d4c66b0",
+    "root": "/path/to/oss-token-platform"
+  }
+}

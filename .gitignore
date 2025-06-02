@@ -3,6 +3,7 @@
 test-results/.last-run.json
 .env.preview
 .env.production
+public/.well-known/appspecific/com.chrome.devtools.json
 
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
