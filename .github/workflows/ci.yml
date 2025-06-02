@@ -60,6 +60,13 @@ jobs:
         with:
           bun-version: latest
       - name: Install dependencies
+        env:
+          GITHUB_APP_ID: ${{ secrets.CI_GITHUB_APP_ID }}
+          GITHUB_APP_PRIVATE_KEY: ${{ secrets.CI_GITHUB_APP_PRIVATE_KEY }}
+          GITHUB_APP_CLIENT_ID: ${{ secrets.CI_GITHUB_APP_CLIENT_ID }}
+          GITHUB_APP_CLIENT_SECRET: ${{ secrets.CI_GITHUB_APP_CLIENT_SECRET }}
+          XAMAN_API_KEY: ${{ secrets.XAMAN_API_KEY }}
+          XAMAN_API_SECRET: ${{ secrets.XAMAN_API_SECRET }}
         run: bun install
       - name: Build
         run: bun run build
