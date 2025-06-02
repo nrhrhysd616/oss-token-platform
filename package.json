@@ -24,6 +24,7 @@
     "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/bun": "latest",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
@@ -47,9 +48,16 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
+    "@octokit/auth-app": "^8.0.1",
+    "@octokit/rest": "^22.0.0",
     "firebase": "^11.7.3",
     "firebase-admin": "^13.4.0",
-    "next": "^15.3.2"
+    "jsonwebtoken": "^9.0.2",
+    "next": "^15.3.2",
+    "react-hook-form": "^7.56.4",
+    "react-hot-toast": "^2.5.2",
+    "zod": "^3.25.42"
   },
   "prettier": {
     "semi": false,
