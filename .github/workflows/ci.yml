@@ -54,6 +54,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    environment: Preview
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
