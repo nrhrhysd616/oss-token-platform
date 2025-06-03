@@ -17,6 +17,21 @@ export const projectRegistrationSchema = z.object({
       'プロジェクト名は英数字、スペース、ハイフン、アンダースコアのみ使用可能です'
     ),
   description: z.string().min(1, '説明は必須です').max(500, '説明は500文字以内で入力してください'),
+  status: z.enum(['draft', 'active', 'suspended']),
+  tokenCode: z
+    .string()
+    .min(1, 'トークンコードは必須です')
+    .max(10, 'トークンコードは10文字以内で入力してください')
+    .regex(/^[A-Z0-9]+$/, 'トークンコードは大文字の英数字のみ使用可能です'),
+  donationUsages: z
+    .array(
+      z
+        .string()
+        .min(1, '使い道の項目は空にできません')
+        .max(40, '各項目は40文字以内で入力してください')
+    )
+    .max(10, '使い道は最大10項目まで設定できます')
+    .default([]),
   // repositoryUrlとgithubInstallationIdは内部的に設定されるため、バリデーションスキーマからは削除
   // リポジトリ選択時に自動的に設定される
 })

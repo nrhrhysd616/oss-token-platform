@@ -1,146 +1,76 @@
 /**
- * プロジェクト管理 API
+ * 公開プロジェクト一覧 API
+ * 寄付者・一般ユーザー向けの公開プロジェクトのみを返却
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
-import { projectRegistrationSchema } from '@/validations/project'
-import { Project } from '@/types/project'
+import { getAdminDb } from '@/lib/firebase/admin'
+import { PublicProject, PublicProjectStats, Project } from '@/types/project'
 import { Query, DocumentData } from 'firebase-admin/firestore'
-
-export async function POST(request: NextRequest) {
-  try {
-    // 認証チェック
-    // Firebase認証トークンを検証
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '認証が必要です',
-        },
-        { status: 401 }
-      )
-    }
-
-    const idToken = authHeader.split('Bearer ')[1]
-    const decodedToken = await getAdminAuth().verifyIdToken(idToken)
-
-    // クライアントサイドからの場合、Cookieから認証情報を取得
-    const body = await request.json()
-
-    // バリデーション
-    const validationResult = projectRegistrationSchema.safeParse(body)
-    if (!validationResult.success) {
-      return NextResponse.json(
-        { error: 'Invalid input data', details: validationResult.error.errors },
-        { status: 400 }
-      )
-    }
-
-    const { name, description } = validationResult.data
-    const {
-      githubInstallationId,
-      repositoryUrl,
-      githubOwner,
-      githubRepo,
-    }: {
-      githubInstallationId: string
-      repositoryUrl: string
-      githubOwner: string
-      githubRepo: string
-    } = body
-
-    // プロジェクト名の重複チェック
-    const existingProjectByName = await getAdminDb()
-      .collection('projects')
-      .where('name', '==', name)
-      .where('ownerUid', '==', decodedToken.uid)
-      .get()
-
-    if (!existingProjectByName.empty) {
-      return NextResponse.json({ error: 'Project name already exists' }, { status: 409 })
-    }
-
-    // リポジトリURLの重複チェック
-    const existingProjectByRepo = await getAdminDb()
-      .collection('projects')
-      .where('repositoryUrl', '==', repositoryUrl)
-      .get()
-
-    if (!existingProjectByRepo.empty) {
-      return NextResponse.json({ error: 'Repository is already registered' }, { status: 409 })
-    }
-
-    // プロジェクトデータを作成
-    const now = new Date()
-    const projectData: Omit<Project, 'id'> = {
-      name,
-      description,
-      repositoryUrl: repositoryUrl,
-      ownerUid: decodedToken.uid,
-      githubOwner,
-      githubRepo,
-      githubInstallationId,
-      status: 'draft',
-      createdAt: now,
-      updatedAt: now,
-    }
-
-    // Firestoreに保存
-    const docRef = await getAdminDb().collection('projects').add(projectData)
-
-    const createdProject: Project = {
-      id: docRef.id,
-      ...projectData,
-    }
-
-    return NextResponse.json({
-      project: createdProject,
-      message: 'Project created successfully',
-    })
-  } catch (error) {
-    console.error('Project creation error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
 
 export async function GET(request: NextRequest) {
   try {
     // クエリパラメータを取得
     const { searchParams } = new URL(request.url)
-    const ownerUid = searchParams.get('ownerUid')
-    const status = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    let query: Query<DocumentData> = getAdminDb().collection('projects')
-
-    // フィルタリング
-    if (ownerUid) {
-      query = query.where('ownerUid', '==', ownerUid)
-    }
-    if (status) {
-      query = query.where('status', '==', status)
-    }
+    // 公開プロジェクト（status: 'active'）のみを取得
+    let query: Query<DocumentData> = getAdminDb()
+      .collection('projects')
+      .where('status', '==', 'active')
 
     // ソートとページネーション
     query = query.orderBy('createdAt', 'desc').limit(limit).offset(offset)
 
     const snapshot = await query.get()
-    const projects: Project[] = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Project[]
+
+    // 公開情報のみを含むプロジェクトリストを作成
+    const publicProjects: PublicProject[] = snapshot.docs.map(doc => {
+      const projectData = { id: doc.id, ...doc.data() } as Project
+
+      // TODO: 統計情報を実際のデータから取得する処理を実装する必要があります
+      // 優先度: 中 - 寄付者向けの重要な情報表示機能
+      // - Firestoreから実際の寄付履歴を取得
+      // - XRPLから現在のトークン価格を取得
+      // - 価格履歴データの計算と保存
+      const stats: PublicProjectStats = {
+        totalDonations: Math.floor(Math.random() * 1000), // TODO: 実際の寄付総額を計算
+        donorCount: Math.floor(Math.random() * 50), // TODO: 実際の寄付者数を計算
+        currentPrice: 1.0 + Math.random() * 2, // TODO: XRPLから現在価格を取得
+        priceHistory: [
+          // TODO: 実際の価格履歴データを取得
+          { date: '2024-01-01', price: 1.0 },
+          { date: '2024-01-02', price: 1.1 },
+          { date: '2024-01-03', price: 1.2 },
+        ],
+      }
+
+      // 公開情報のみを返却（ownerUid, githubInstallationIdを除外）
+      return {
+        id: projectData.id,
+        name: projectData.name,
+        description: projectData.description,
+        repositoryUrl: projectData.repositoryUrl,
+        githubOwner: projectData.githubOwner,
+        githubRepo: projectData.githubRepo,
+        tokenCode: projectData.tokenCode,
+        donationUsages: projectData.donationUsages,
+        createdAt: projectData.createdAt,
+        updatedAt: projectData.updatedAt,
+        status: projectData.status,
+        stats,
+      }
+    })
 
     return NextResponse.json({
-      projects,
+      projects: publicProjects,
       total: snapshot.size,
       limit,
       offset,
     })
   } catch (error) {
-    console.error('Projects fetch error:', error)
-    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+    console.error('Public projects fetch error:', error)
+    return NextResponse.json({ error: 'プロジェクトの取得に失敗しました' }, { status: 500 })
   }
 }

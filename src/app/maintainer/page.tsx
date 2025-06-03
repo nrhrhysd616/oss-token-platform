@@ -151,9 +151,12 @@ export default function MaintainerDashboard() {
                       <h3 className="font-semibold text-white">プロジェクト一覧</h3>
                       <p className="text-gray-400 text-sm">登録済みプロジェクトの管理</p>
                     </div>
-                    <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                    <Link
+                      href="/maintainer/projects"
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors inline-block"
+                    >
                       管理する
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

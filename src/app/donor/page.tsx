@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/firebase/auth-context'
 import { useWallet } from '@/hooks/useWallet'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 export default function DonorDashboard() {
   const { user, currentMode, loading } = useAuth()
@@ -56,9 +57,7 @@ export default function DonorDashboard() {
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm text-gray-400">ウォレット</p>
-                <p className="text-white font-mono text-sm">
-                  {primaryWallet.address.slice(0, 8)}...{primaryWallet.address.slice(-6)}
-                </p>
+                <p className="text-white font-mono text-sm">{primaryWallet.address}</p>
               </div>
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm">🎁</span>
@@ -121,9 +120,12 @@ export default function DonorDashboard() {
                     <h3 className="font-semibold text-white">プロジェクト一覧</h3>
                     <p className="text-gray-400 text-sm">登録されているOSSプロジェクトを閲覧</p>
                   </div>
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                  <Link
+                    href="/donor/projects"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                  >
                     探索する
-                  </button>
+                  </Link>
                 </div>
               </div>
               <div className="border border-gray-600 rounded-lg p-4 hover:border-gray-500 transition-colors">
@@ -132,7 +134,12 @@ export default function DonorDashboard() {
                     <h3 className="font-semibold text-white">人気プロジェクト</h3>
                     <p className="text-gray-400 text-sm">寄付額の多いプロジェクトをチェック</p>
                   </div>
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                  {/* TODO: 人気プロジェクトページを作成次第リンク付け */}
+                  <button
+                    // href="/donor/projects"
+                    disabled
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors cursor-not-allowed"
+                  >
                     見る
                   </button>
                 </div>

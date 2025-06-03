@@ -29,6 +29,8 @@ export default function ProjectRegistrationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [registeredProjects, setRegisteredProjects] = useState<Project[]>([])
   const [registeredProjectsLoading, setRegisteredProjectsLoading] = useState(false)
+  // 寄付の使い道を独立したstateで管理（文字列配列）
+  const [donationUsages, setDonationUsages] = useState<string[]>([''])
 
   const {
     register,
@@ -36,9 +38,16 @@ export default function ProjectRegistrationForm() {
     watch,
     formState: { errors, isValid },
     setValue,
-  } = useForm<ProjectRegistrationFormData>({
+  } = useForm({
     resolver: zodResolver(projectRegistrationSchema),
     mode: 'onChange',
+    defaultValues: {
+      status: 'draft' as const,
+      name: '',
+      description: '',
+      tokenCode: '',
+      donationUsages: [],
+    },
   })
 
   // 登録済みプロジェクトを取得する関数
@@ -47,7 +56,7 @@ export default function ProjectRegistrationForm() {
 
     setRegisteredProjectsLoading(true)
     try {
-      const response = await fetch(`/api/projects?ownerUid=${user.uid}`, {
+      const response = await fetch('/api/management/projects', {
         headers: {
           Authorization: `Bearer ${await user.getIdToken()}`,
         },
@@ -74,8 +83,6 @@ export default function ProjectRegistrationForm() {
 
   // リポジトリが登録済みかどうかをチェックする関数
   const isRepositoryRegistered = (repository: RepositoryWithInstallation): boolean => {
-    console.debug('Checking if repository is registered:', repository)
-    console.debug('Registered projects:', registeredProjects)
     return registeredProjects.some(
       project =>
         project.repositoryUrl === repository.htmlUrl ||
@@ -86,6 +93,27 @@ export default function ProjectRegistrationForm() {
   // 利用可能なリポジトリと登録済みリポジトリを分離
   const availableRepositories = allRepositories.filter(repo => !isRepositoryRegistered(repo))
   const registeredRepositories = allRepositories.filter(repo => isRepositoryRegistered(repo))
+
+  // トークンコード自動生成関数
+  const generateTokenCode = (projectName: string): string => {
+    // プロジェクト名から英数字のみを抽出し、大文字に変換
+    const cleanName = projectName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
+    // 最大10文字に制限
+    return cleanName.substring(0, 10)
+  }
+
+  // トークンコード自動生成ボタンのハンドラー
+  const handleGenerateTokenCode = () => {
+    const currentName = watch('name')
+    if (!currentName) {
+      toast.error('プロジェクト名を入力してからトークンコードを生成してください')
+      return
+    }
+
+    const generatedCode = generateTokenCode(currentName)
+    setValue('tokenCode', generatedCode)
+    toast.success('トークンコードを生成しました')
+  }
 
   // リポジトリ選択時の処理
   const handleRepositorySelect = (repository: RepositoryWithInstallation) => {
@@ -107,6 +135,33 @@ export default function ProjectRegistrationForm() {
     if (!currentDescription && repository.description) {
       setValue('description', repository.description)
     }
+
+    // トークンコードを自動生成（未入力の場合）
+    const currentTokenCode = watch('tokenCode')
+    if (!currentTokenCode) {
+      const generatedCode = generateTokenCode(repository.name)
+      setValue('tokenCode', generatedCode)
+    }
+  }
+
+  // 寄付の使い道の管理関数
+  const addDonationUsage = () => {
+    if (donationUsages.length < 10) {
+      setDonationUsages([...donationUsages, ''])
+    }
+  }
+
+  const removeDonationUsage = (index: number) => {
+    if (donationUsages.length > 1) {
+      const newUsages = donationUsages.filter((_, i) => i !== index)
+      setDonationUsages(newUsages)
+    }
+  }
+
+  const updateDonationUsage = (index: number, value: string) => {
+    const newUsages = [...donationUsages]
+    newUsages[index] = value
+    setDonationUsages(newUsages)
   }
 
   const onSubmit = async (data: ProjectRegistrationFormData) => {
@@ -123,7 +178,10 @@ export default function ProjectRegistrationForm() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/projects', {
+      // 空の項目を除外した文字列配列を使用
+      const filteredDonationUsages = donationUsages.filter(usage => usage.trim() !== '')
+
+      const response = await fetch('/api/management/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,6 +189,7 @@ export default function ProjectRegistrationForm() {
         },
         body: JSON.stringify({
           ...data,
+          donationUsages: filteredDonationUsages,
           repositoryUrl: selectedRepository.htmlUrl,
           githubInstallationId: selectedRepository.installationId.toString(),
           githubOwner: selectedRepository.owner.login,
@@ -348,6 +407,138 @@ export default function ProjectRegistrationForm() {
                 <p className="mt-2 text-sm text-red-400">{errors.description.message}</p>
               )}
             </div>
+
+            {/* ステータス */}
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-2">
+                プロジェクトステータス <span className="text-red-400">*</span>
+              </label>
+              <select
+                {...register('status')}
+                id="status"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="draft">📝 下書き（Draft）</option>
+                <option value="active">✅ アクティブ（Active）</option>
+                <option value="suspended">⏸️ 一時停止（Suspended）</option>
+              </select>
+              {errors.status && (
+                <p className="mt-2 text-sm text-red-400">{errors.status.message}</p>
+              )}
+              <p className="mt-2 text-sm text-gray-400">
+                下書き: プロジェクトを非公開で準備 | アクティブ: 公開して支援を受け取り可能 |
+                一時停止: 一時的に非公開
+              </p>
+            </div>
+
+            {/* トークンコード */}
+            <div>
+              <label htmlFor="tokenCode" className="block text-sm font-medium text-gray-300 mb-2">
+                トークンコード <span className="text-red-400">*</span>
+              </label>
+              <div className="flex space-x-3">
+                <input
+                  {...register('tokenCode')}
+                  type="text"
+                  id="tokenCode"
+                  className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent uppercase"
+                  placeholder="例: MYPROJECT"
+                  style={{ textTransform: 'uppercase' }}
+                />
+                <button
+                  type="button"
+                  onClick={handleGenerateTokenCode}
+                  // disabled={isGeneratingTokenCode}
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center space-x-2 whitespace-nowrap"
+                >
+                  <span>⚡</span>
+                  <span>自動生成</span>
+                </button>
+              </div>
+              {errors.tokenCode && (
+                <p className="mt-2 text-sm text-red-400">{errors.tokenCode.message}</p>
+              )}
+              <p className="mt-2 text-sm text-gray-400">
+                プロジェクト固有のトークン識別子（大文字英数字、最大10文字）
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 寄付の使い道 */}
+        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-6">🎯 寄付の使い道</h2>
+          <p className="text-sm text-gray-400 mb-4">
+            寄付者に向けて、寄付がどのように使われるかを説明する項目を設定できます（任意）
+          </p>
+
+          <div className="space-y-4">
+            {donationUsages.map((usage, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-gray-300">
+                    項目 {index + 1}
+                  </label>
+                  {donationUsages.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeDonationUsage(index)}
+                      className="text-red-400 hover:text-red-300 text-sm"
+                    >
+                      削除
+                    </button>
+                  )}
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={usage}
+                    onChange={e => updateDonationUsage(index, e.target.value)}
+                    placeholder="例: 新機能の開発と改善"
+                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent pr-16"
+                    maxLength={40}
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+                    {usage.length}/40
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {donationUsages.length < 10 && (
+              <button
+                type="button"
+                onClick={addDonationUsage}
+                className="w-full bg-gray-700 hover:bg-gray-600 border border-gray-600 text-gray-300 px-4 py-3 rounded-lg transition-colors flex items-center justify-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                <span>項目を追加 ({donationUsages.length}/10)</span>
+              </button>
+            )}
+
+            {/* プレビュー */}
+            {donationUsages.some(usage => usage.trim()) && (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-md p-4">
+                <h3 className="text-blue-400 font-semibold mb-2">プレビュー</h3>
+                <ul className="text-gray-300 text-sm space-y-1">
+                  {donationUsages
+                    .filter(usage => usage.trim())
+                    .map((usage, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-blue-400 mr-2">•</span>
+                        <span>{usage}</span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 
