@@ -93,7 +93,7 @@ bun run dev
 
 ```bash
 # 全テストの実行
-bun test
+bun run test
 
 # カバレッジ付きテスト実行
 bun run test:coverage

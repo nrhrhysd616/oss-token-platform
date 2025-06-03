@@ -2,5 +2,5 @@ bun lint
 # コミット前にテストも実行したい場合には、以下のコメントを外す
 # 現在はエミュレータの起動・停止・テストはCIで行っているため、コメントアウトしている
 # bun run firebase:emulators:start
-# bun test
+# bun run test
 # bun run firebase:emulators:stop

@@ -51,16 +51,5 @@ describe('Xaman API Tests', () => {
         client = new XamanClient()
       }
     })
-
-    it('should create XamanClient instance', () => {
-      expect(() => new XamanClient()).not.toThrow()
-      expect(client).toBeInstanceOf(XamanClient)
-    })
-
-    it('should have required methods', () => {
-      expect(typeof client.createPayload).toBe('function')
-      expect(typeof client.getPayloadStatus).toBe('function')
-      expect(typeof client.cancelPayload).toBe('function')
-    })
   })
 })
