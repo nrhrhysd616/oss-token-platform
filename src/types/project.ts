@@ -24,7 +24,7 @@ export type Project = {
 /**
  * 公開プロジェクト情報（寄付者・一般ユーザー向け）
  */
-export type PublicProject = Omit<Project, 'ownerUid' | 'githubInstallationId'> & {
+export type PublicProject = Omit<Project, 'ownerUid' | 'githubInstallationId' | 'issuerAddress'> & {
   stats: PublicProjectStats
 }
 
