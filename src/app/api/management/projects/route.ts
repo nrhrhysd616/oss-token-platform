@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
 import { projectRegistrationSchema } from '@/validations/project'
 import { Project } from '@/types/project'
+import { assignIssuerWallet } from '@/lib/xrpl/config'
 import { Query, DocumentData } from 'firebase-admin/firestore'
 
 export async function POST(request: NextRequest) {
@@ -76,9 +77,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Token code already exists' }, { status: 409 })
     }
 
-    // プロジェクトデータを作成
+    // プロジェクトデータを作成（issuerAddressは後で追加）
     const now = new Date()
-    const projectData: Omit<Project, 'id'> = {
+    const projectData = {
       name,
       description,
       repositoryUrl: repositoryUrl,
@@ -93,6 +94,30 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     }
 
+    // Firestoreに保存
+    const docRef = await getAdminDb().collection('projects').add(projectData)
+
+    // プロジェクトIDを使ってIssuerウォレットを割り当て
+    let issuerAddress: string
+    try {
+      const assignedWallet = assignIssuerWallet(docRef.id)
+      issuerAddress = assignedWallet.address
+    } catch (error) {
+      console.error('Issuer wallet assignment error:', error)
+      // プロジェクト作成は成功したが、Issuerウォレット割り当てに失敗した場合はプロジェクトを削除
+      await docRef.delete()
+      return NextResponse.json(
+        { error: 'Issuerウォレットの割り当てに失敗しました' },
+        { status: 500 }
+      )
+    }
+
+    // issuerAddressを追加してプロジェクトを更新
+    await docRef.update({
+      issuerAddress,
+      updatedAt: new Date(),
+    })
+
     // TODO: ステータスがactiveの場合、指定されたtokenCodeでトークンを発行する
     // 優先度: 高 - プロジェクトの公開に必要な機能
     if (status === 'active') {
@@ -104,12 +129,10 @@ export async function POST(request: NextRequest) {
       console.log(`TODO: Issue token with code ${tokenCode} for project ${name}`)
     }
 
-    // Firestoreに保存
-    const docRef = await getAdminDb().collection('projects').add(projectData)
-
     const createdProject: Project = {
       id: docRef.id,
       ...projectData,
+      issuerAddress,
     }
 
     return NextResponse.json({

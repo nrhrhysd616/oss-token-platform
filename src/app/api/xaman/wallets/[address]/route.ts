@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { WalletService } from '@/lib/xaman/WalletService'
 import { getAdminAuth } from '@/lib/firebase/admin'
+import { z } from 'zod'
+import { xrplAddressSchema } from '@/validations/common'
 
 /**
  * 特定のウォレット情報を取得
@@ -22,16 +24,16 @@ export async function GET(
     const userId = decodedToken.uid
 
     const { address } = await params
-    if (!address) {
-      return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 })
-    }
+
+    // アドレスのバリデーション
+    const validatedAddress = xrplAddressSchema.parse(address)
 
     // ウォレットサービスを初期化
     const walletService = new WalletService()
 
     // ユーザーのウォレット一覧を取得して、指定されたアドレスのウォレットを検索
     const wallets = await walletService.getUserWallets(userId)
-    const wallet = wallets.find(w => w.address === address)
+    const wallet = wallets.find(w => w.address === validatedAddress)
 
     if (!wallet) {
       return NextResponse.json({ error: 'Wallet not found' }, { status: 404 })
@@ -71,9 +73,8 @@ export async function PUT(
 
     const { address } = await params
 
-    if (!address) {
-      return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 })
-    }
+    // アドレスのバリデーション
+    const validatedAddress = xrplAddressSchema.parse(address)
 
     // TODO: ウォレット情報更新機能を実装する必要があります
     // 優先度: 低 - 将来的な拡張機能
@@ -112,9 +113,9 @@ export async function DELETE(
 
     const { address } = await params
 
-    if (!address) {
-      return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 })
-    }
+    // アドレスのバリデーション
+    const validatedAddress = xrplAddressSchema.parse(address)
+
     // TODO: ウォレット削除機能を実装する必要があります
     // 優先度: 低 - 将来的な拡張機能
     // - ウォレットの安全な削除処理

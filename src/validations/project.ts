@@ -1,5 +1,5 @@
 /**
- * GitHub関連のバリデーション
+ * プロジェクト関連のバリデーション
  */
 
 import { z } from 'zod'
@@ -38,6 +38,7 @@ export const projectRegistrationSchema = z.object({
 
 export type ProjectRegistrationFormData = z.infer<typeof projectRegistrationSchema>
 
+// FIXME: 現状未使用かつ利用不可
 /**
  * プロジェクト名の重複チェック用バリデーション
  */

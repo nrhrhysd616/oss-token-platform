@@ -14,6 +14,7 @@ export type Project = {
   githubRepo: string
   githubInstallationId: string
   tokenCode: string
+  issuerAddress: string
   donationUsages: string[]
   createdAt: Date
   updatedAt: Date

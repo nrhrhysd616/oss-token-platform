@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { WalletService } from '@/lib/xaman/WalletService'
 import { getAdminAuth } from '@/lib/firebase/admin'
+import { walletLinkStatusQuerySchema } from '@/validations/xaman'
 
 /**
  * ウォレット連携ステータスを確認
@@ -19,13 +20,14 @@ export async function GET(request: NextRequest) {
     const decodedToken = await getAdminAuth().verifyIdToken(token)
     const userId = decodedToken.uid
 
-    // URLパラメータからpayloadUuidを取得
+    // URLパラメータからpayloadUuidを取得してバリデーション
     const { searchParams } = new URL(request.url)
-    const payloadUuid = searchParams.get('payloadUuid')
-
-    if (!payloadUuid) {
-      return NextResponse.json({ error: 'Payload UUID is required' }, { status: 400 })
+    const queryParams = {
+      payloadUuid: searchParams.get('payloadUuid'),
     }
+
+    const validatedQuery = walletLinkStatusQuerySchema.parse(queryParams)
+    const { payloadUuid } = validatedQuery
 
     // ウォレットサービスを初期化
     const walletService = new WalletService()

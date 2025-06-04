@@ -1,0 +1,290 @@
+/**
+ * Xaman関連のバリデーションスキーマ
+ */
+
+import { z } from 'zod'
+import {
+  projectIdSchema,
+  xrplAddressSchema,
+  xamanPayloadUuidSchema,
+  transactionHashSchema,
+  statusSchema,
+  tokenCodeSchema,
+} from './common'
+
+/**
+ * Xamanコールバックペイロードのバリデーション（正式なwebhook形式）
+ * https://docs.xaman.dev/concepts/payloads-sign-requests/status-updates/webhooks
+ */
+export const xamanCallbackSchema = z.object({
+  meta: z.object({
+    url: z.string(),
+    application_uuidv4: z.string().uuid(),
+    payload_uuidv4: xamanPayloadUuidSchema,
+    opened_by_deeplink: z.boolean(),
+  }),
+  custom_meta: z
+    .object({
+      identifier: z.string().optional(),
+      blob: z.record(z.any()).optional(),
+      instruction: z.string().optional(),
+    })
+    .optional(),
+  payloadResponse: z.object({
+    payload_uuidv4: xamanPayloadUuidSchema,
+    reference_call_uuidv4: z.string().uuid(),
+    signed: z.boolean(),
+    user_token: z.boolean(),
+    return_url: z
+      .object({
+        app: z.string().optional(),
+        web: z.string().optional(),
+      })
+      .optional(),
+    txid: transactionHashSchema.optional(),
+  }),
+  userToken: z
+    .object({
+      user_token: z.string(),
+      token_issued: z.number(),
+      token_expiration: z.number(),
+    })
+    .optional(),
+})
+
+/**
+ * トラストライン設定リクエストのバリデーション
+ */
+export const trustlineRequestSchema = z.object({
+  projectId: projectIdSchema,
+  donorAddress: xrplAddressSchema,
+})
+
+// FIXME: 現状未使用
+/**
+ * トラストライン設定レスポンスのバリデーション
+ */
+export const trustlineResponseSchema = z.object({
+  request: z.object({
+    id: z.string(),
+    projectId: z.string(),
+    projectName: z.string(),
+    tokenCode: tokenCodeSchema,
+    expiresAt: z.string().datetime(),
+  }),
+  xamanPayload: z.object({
+    uuid: xamanPayloadUuidSchema,
+    qr_png: z.string(),
+    qr_uri: z.string(),
+    websocket_status: z.string(),
+  }),
+})
+
+/**
+ * トラストライン状態確認のクエリパラメータ
+ */
+export const trustlineStatusQuerySchema = z.object({
+  requestId: z.string().optional(),
+  donorAddress: xrplAddressSchema.optional(),
+  projectId: z.string().optional(),
+})
+
+// FIXME: 現状未使用
+/**
+ * トラストライン状態レスポンスのバリデーション
+ */
+export const trustlineStatusResponseSchema = z.object({
+  donorAddress: xrplAddressSchema.optional(),
+  projectId: z.string().optional(),
+  tokenCode: tokenCodeSchema.optional(),
+  hasTrustLine: z.boolean().optional(),
+  issuerAddress: xrplAddressSchema.optional(),
+  request: z
+    .object({
+      id: z.string(),
+      projectId: z.string(),
+      projectName: z.string(),
+      tokenCode: tokenCodeSchema,
+      status: statusSchema,
+      createdAt: z.date(),
+      expiresAt: z.date(),
+    })
+    .optional(),
+  xamanStatus: z.any().optional(), // Xamanのステータスは動的なため
+})
+
+// FIXME: 現状未使用
+/**
+ * ウォレット連携リクエストのバリデーション
+ */
+export const walletLinkRequestSchema = z.object({
+  // ウォレット連携は認証が必要なため、リクエストボディは空
+})
+
+// FIXME: 現状未使用
+/**
+ * ウォレット連携レスポンスのバリデーション
+ */
+export const walletLinkResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.object({
+    payloadUuid: xamanPayloadUuidSchema,
+    qrData: z.string(),
+    expiresAt: z.date(),
+  }),
+})
+
+/**
+ * ウォレット連携ステータス確認のクエリパラメータ
+ */
+export const walletLinkStatusQuerySchema = z.object({
+  payloadUuid: xamanPayloadUuidSchema,
+})
+
+// FIXME: 現状未使用
+/**
+ * ウォレット連携ステータスレスポンスのバリデーション
+ */
+export const walletLinkStatusResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.object({
+    status: z.enum(['pending', 'completed', 'cancelled', 'expired']),
+    wallet: z
+      .object({
+        address: xrplAddressSchema,
+        publicKey: z.string(),
+        linkedAt: z.date(),
+      })
+      .optional(),
+    xamanStatus: z.any().optional(), // Xamanのステータスは動的なため
+  }),
+})
+
+// FIXME: 現状未使用
+/**
+ * ウォレット情報のバリデーション
+ */
+export const walletInfoSchema = z.object({
+  address: xrplAddressSchema,
+  publicKey: z.string(),
+  linkedAt: z.date(),
+  userId: z.string(),
+  isPrimary: z.boolean().optional().default(false),
+  nickname: z.string().optional(),
+})
+
+// FIXME: 現状未使用
+/**
+ * ウォレット一覧レスポンスのバリデーション
+ */
+export const walletListResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.array(walletInfoSchema),
+})
+
+// FIXME: 現状未使用
+/**
+ * Xamanペイロードステータスのバリデーション
+ */
+export const xamanPayloadStatusSchema = z.object({
+  meta: z.object({
+    exists: z.boolean(),
+    uuid: xamanPayloadUuidSchema,
+    multisign: z.boolean(),
+    submit: z.boolean(),
+    destination: z.string(),
+    resolved_destination: z.string(),
+    signed: z.boolean(),
+    cancelled: z.boolean(),
+    expired: z.boolean(),
+    pushed: z.boolean(),
+    app_opened: z.boolean(),
+    return_url_app: z.string().optional(),
+    return_url_web: z.string().optional(),
+  }),
+  application: z.object({
+    name: z.string(),
+    description: z.string(),
+    disabled: z.number(),
+    uuidv4: z.string(),
+    icon_url: z.string(),
+    issued_user_token: z.string().optional(),
+  }),
+  payload: z.object({
+    tx_type: z.string(),
+    tx_destination: z.string(),
+    tx_destination_tag: z.number().optional(),
+    request_json: z.any(),
+    created_at: z.string(),
+    expires_at: z.string(),
+    expires_in_seconds: z.number(),
+  }),
+  response: z
+    .object({
+      hex: z.string(),
+      txid: transactionHashSchema,
+      resolved_at: z.string(),
+      dispatched_to: z.string(),
+      dispatched_result: z.string(),
+      multisign_account: z.string().optional(),
+      account: xrplAddressSchema,
+    })
+    .optional(),
+})
+
+// FIXME: 現状未使用
+/**
+ * トラストライン設定記録のバリデーション
+ */
+export const trustlineRecordSchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  projectName: z.string(),
+  tokenCode: tokenCodeSchema,
+  issuerAddress: xrplAddressSchema,
+  donorAddress: xrplAddressSchema,
+  donorUid: z.string().nullable(),
+  xamanPayloadId: xamanPayloadUuidSchema,
+  status: statusSchema,
+  txHash: transactionHashSchema.optional(),
+  createdAt: z.date(),
+  expiresAt: z.date(),
+  completedAt: z.date().optional(),
+  error: z.string().optional(),
+})
+
+// バリデーション関数
+// FIXME: 現状未使用
+export const validateXamanPayloadUuid = (uuid: string): boolean => {
+  try {
+    xamanPayloadUuidSchema.parse(uuid)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// FIXME: 現状未使用
+export const validateTransactionHash = (hash: string): boolean => {
+  try {
+    transactionHashSchema.parse(hash)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// 型エクスポート
+export type XamanCallback = z.infer<typeof xamanCallbackSchema>
+export type TrustlineRequest = z.infer<typeof trustlineRequestSchema>
+export type TrustlineResponse = z.infer<typeof trustlineResponseSchema>
+export type TrustlineStatusQuery = z.infer<typeof trustlineStatusQuerySchema>
+export type TrustlineStatusResponse = z.infer<typeof trustlineStatusResponseSchema>
+export type WalletLinkRequest = z.infer<typeof walletLinkRequestSchema>
+export type WalletLinkResponse = z.infer<typeof walletLinkResponseSchema>
+export type WalletLinkStatusQuery = z.infer<typeof walletLinkStatusQuerySchema>
+export type WalletLinkStatusResponse = z.infer<typeof walletLinkStatusResponseSchema>
+export type WalletInfo = z.infer<typeof walletInfoSchema>
+export type WalletListResponse = z.infer<typeof walletListResponseSchema>
+export type XamanPayloadStatus = z.infer<typeof xamanPayloadStatusSchema>
+export type TrustlineRecord = z.infer<typeof trustlineRecordSchema>
