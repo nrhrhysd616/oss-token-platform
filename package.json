@@ -15,7 +15,11 @@
     "e2e-test:headed": "playwright test --headed",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "db:reset:dev": "bun firebase use default && bun firebase firestore:delete --all-collections --force",
+    "auth:reset:dev": "bun firebase use default && bun scripts/reset-auth.ts",
+    "reset:dev": "bun run db:reset:dev && bun run auth:reset:dev",
+    "reset:dev:safe": "bun scripts/reset-confirm.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
