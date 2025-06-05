@@ -5,14 +5,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { DonationService, DonationServiceError } from '@/services/DonationService'
-import { createDonationSchema } from '@/validations/donation'
+import { donationCreateApiSchema } from '@/validations'
 import { z } from 'zod'
 
 export async function POST(request: NextRequest) {
   try {
     // リクエストボディの解析
     const body = await request.json()
-    const validatedData = createDonationSchema.parse(body)
+    const validatedData = donationCreateApiSchema.parse(body)
 
     // 認証チェック（オプション - 寄付は匿名でも可能）
     let donorUid: string | undefined = undefined

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { WalletLinkService, WalletLinkServiceError } from '@/services/WalletLinkService'
 import { getAdminAuth } from '@/lib/firebase/admin'
-import { walletLinkStatusQuerySchema } from '@/validations/wallet-link'
+import { walletLinkQuerySchema } from '@/validations'
 import { z } from 'zod'
 
 /**
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       payloadUuid: searchParams.get('payloadUuid'),
     }
 
-    const validatedQuery = walletLinkStatusQuerySchema.parse(queryParams)
+    const validatedQuery = walletLinkQuerySchema.parse(queryParams)
     const { payloadUuid } = validatedQuery
 
     // ウォレット連携リクエストを取得して所有者を確認

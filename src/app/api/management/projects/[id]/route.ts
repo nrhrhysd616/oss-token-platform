@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
-import { ProjectUpdateData } from '@/validations/project'
+import { ProjectUpdateApiData, projectUpdateApiSchema } from '@/validations/project'
 import { MaintainerProject, MaintainerProjectStats } from '@/types/project'
 import { z } from 'zod'
 
@@ -82,14 +82,19 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const idToken = authHeader.split('Bearer ')[1]
     const decodedToken = await getAdminAuth().verifyIdToken(idToken)
 
-    const body = await request.json()
+    const validatedData = projectUpdateApiSchema.parse(await request.json())
+
+    // 名前の重複チェック（名前が変更される場合、route層でバリデーション）
+    if (validatedData.name) {
+      await ProjectService.validateUniqueConstraints(
+        { name: validatedData.name },
+        decodedToken.uid,
+        id
+      )
+    }
 
     // ProjectServiceを使用してプロジェクトを更新
-    const updatedProject = await ProjectService.updateProject(
-      id,
-      body as ProjectUpdateData,
-      decodedToken.uid
-    )
+    const updatedProject = await ProjectService.updateProject(id, validatedData, decodedToken.uid)
 
     return NextResponse.json({
       project: updatedProject,

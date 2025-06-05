@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
-import { projectQuerySchema, type ProjectCreateData } from '@/validations/project'
+import { projectCreateApiSchema, projectQuerySchema } from '@/validations/project'
 import { z } from 'zod'
 
 export async function POST(request: NextRequest) {
@@ -20,10 +20,20 @@ export async function POST(request: NextRequest) {
     const idToken = authHeader.split('Bearer ')[1]
     const decodedToken = await getAdminAuth().verifyIdToken(idToken)
 
-    const body = await request.json()
+    const validatedData = projectCreateApiSchema.parse(await request.json())
+
+    // 重複チェック（route層でバリデーション）
+    await ProjectService.validateUniqueConstraints(
+      {
+        name: validatedData.name,
+        tokenCode: validatedData.tokenCode,
+        repositoryUrl: validatedData.repositoryUrl,
+      },
+      decodedToken.uid
+    )
 
     // ProjectServiceを使用してプロジェクトを作成
-    const project = await ProjectService.createProject(body as ProjectCreateData, decodedToken.uid)
+    const project = await ProjectService.createProject(validatedData, decodedToken.uid)
 
     return NextResponse.json({
       project,

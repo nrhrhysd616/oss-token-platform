@@ -6,12 +6,11 @@ import { getAdminDb } from '../lib/firebase/admin'
 import { assignIssuerWallet } from '../lib/xrpl/config'
 import { convertTimestamps } from '../lib/firebase/utils'
 import {
-  projectCreateSchema,
-  projectUpdateSchema,
-  type ProjectCreateData,
-  type ProjectUpdateData,
+  projectUpdateApiSchema,
+  type ProjectCreateApiData,
+  type ProjectUpdateApiData,
   type ProjectQueryParams,
-  type PublicProjectQueryParams,
+  type ProjectPublicQueryParams,
 } from '../validations/project'
 import type {
   Project,
@@ -55,33 +54,23 @@ export class ProjectService {
   /**
    * プロジェクトを作成
    */
-  static async createProject(projectData: ProjectCreateData, ownerUid: string): Promise<Project> {
+  static async createProject(
+    projectData: ProjectCreateApiData,
+    ownerUid: string
+  ): Promise<Project> {
     try {
-      // バリデーション
-      const validatedData = projectCreateSchema.parse(projectData)
-
-      // 重複チェック
-      await this.validateUniqueConstraints(
-        {
-          name: validatedData.name,
-          tokenCode: validatedData.tokenCode,
-          repositoryUrl: validatedData.repositoryUrl,
-        },
-        ownerUid
-      )
-
       const now = new Date()
       const projectDoc = {
-        name: validatedData.name,
-        description: validatedData.description,
-        repositoryUrl: validatedData.repositoryUrl,
+        name: projectData.name,
+        description: projectData.description,
+        repositoryUrl: projectData.repositoryUrl,
         ownerUid,
-        githubOwner: validatedData.githubOwner,
-        githubRepo: validatedData.githubRepo,
-        githubInstallationId: validatedData.githubInstallationId,
-        tokenCode: validatedData.tokenCode,
-        donationUsages: validatedData.donationUsages,
-        status: validatedData.status,
+        githubOwner: projectData.githubOwner,
+        githubRepo: projectData.githubRepo,
+        githubInstallationId: projectData.githubInstallationId,
+        tokenCode: projectData.tokenCode,
+        donationUsages: projectData.donationUsages,
+        status: projectData.status,
         createdAt: now,
         updatedAt: now,
       }
@@ -160,7 +149,7 @@ export class ProjectService {
    * 公開プロジェクト一覧を取得
    */
   static async getPublicProjects(
-    options: PublicProjectQueryParams
+    options: ProjectPublicQueryParams
   ): Promise<PaginatedResult<PublicProject>> {
     try {
       let query: Query<DocumentData> = getAdminDb()
@@ -317,24 +306,16 @@ export class ProjectService {
    */
   static async updateProject(
     projectId: string,
-    updates: ProjectUpdateData,
+    updates: ProjectUpdateApiData,
     ownerUid: string
   ): Promise<Project> {
     try {
-      // バリデーション
-      const validatedUpdates = projectUpdateSchema.parse(updates)
-
       // 所有者チェック
       await this.checkProjectOwnership(projectId, ownerUid)
 
-      // 名前の重複チェック（名前が変更される場合）
-      if (validatedUpdates.name) {
-        await this.validateUniqueConstraints({ name: validatedUpdates.name }, ownerUid, projectId)
-      }
-
       // 更新データを準備
       const updateData = {
-        ...validatedUpdates,
+        ...updates,
         updatedAt: new Date(),
       }
 

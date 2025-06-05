@@ -22,7 +22,7 @@ import type {
   TrustLineRequest,
   TrustLinePayload,
 } from '@/types/donation'
-import type { DonationHistoryQuery } from '@/validations/donation'
+import type { DonationQueryParams } from '@/validations'
 
 /**
  * 寄付サービス統合クラス
@@ -318,7 +318,7 @@ export class DonationService extends BaseService {
    * 寄付履歴を取得
    */
   static async getDonationHistory(
-    queryParams: DonationHistoryQuery
+    queryParams: DonationQueryParams
   ): Promise<PaginatedResult<DonationRecord>> {
     return DonationHistoryManager.getDonationHistory(queryParams)
   }

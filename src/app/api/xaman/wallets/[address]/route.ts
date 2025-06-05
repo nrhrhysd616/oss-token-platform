@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { WalletLinkService, WalletLinkServiceError } from '@/services/WalletLinkService'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { z } from 'zod'
-import { xrplAddressSchema } from '@/validations/common'
+import { xrplAddressSchema } from '@/validations'
 
 /**
  * 特定のウォレット情報を取得

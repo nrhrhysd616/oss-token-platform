@@ -5,9 +5,24 @@
 import { z } from 'zod'
 
 /**
- * プロジェクト登録フォームのバリデーションスキーマ
+ * プロジェクトIDのバリデーション
  */
-export const projectRegistrationSchema = z.object({
+export const projectIdSchema = z.string().min(1, 'プロジェクトIDが必要です')
+
+/**
+ * トークンコードのバリデーション
+ */
+export const tokenCodeSchema = z
+  .string()
+  .min(1, 'トークンコードが必要です')
+  .max(10, 'トークンコードは10文字以内である必要があります')
+  .regex(/^[A-Z0-9]+$/, 'トークンコードは大文字の英数字のみ使用可能です')
+
+/**
+ * プロジェクト作成フォーム用バリデーションスキーマ
+ * ユーザーが直接入力する項目のみ
+ */
+export const projectCreateFormSchema = z.object({
   name: z
     .string()
     .min(1, 'プロジェクト名は必須です')
@@ -32,35 +47,40 @@ export const projectRegistrationSchema = z.object({
     )
     .max(10, '使い道は最大10項目まで設定できます')
     .default([]),
-  // repositoryUrlとgithubInstallationIdは内部的に設定されるため、バリデーションスキーマからは削除
-  // リポジトリ選択時に自動的に設定される
 })
 
-export type ProjectRegistrationFormData = z.infer<typeof projectRegistrationSchema>
+export type ProjectCreateFormData = z.infer<typeof projectCreateFormSchema>
 
 /**
- * プロジェクト更新用バリデーションスキーマ
- * tokenCodeは変更不可のため除外
+ * プロジェクト作成API用バリデーションスキーマ
+ * フォームスキーマを拡張して内部フィールドを追加
  */
-export const projectUpdateSchema = projectRegistrationSchema.omit({ tokenCode: true }).partial()
-
-export type ProjectUpdateData = z.infer<typeof projectUpdateSchema>
-
-/**
- * プロジェクト作成用の完全なスキーマ
- * APIで受け取る際に使用
- */
-export const projectCreateSchema = projectRegistrationSchema.extend({
+export const projectCreateApiSchema = projectCreateFormSchema.extend({
   repositoryUrl: z.string().url('有効なURLを入力してください'),
   githubOwner: z.string().min(1, 'GitHubオーナーは必須です'),
   githubRepo: z.string().min(1, 'GitHubリポジトリ名は必須です'),
   githubInstallationId: z.string().min(1, 'GitHub Installation IDは必須です'),
 })
 
-export type ProjectCreateData = z.infer<typeof projectCreateSchema>
+export type ProjectCreateApiData = z.infer<typeof projectCreateApiSchema>
 
 /**
- * クエリパラメータ用バリデーションスキーマ
+ * プロジェクト更新フォーム用バリデーションスキーマ
+ * tokenCodeは変更不可のため除外
+ */
+export const projectUpdateFormSchema = projectCreateFormSchema.omit({ tokenCode: true }).partial()
+
+export type ProjectUpdateFormData = z.infer<typeof projectUpdateFormSchema>
+
+/**
+ * プロジェクト更新API用バリデーションスキーマ
+ */
+export const projectUpdateApiSchema = projectUpdateFormSchema
+
+export type ProjectUpdateApiData = z.infer<typeof projectUpdateApiSchema>
+
+/**
+ * プロジェクト一覧取得用クエリパラメータバリデーションスキーマ
  */
 export const projectQuerySchema = z.object({
   limit: z
@@ -89,10 +109,10 @@ export const projectQuerySchema = z.object({
 export type ProjectQueryParams = z.infer<typeof projectQuerySchema>
 
 /**
- * 公開プロジェクト用クエリパラメータ
+ * 公開プロジェクト一覧取得用クエリパラメータバリデーションスキーマ
  */
-export const publicProjectQuerySchema = projectQuerySchema.extend({
+export const projectPublicQuerySchema = projectQuerySchema.extend({
   status: z.literal('active').default('active'), // 公開プロジェクトはactiveのみ
 })
 
-export type PublicProjectQueryParams = z.infer<typeof publicProjectQuerySchema>
+export type ProjectPublicQueryParams = z.infer<typeof projectPublicQuerySchema>

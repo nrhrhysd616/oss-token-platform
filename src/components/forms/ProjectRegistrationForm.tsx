@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/firebase/auth-context'
-import { projectRegistrationSchema, ProjectRegistrationFormData } from '@/validations/project'
+import { projectCreateFormSchema, ProjectCreateFormData } from '@/validations/project'
 import { useGitHubApp } from '@/hooks/useGitHubApp'
 import { GitHubRepository } from '@/types/github'
 import { Project } from '@/types/project'
@@ -39,7 +39,7 @@ export default function ProjectRegistrationForm() {
     formState: { errors, isValid },
     setValue,
   } = useForm({
-    resolver: zodResolver(projectRegistrationSchema),
+    resolver: zodResolver(projectCreateFormSchema),
     mode: 'onChange',
     defaultValues: {
       status: 'draft' as const,
@@ -164,7 +164,7 @@ export default function ProjectRegistrationForm() {
     setDonationUsages(newUsages)
   }
 
-  const onSubmit = async (data: ProjectRegistrationFormData) => {
+  const onSubmit = async (data: ProjectCreateFormData) => {
     if (!user) {
       toast.error('ログインが必要です')
       return

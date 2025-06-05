@@ -5,14 +5,14 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
-import { publicProjectQuerySchema } from '@/validations/project'
+import { projectPublicQuerySchema } from '@/validations/project'
 import { z } from 'zod'
 
 export async function GET(request: NextRequest) {
   try {
     // クエリパラメータを取得・バリデーション
     const { searchParams } = new URL(request.url)
-    const queryParams = publicProjectQuerySchema.parse({
+    const queryParams = projectPublicQuerySchema.parse({
       limit: searchParams.get('limit'),
       offset: searchParams.get('offset'),
       sortBy: searchParams.get('sortBy'),

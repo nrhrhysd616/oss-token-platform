@@ -5,7 +5,7 @@
 import { BaseService, type PaginatedResult, type PaginationOptions } from '../shared/BaseService'
 import { DonationServiceError } from '../shared/ServiceError'
 import { convertTimestamps } from '@/lib/firebase/utils'
-import { donationHistoryQuerySchema, type DonationHistoryQuery } from '@/validations/donation'
+import { donationQuerySchema, type DonationQueryParams } from '@/validations'
 import type { DonationRecord } from '@/types/donation'
 import type { Query, DocumentData } from 'firebase-admin/firestore'
 
@@ -19,11 +19,11 @@ export class DonationHistoryManager extends BaseService {
    * 寄付履歴を取得（ページネーション付き）
    */
   static async getDonationHistory(
-    queryParams: DonationHistoryQuery
+    queryParams: DonationQueryParams
   ): Promise<PaginatedResult<DonationRecord>> {
     try {
       // バリデーション
-      const validatedParams = donationHistoryQuerySchema.parse(queryParams)
+      const validatedParams = donationQuerySchema.parse(queryParams)
 
       // ベースクエリを構築
       let baseQuery: Query<DocumentData> = this.db.collection('donationRecords')
