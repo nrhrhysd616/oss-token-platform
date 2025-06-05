@@ -43,6 +43,9 @@ jobs:
         run: bun install
       - name: Run tests
         env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
           GITHUB_APP_ID: ${{ secrets.CI_GITHUB_APP_ID }}
           GITHUB_APP_PRIVATE_KEY: ${{ secrets.CI_GITHUB_APP_PRIVATE_KEY }}
           GITHUB_APP_CLIENT_ID: ${{ secrets.CI_GITHUB_APP_CLIENT_ID }}
@@ -71,6 +74,9 @@ jobs:
         run: bun install
       - name: Build
         env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
           GITHUB_APP_ID: ${{ secrets.CI_GITHUB_APP_ID }}
           GITHUB_APP_PRIVATE_KEY: ${{ secrets.CI_GITHUB_APP_PRIVATE_KEY }}
           GITHUB_APP_CLIENT_ID: ${{ secrets.CI_GITHUB_APP_CLIENT_ID }}
