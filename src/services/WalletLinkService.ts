@@ -136,6 +136,7 @@ export class WalletLinkService extends BaseService {
 
   /**
    * ウォレット連携が完了しているかチェック
+   * payloadUuidをドキュメントIDとして直接検索
    */
   static async isWalletLinkCompleted(
     payloadUuid: string
@@ -146,24 +147,22 @@ export class WalletLinkService extends BaseService {
         return { completed: false }
       }
 
-      // ウォレット連携リクエストが既に完了状態かチェック
-      if (linkRequest.status === 'signed' && linkRequest.walletAddress) {
-        // 対応するウォレットを取得
-        const walletsSnapshot = await this.db
-          .collection('users')
-          .doc(linkRequest.userId)
-          .collection('wallets')
-          .where('address', '==', linkRequest.walletAddress)
-          .where('xamanPayloadUuid', '==', payloadUuid)
-          .get()
+      // payloadUuidをドキュメントIDとして直接ウォレットを取得
+      const walletDoc = await this.db
+        .collection('users')
+        .doc(linkRequest.userId)
+        .collection('wallets')
+        .doc(payloadUuid)
+        .get()
 
-        if (!walletsSnapshot.empty) {
-          const doc = walletsSnapshot.docs[0]
+      if (walletDoc.exists) {
+        const walletData = walletDoc.data()
+        if (walletData && walletData.status === 'linked') {
           return {
             completed: true,
             wallet: convertTimestamps({
-              id: doc.id,
-              ...doc.data(),
+              id: payloadUuid,
+              ...walletData,
             }) as Wallet,
           }
         }
@@ -184,6 +183,7 @@ export class WalletLinkService extends BaseService {
 
   /**
    * ウォレット連携を完了
+   * payloadUuidをドキュメントIDとして使用し、冪等性を確保
    */
   static async completeWalletLink(
     payloadUuid: string,
@@ -210,75 +210,112 @@ export class WalletLinkService extends BaseService {
       const walletAddress = xamanStatus.response.account
       const userId = linkRequest.userId
 
-      // 既存のウォレットをチェック
-      const existingWallets = await this.db
+      // === トランザクション外で必要なデータを事前に取得 ===
+      // 同じアドレスの他のウォレットをチェック
+      const sameAddressWalletsSnapshot = await this.db
         .collection('users')
         .doc(userId)
         .collection('wallets')
         .where('address', '==', walletAddress)
         .get()
 
-      if (!existingWallets.empty) {
-        throw new WalletLinkServiceError('このウォレットは既に連携されています', 'DUPLICATE', 409)
-      }
-
-      // プライマリウォレットかどうかを判定（初回連携の場合はプライマリ）
-      const userWallets = await this.db
+      // 現在のウォレット数を取得
+      const allWalletsSnapshot = await this.db
         .collection('users')
         .doc(userId)
         .collection('wallets')
         .where('status', '==', 'linked')
         .get()
-      const isPrimary = userWallets.empty
 
-      // 新しいウォレットを作成
-      const newWallet: Omit<Wallet, 'id'> = {
-        address: walletAddress,
-        linkedAt: new Date(),
-        xamanPayloadUuid: payloadUuid,
-        verificationTxHash: xamanStatus.response.txid || '',
-        status: 'linked',
-        isPrimary,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      // プライマリウォレット判定（初回連携または既存プライマリがない場合）
+      const hasExistingPrimary = allWalletsSnapshot.docs
+        .filter(doc => !sameAddressWalletsSnapshot.docs.some(sameDoc => sameDoc.id === doc.id))
+        .some(doc => doc.data().isPrimary)
+      const isPrimary = !hasExistingPrimary
 
-      // Firestoreに保存
-      const walletRef = this.db.collection('users').doc(userId).collection('wallets').doc()
-      await walletRef.set(newWallet)
+      // Firestoreトランザクションで冪等性を確保
+      return await this.db.runTransaction(async transaction => {
+        // === すべての読み取り操作を最初に実行 ===
 
-      // ユーザーのwalletSummaryを更新
-      const userRef = this.db.collection('users').doc(userId)
-      const userDoc = await userRef.get()
-      const currentWalletCount = userWallets.size + 1
+        // payloadUuidをドキュメントIDとして使用
+        const walletRef = this.db
+          .collection('users')
+          .doc(userId)
+          .collection('wallets')
+          .doc(payloadUuid)
 
-      await userRef.update({
-        walletSummary: {
-          primaryWalletId: isPrimary
-            ? walletRef.id
-            : userDoc.data()?.walletSummary?.primaryWalletId,
-          totalWallets: currentWalletCount,
-          lastLinkedAt: new Date(),
-        },
+        // 既存ウォレット（payloadUuid）をチェック
+        const existingWallet = await transaction.get(walletRef)
+        if (existingWallet.exists) {
+          // 冪等性：既に存在する場合はそのまま返す
+          return convertTimestamps({
+            id: payloadUuid,
+            ...existingWallet.data(),
+          }) as Wallet
+        }
+
+        // ユーザードキュメントを読み取り
+        const userRef = this.db.collection('users').doc(userId)
+        const userDoc = await transaction.get(userRef)
+        const currentData = userDoc.data()
+
+        // === すべての書き込み操作を実行 ===
+
+        // 同じアドレスのウォレットがある場合は削除（重複排除）
+        for (const doc of sameAddressWalletsSnapshot.docs) {
+          transaction.delete(doc.ref)
+        }
+
+        // 新しいウォレットを作成
+        const newWallet: Omit<Wallet, 'id'> = {
+          address: walletAddress,
+          linkedAt: new Date(),
+          xamanPayloadUuid: payloadUuid,
+          verificationTxHash: xamanStatus.response.txid || '',
+          status: 'linked',
+          isPrimary,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+
+        transaction.set(walletRef, newWallet)
+
+        // ユーザーのwalletSummaryを更新
+        const newTotalWallets = allWalletsSnapshot.size - sameAddressWalletsSnapshot.size + 1
+
+        transaction.update(userRef, {
+          walletSummary: {
+            primaryWalletId: isPrimary
+              ? payloadUuid
+              : currentData?.walletSummary?.primaryWalletId || payloadUuid,
+            totalWallets: newTotalWallets,
+            lastLinkedAt: new Date(),
+          },
+        })
+
+        return {
+          id: payloadUuid,
+          ...newWallet,
+        }
       })
-
-      // ウォレット連携リクエストを完了状態に更新
-      await this.updateDocument<WalletLinkRequest>('walletLinkRequests', payloadUuid, {
-        status: 'signed',
-        completedAt: new Date(),
-        walletAddress,
-      })
-
-      return {
-        id: walletRef.id,
-        ...newWallet,
-      }
     } catch (error) {
       if (error instanceof WalletLinkServiceError) {
         throw error
       }
       console.error('ウォレット連携完了エラー:', error)
       throw new WalletLinkServiceError('ウォレット連携の完了に失敗しました', 'INTERNAL_ERROR', 500)
+    } finally {
+      // ウォレット連携リクエストを完了状態に更新（トランザクション外で実行）
+      try {
+        await this.updateDocument<WalletLinkRequest>('walletLinkRequests', payloadUuid, {
+          status: 'signed',
+          completedAt: new Date(),
+          walletAddress: xamanStatus.response?.account!,
+        })
+      } catch (error) {
+        console.error('ウォレット連携リクエスト更新エラー:', error)
+        // リクエスト更新の失敗はウォレット連携全体を失敗させない
+      }
     }
   }
 

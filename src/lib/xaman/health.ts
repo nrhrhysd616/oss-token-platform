@@ -27,7 +27,6 @@ export function checkXamanHealth(): XamanHealthCheck {
     // 環境変数の存在チェック
     result.apiKeyPresent = !!process.env.XUMM_API_KEY
     result.apiSecretPresent = !!process.env.XUMM_API_SECRET
-    result.webhookUrlPresent = !!process.env.XUMM_WEBHOOK_URL
 
     result.configured = result.apiKeyPresent && result.apiSecretPresent
   } catch (error) {

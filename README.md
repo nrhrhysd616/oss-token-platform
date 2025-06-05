@@ -72,7 +72,6 @@ cp .env.example .env
 3. `.env`ファイルに設定：
    - `XUMM_API_KEY`
    - `XUMM_API_SECRET`
-   - `XUMM_WEBHOOK_URL`
 
 ### 5. 開発サーバーの起動
 
@@ -86,6 +85,31 @@ bun run firebase:emulators:start
 # 開発サーバーの起動
 bun run dev
 ```
+
+### 6. Xamanコールバック用ngrok設定（開発環境）
+
+開発環境でXamanのコールバックを受け取るために、ngrokを使用してローカルサーバーを外部からアクセス可能にします。
+
+```bash
+# ngrokでローカルサーバーを公開
+ngrok http http://localhost:3000
+```
+
+ngrok起動後に表示されるHTTPS URLを、[Xaman Developer Portal](https://apps.xaman.dev/)のコールバック設定に登録してください。
+
+#### 注意事項（ngrok無料プラン）
+
+- **URLの変更**: ngrok再起動のたびにURLが変更されるため、開発セッション毎にXaman設定の更新が必要です
+- **セッション制限**: 無料プランでは同時接続数やセッション時間に制限があります
+- **帯域幅制限**: 月間データ転送量に制限があります（1GB/月）
+- **ドメイン固定不可**: カスタムドメインは有料プランでのみ利用可能です
+
+#### 開発フロー
+
+1. `bun run dev`でローカルサーバーを起動
+2. `ngrok http http://localhost:3000`でトンネルを作成
+3. 表示されたHTTPS URLをXaman Developer Portalに設定
+4. Xamanアプリでテスト実行
 
 ## 🧪 テスト
 

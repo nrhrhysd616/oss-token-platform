@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as XummTypes.XummWebhookBody
 
     // 署名検証を実行
-    const verificationResult = await verifyXamanWebhookRequest(request, body)
-    if (!verificationResult.isValid) {
-      console.error('Webhook signature verification failed:', verificationResult.error)
+    const isSignatureValid = verifyXamanWebhookRequest(request, body)
+    if (!isSignatureValid) {
+      console.error('Webhook signature verification failed')
       return NextResponse.json({ error: 'Unauthorized: Invalid signature' }, { status: 401 })
     }
 
