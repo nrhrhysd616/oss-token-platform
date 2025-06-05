@@ -33,7 +33,6 @@ export type PublicProject = Omit<Project, 'ownerUid' | 'githubInstallationId' | 
  */
 export type MaintainerProject = Project & {
   stats: MaintainerProjectStats
-  permissions: ProjectPermissions
 }
 
 /**
@@ -60,13 +59,4 @@ export type MaintainerProjectStats = PublicProjectStats & {
     timestamp: string
     txHash: string
   }>
-}
-
-/**
- * プロジェクト権限情報
- */
-export type ProjectPermissions = {
-  canEdit: boolean
-  canIssueToken: boolean
-  tokenIssued: boolean
 }

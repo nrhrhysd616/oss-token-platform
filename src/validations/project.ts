@@ -38,30 +38,61 @@ export const projectRegistrationSchema = z.object({
 
 export type ProjectRegistrationFormData = z.infer<typeof projectRegistrationSchema>
 
-// FIXME: 現状未使用かつ利用不可
 /**
- * プロジェクト名の重複チェック用バリデーション
+ * プロジェクト更新用バリデーションスキーマ
+ * tokenCodeは変更不可のため除外
  */
-export async function validateProjectNameUnique(
-  name: string,
-  excludeId?: string
-): Promise<boolean> {
-  try {
-    const response = await fetch('/api/projects/validate-name', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, excludeId }),
-    })
+export const projectUpdateSchema = projectRegistrationSchema.omit({ tokenCode: true }).partial()
 
-    if (!response.ok) {
-      return false
-    }
+export type ProjectUpdateData = z.infer<typeof projectUpdateSchema>
 
-    const data = await response.json()
-    return data.isUnique
-  } catch {
-    return false
-  }
-}
+/**
+ * プロジェクト作成用の完全なスキーマ
+ * APIで受け取る際に使用
+ */
+export const projectCreateSchema = projectRegistrationSchema.extend({
+  repositoryUrl: z.string().url('有効なURLを入力してください'),
+  githubOwner: z.string().min(1, 'GitHubオーナーは必須です'),
+  githubRepo: z.string().min(1, 'GitHubリポジトリ名は必須です'),
+  githubInstallationId: z.string().min(1, 'GitHub Installation IDは必須です'),
+})
+
+export type ProjectCreateData = z.infer<typeof projectCreateSchema>
+
+/**
+ * クエリパラメータ用バリデーションスキーマ
+ */
+export const projectQuerySchema = z.object({
+  limit: z
+    .string()
+    .nullable()
+    .transform(val => (val ? parseInt(val, 10) : 10))
+    .pipe(z.number().min(1).max(100)),
+  offset: z
+    .string()
+    .nullable()
+    .transform(val => (val ? parseInt(val, 10) : 0))
+    .pipe(z.number().min(0)),
+  status: z.enum(['draft', 'active', 'suspended']).optional(),
+  sortBy: z
+    .string()
+    .nullable()
+    .transform(val => val || 'createdAt')
+    .pipe(z.enum(['createdAt', 'updatedAt', 'name'])),
+  sortOrder: z
+    .string()
+    .nullable()
+    .transform(val => val || 'desc')
+    .pipe(z.enum(['asc', 'desc'])),
+})
+
+export type ProjectQueryParams = z.infer<typeof projectQuerySchema>
+
+/**
+ * 公開プロジェクト用クエリパラメータ
+ */
+export const publicProjectQuerySchema = projectQuerySchema.extend({
+  status: z.literal('active').default('active'), // 公開プロジェクトはactiveのみ
+})
+
+export type PublicProjectQueryParams = z.infer<typeof publicProjectQuerySchema>

@@ -70,9 +70,9 @@ cp .env.example .env
 1. [Xaman Developer Portal](https://apps.xaman.dev/)でアプリを作成
 2. API KeyとAPI Secretを取得
 3. `.env`ファイルに設定：
-   - `XAMAN_API_KEY`
-   - `XAMAN_API_SECRET`
-   - `XAMAN_WEBHOOK_URL`
+   - `XUMM_API_KEY`
+   - `XUMM_API_SECRET`
+   - `XUMM_WEBHOOK_URL`
 
 ### 5. 開発サーバーの起動
 

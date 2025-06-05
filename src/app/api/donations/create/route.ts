@@ -1,13 +1,12 @@
 /**
- * 寄付セッション作成API
+ * 寄付リクエスト作成API
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
-import { DonationService } from '@/lib/xrpl/donation-service'
-import type { DonationSession } from '@/types/donation'
-import { z } from 'zod'
+import { getAdminAuth } from '@/lib/firebase/admin'
+import { DonationService, DonationServiceError } from '@/services/DonationService'
 import { createDonationSchema } from '@/validations/donation'
+import { z } from 'zod'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +15,7 @@ export async function POST(request: NextRequest) {
     const validatedData = createDonationSchema.parse(body)
 
     // 認証チェック（オプション - 寄付は匿名でも可能）
-    let donorUid: string | null = null
+    let donorUid: string | undefined = undefined
     const authHeader = request.headers.get('Authorization')
     if (authHeader && authHeader.startsWith('Bearer ')) {
       try {
@@ -29,144 +28,92 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // プロジェクトの存在確認
-    const projectDoc = await getAdminDb().collection('projects').doc(validatedData.projectId).get()
-    if (!projectDoc.exists) {
-      return NextResponse.json({ error: 'プロジェクトが見つかりません' }, { status: 404 })
-    }
-
-    const projectData = projectDoc.data()
-    if (!projectData) {
-      return NextResponse.json({ error: 'プロジェクトデータが無効です' }, { status: 400 })
-    }
-
-    // プロジェクトがアクティブかチェック
-    if (projectData.status !== 'active') {
-      return NextResponse.json(
-        { error: 'このプロジェクトは現在寄付を受け付けていません' },
-        { status: 400 }
+    // 寄付リクエスト作成とXamanペイロード生成を統合実行
+    const { request: donationRequest, payload } =
+      await DonationService.createDonationRequestWithPayload(
+        validatedData.projectId,
+        validatedData.donorAddress,
+        validatedData.amount,
+        donorUid
       )
-    }
-
-    // 寄付サービスの初期化
-    const donationService = new DonationService()
-
-    // 寄付金額の妥当性確認
-    if (!donationService.validateDonationAmount(validatedData.amount)) {
-      return NextResponse.json({ error: '寄付金額が無効です' }, { status: 400 })
-    }
-
-    // 寄付セッションの作成
-    const session = await donationService.createDonationSession(
-      validatedData.projectId,
-      validatedData.donorAddress,
-      validatedData.amount
-    )
-
-    // Firestoreに寄付セッションを保存
-    const sessionData = {
-      ...session,
-      donorUid,
-      createdAt: session.createdAt,
-      expiresAt: session.expiresAt,
-    }
-
-    await getAdminDb().collection('donationSessions').doc(session.id).set(sessionData)
-
-    // 寄付用Xamanペイロードの生成
-    const donationPayload = await donationService.createDonationPayload(session)
-
-    // セッションにXamanペイロードIDを追加
-    await getAdminDb().collection('donationSessions').doc(session.id).update({
-      xamanPayloadId: donationPayload.uuid,
-    })
 
     return NextResponse.json({
-      session: {
-        id: session.id,
-        projectId: session.projectId,
-        amount: session.amount,
-        destinationTag: session.destinationTag,
-        expiresAt: session.expiresAt.toISOString(),
-      },
-      xamanPayload: {
-        uuid: donationPayload.uuid,
-        qr_png: donationPayload.qr_png,
-        qr_uri: donationPayload.qr_uri,
-        websocket_status: donationPayload.websocket_status,
+      success: true,
+      data: {
+        request: {
+          id: donationRequest.id,
+          projectId: donationRequest.projectId,
+          amount: donationRequest.amount,
+          destinationTag: donationRequest.destinationTag,
+          expiresAt: donationRequest.expiresAt.toISOString(),
+        },
+        xamanPayload: {
+          uuid: payload.uuid,
+          qrPng: payload.qrPng,
+          websocketUrl: payload.websocketUrl,
+        },
       },
     })
   } catch (error) {
-    console.error('Donation session creation error:', error)
+    console.error('Donation request creation error:', error)
+
+    if (error instanceof DonationServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'リクエストデータが無効です', details: error.errors },
+        { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       )
     }
 
-    return NextResponse.json({ error: '寄付セッションの作成に失敗しました' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const sessionId = searchParams.get('sessionId')
+    const requestId = searchParams.get('sessirequestIdonId')
 
-    if (!sessionId) {
-      return NextResponse.json({ error: 'セッションIDが必要です' }, { status: 400 })
+    if (!requestId) {
+      return NextResponse.json({ error: 'Request ID is required' }, { status: 400 })
     }
 
-    // セッション情報を取得
-    const sessionDoc = await getAdminDb().collection('donationSessions').doc(sessionId).get()
-
-    if (!sessionDoc.exists) {
-      return NextResponse.json({ error: 'セッションが見つかりません' }, { status: 404 })
+    // リクエスト情報を取得
+    const requestData = await DonationService.getDonationRequest(requestId)
+    if (!requestData) {
+      return NextResponse.json({ error: 'Request not found' }, { status: 404 })
     }
 
-    const sessionData = sessionDoc.data() as DonationSession
-
-    // プロジェクト情報を動的に取得
-    const projectDoc = await getAdminDb().collection('projects').doc(sessionData.projectId).get()
-    if (!projectDoc.exists) {
-      return NextResponse.json({ error: 'プロジェクトが見つかりません' }, { status: 404 })
-    }
-    const projectData = projectDoc.data()!
-
-    // セッションの期限確認
-    const donationService = new DonationService()
-    if (donationService.isSessionExpired(sessionData)) {
-      return NextResponse.json({ error: 'セッションが期限切れです' }, { status: 410 })
-    }
-
-    // Xamanペイロードのステータス確認
-    let xamanStatus = null
-    if (sessionData.xamanPayloadId) {
-      try {
-        xamanStatus = await donationService.checkPayloadStatus(sessionData.xamanPayloadId)
-      } catch (error) {
-        console.warn('Failed to check Xaman payload status:', error)
-      }
+    // リクエストの期限確認
+    if (DonationService.isDonationRequestExpired(requestData)) {
+      return NextResponse.json({ error: 'Request expired' }, { status: 410 })
     }
 
     return NextResponse.json({
-      session: {
-        id: sessionData.id,
-        projectId: sessionData.projectId,
-        projectName: projectData.name,
-        amount: sessionData.amount,
-        status: sessionData.status,
-        destinationTag: sessionData.destinationTag,
-        createdAt: sessionData.createdAt,
-        expiresAt: sessionData.expiresAt,
-        txHash: sessionData.txHash,
+      success: true,
+      data: {
+        request: {
+          id: requestData.id,
+          projectId: requestData.projectId,
+          amount: requestData.amount,
+          status: requestData.status,
+          destinationTag: requestData.destinationTag,
+          createdAt: requestData.createdAt,
+          expiresAt: requestData.expiresAt,
+          txHash: requestData.txHash,
+        },
       },
-      xamanStatus,
     })
   } catch (error) {
-    console.error('Donation session fetch error:', error)
-    return NextResponse.json({ error: 'セッション情報の取得に失敗しました' }, { status: 500 })
+    console.error('Donation request fetch error:', error)
+
+    if (error instanceof DonationServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

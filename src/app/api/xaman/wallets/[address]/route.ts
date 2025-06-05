@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { WalletService } from '@/lib/xaman/WalletService'
+import { WalletLinkService, WalletLinkServiceError } from '@/services/WalletLinkService'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { z } from 'zod'
 import { xrplAddressSchema } from '@/validations/common'
@@ -28,11 +28,8 @@ export async function GET(
     // アドレスのバリデーション
     const validatedAddress = xrplAddressSchema.parse(address)
 
-    // ウォレットサービスを初期化
-    const walletService = new WalletService()
-
     // ユーザーのウォレット一覧を取得して、指定されたアドレスのウォレットを検索
-    const wallets = await walletService.getUserWallets(userId)
+    const wallets = await WalletLinkService.getUserWallets(userId)
     const wallet = wallets.find(w => w.address === validatedAddress)
 
     if (!wallet) {
@@ -44,9 +41,18 @@ export async function GET(
     })
   } catch (error) {
     console.error('Failed to get wallet:', error)
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+
+    if (error instanceof WalletLinkServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid parameters', details: error.errors },
+        { status: 400 }
+      )
+    }
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

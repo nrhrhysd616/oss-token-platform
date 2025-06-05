@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { WalletService } from '@/lib/xaman/WalletService'
+import { WalletLinkService, WalletLinkServiceError } from '@/services/WalletLinkService'
 import { getAdminAuth } from '@/lib/firebase/admin'
-import { walletLinkStatusQuerySchema } from '@/validations/xaman'
+import { walletLinkStatusQuerySchema } from '@/validations/wallet-link'
+import { z } from 'zod'
 
 /**
  * ウォレット連携ステータスを確認
@@ -29,11 +30,8 @@ export async function GET(request: NextRequest) {
     const validatedQuery = walletLinkStatusQuerySchema.parse(queryParams)
     const { payloadUuid } = validatedQuery
 
-    // ウォレットサービスを初期化
-    const walletService = new WalletService()
-
     // ウォレット連携リクエストを取得して所有者を確認
-    const linkRequest = await walletService.getWalletLinkRequest(payloadUuid)
+    const linkRequest = await WalletLinkService.getWalletLinkRequest(payloadUuid)
     if (!linkRequest) {
       return NextResponse.json({ error: 'Wallet link request not found' }, { status: 404 })
     }
@@ -43,7 +41,7 @@ export async function GET(request: NextRequest) {
     }
 
     // まず、ウォレット連携が既に完了しているかチェック
-    const linkCompletionStatus = await walletService.isWalletLinkCompleted(payloadUuid)
+    const linkCompletionStatus = await WalletLinkService.isWalletLinkCompleted(payloadUuid)
 
     if (linkCompletionStatus.completed && linkCompletionStatus.wallet) {
       // 既に連携完了済みの場合、既存のウォレット情報を返す
@@ -57,11 +55,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Xamanペイロードの状態をチェック
-    const xamanStatus = await walletService.checkPayloadStatus(payloadUuid)
+    const xamanStatus = await WalletLinkService.checkPayloadStatus(payloadUuid)
 
     // 署名が完了している場合、ウォレット連携を完了
     if (xamanStatus.meta.signed && xamanStatus.response) {
-      const wallet = await walletService.completeWalletLink(payloadUuid, xamanStatus)
+      const wallet = await WalletLinkService.completeWalletLink(payloadUuid, xamanStatus)
 
       return NextResponse.json({
         success: true,
@@ -88,8 +86,15 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Failed to check wallet link status:', error)
 
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error instanceof WalletLinkServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid query parameters', details: error.errors },
+        { status: 400 }
+      )
     }
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -4,7 +4,7 @@
  */
 
 import crypto from 'crypto'
-import { xamanConfig } from './config'
+import type { XummTypes } from 'xumm-sdk'
 
 /**
  * Xamanからのwebhook署名を検証する
@@ -15,12 +15,12 @@ import { xamanConfig } from './config'
  */
 export function verifyXamanWebhookSignature(
   timestamp: string,
-  body: any,
+  body: XummTypes.XummWebhookBody,
   signature: string
 ): boolean {
   try {
     // Xamanアプリシークレットからハイフンを除去
-    const secret = xamanConfig.apiSecret.replace(/-/g, '')
+    const secret = process.env.XUMM_API_SECRET!.replace(/-/g, '')
 
     // HMAC-SHA1で署名を生成
     const expectedSignature = crypto
@@ -62,7 +62,7 @@ export function extractSignatureHeaders(headers: Headers): {
  */
 export async function verifyXamanWebhookRequest(
   request: Request,
-  body: any
+  body: XummTypes.XummWebhookBody
 ): Promise<{
   isValid: boolean
   error?: string

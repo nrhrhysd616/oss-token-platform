@@ -4,8 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminDb } from '@/lib/firebase/admin'
-import { PublicProject, PublicProjectStats, Project } from '@/types/project'
+import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
+import { PublicProject, PublicProjectStats } from '@/types/project'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -15,18 +15,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'プロジェクトIDが必要です' }, { status: 400 })
     }
 
-    // プロジェクトを取得
-    const projectDoc = await getAdminDb().collection('projects').doc(id).get()
+    // ProjectServiceを使用してプロジェクトを取得
+    const projectData = await ProjectService.getProjectById(id)
 
-    if (!projectDoc.exists) {
+    if (!projectData || projectData.status !== 'active') {
       return NextResponse.json({ error: 'プロジェクトが見つかりません' }, { status: 404 })
-    }
-
-    const projectData = { id: projectDoc.id, ...projectDoc.data() } as Project
-
-    // 公開プロジェクトのみアクセス可能
-    if (projectData.status !== 'active') {
-      return NextResponse.json({ error: 'このプロジェクトは公開されていません' }, { status: 403 })
     }
 
     // TODO: 統計情報を実際のデータから取得する処理を実装する必要があります
@@ -46,7 +39,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       ],
     }
 
-    // 公開情報のみを返却（ownerUid, githubInstallationIdを除外）
+    // 公開情報のみを返却（ownerUid, githubInstallationId, issuerAddressを除外）
     const publicProject: PublicProject = {
       id: projectData.id,
       name: projectData.name,
@@ -67,6 +60,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
   } catch (error) {
     console.error('Public project fetch error:', error)
+
+    if (error instanceof ProjectServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
+
     return NextResponse.json({ error: 'プロジェクトの取得に失敗しました' }, { status: 500 })
   }
 }

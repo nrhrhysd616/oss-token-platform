@@ -46,36 +46,6 @@ export const convertTimestampToDate = (
 }
 
 /**
- * Walletオブジェクトのタイムスタンプフィールドを変換
- * @param walletData Firestoreから取得したウォレットデータ
- * @returns タイムスタンプが変換されたウォレットデータ
- */
-export const convertWalletTimestamps = (walletData: any): any => {
-  return {
-    ...walletData,
-    linkedAt: convertTimestampToDate(walletData.linkedAt),
-    createdAt: convertTimestampToDate(walletData.createdAt),
-    updatedAt: convertTimestampToDate(walletData.updatedAt),
-  }
-}
-
-/**
- * WalletSummaryオブジェクトのタイムスタンプフィールドを変換
- * @param summaryData Firestoreから取得したWalletSummaryデータ
- * @returns タイムスタンプが変換されたWalletSummaryデータ
- */
-export const convertWalletSummaryTimestamps = (summaryData: any): any => {
-  if (!summaryData) return summaryData
-
-  return {
-    ...summaryData,
-    lastLinkedAt: summaryData.lastLinkedAt
-      ? convertTimestampToDate(summaryData.lastLinkedAt)
-      : undefined,
-  }
-}
-
-/**
  * 日付をyyyy/MM/dd形式でフォーマット
  * @param timestamp Firestoreのタイムスタンプまたは日付
  * @returns フォーマットされた日付文字列
@@ -118,4 +88,38 @@ export const formatDateTimeJP = (
   const minutes = String(date.getMinutes()).padStart(2, '0')
   const seconds = String(date.getSeconds()).padStart(2, '0')
   return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
+}
+
+// 全てのtimestampフィールドを定義
+const TIMESTAMP_FIELDS = [
+  'createdAt',
+  'updatedAt',
+  'expiresAt',
+  'completedAt',
+  'linkedAt',
+  'lastLinkedAt',
+  'lastDonationAt',
+  'suspendedAt',
+  'issuedAt',
+] as const
+
+/**
+ * 汎用的なタイムスタンプ変換関数
+ * @param data Firestoreから取得したデータ
+ * @param fields 変換対象のフィールド名配列（省略時は全てのtimestampフィールドを対象）
+ * @returns タイムスタンプが変換されたデータ
+ */
+export const convertTimestamps = (data: any, fields?: string[]): any => {
+  if (!data) return data
+
+  const fieldsToConvert = fields || TIMESTAMP_FIELDS
+  const result = { ...data }
+
+  fieldsToConvert.forEach(field => {
+    if (result[field]) {
+      result[field] = convertTimestampToDate(result[field])
+    }
+  })
+
+  return result
 }

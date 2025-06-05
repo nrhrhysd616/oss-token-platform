@@ -47,8 +47,8 @@ jobs:
           GITHUB_APP_PRIVATE_KEY: ${{ secrets.CI_GITHUB_APP_PRIVATE_KEY }}
           GITHUB_APP_CLIENT_ID: ${{ secrets.CI_GITHUB_APP_CLIENT_ID }}
           GITHUB_APP_CLIENT_SECRET: ${{ secrets.CI_GITHUB_APP_CLIENT_SECRET }}
-          XAMAN_API_KEY: ${{ secrets.XAMAN_API_KEY }}
-          XAMAN_API_SECRET: ${{ secrets.XAMAN_API_SECRET }}
+          XUMM_API_KEY: ${{ secrets.XUMM_API_KEY }}
+          XUMM_API_SECRET: ${{ secrets.XUMM_API_SECRET }}
           XRPL_NETWORK: ${{ secrets.XRPL_NETWORK }}
           XRPL_ISSUER_1_ADDRESS: ${{ secrets.XRPL_ISSUER_1_ADDRESS }}
           XRPL_ISSUER_1_SECRET: ${{ secrets.XRPL_ISSUER_1_SECRET }}
@@ -75,8 +75,8 @@ jobs:
           GITHUB_APP_PRIVATE_KEY: ${{ secrets.CI_GITHUB_APP_PRIVATE_KEY }}
           GITHUB_APP_CLIENT_ID: ${{ secrets.CI_GITHUB_APP_CLIENT_ID }}
           GITHUB_APP_CLIENT_SECRET: ${{ secrets.CI_GITHUB_APP_CLIENT_SECRET }}
-          XAMAN_API_KEY: ${{ secrets.XAMAN_API_KEY }}
-          XAMAN_API_SECRET: ${{ secrets.XAMAN_API_SECRET }}
+          XUMM_API_KEY: ${{ secrets.XUMM_API_KEY }}
+          XUMM_API_SECRET: ${{ secrets.XUMM_API_SECRET }}
           XRPL_NETWORK: ${{ secrets.XRPL_NETWORK }}
           XRPL_ISSUER_1_ADDRESS: ${{ secrets.XRPL_ISSUER_1_ADDRESS }}
           XRPL_ISSUER_1_SECRET: ${{ secrets.XRPL_ISSUER_1_SECRET }}
@@ -105,8 +105,8 @@ jobs:
           GITHUB_APP_PRIVATE_KEY: ${{ secrets.CI_GITHUB_APP_PRIVATE_KEY }}
           GITHUB_APP_CLIENT_ID: ${{ secrets.CI_GITHUB_APP_CLIENT_ID }}
           GITHUB_APP_CLIENT_SECRET: ${{ secrets.CI_GITHUB_APP_CLIENT_SECRET }}
-          XAMAN_API_KEY: ${{ secrets.XAMAN_API_KEY }}
-          XAMAN_API_SECRET: ${{ secrets.XAMAN_API_SECRET }}
+          XUMM_API_KEY: ${{ secrets.XUMM_API_KEY }}
+          XUMM_API_SECRET: ${{ secrets.XUMM_API_SECRET }}
           XRPL_NETWORK: ${{ secrets.XRPL_NETWORK }}
           XRPL_ISSUER_1_ADDRESS: ${{ secrets.XRPL_ISSUER_1_ADDRESS }}
           XRPL_ISSUER_1_SECRET: ${{ secrets.XRPL_ISSUER_1_SECRET }}

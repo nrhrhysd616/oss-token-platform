@@ -148,11 +148,6 @@ export default function MaintainerProjectDetailPage({
             <button className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors">
               編集
             </button>
-            {project.permissions.canIssueToken && (
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-md font-medium transition-colors">
-                トークン発行
-              </button>
-            )}
           </div>
         </div>
 
@@ -291,14 +286,12 @@ export default function MaintainerProjectDetailPage({
                   </div>
                 </div>
 
-                {project.permissions.tokenIssued && (
-                  <div className="text-center p-4 bg-gray-800 rounded-md">
-                    <div className="text-xl font-bold text-green-400">
-                      {project.stats.tokenSupply.toLocaleString()}
-                    </div>
-                    <div className="text-sm text-gray-400">発行済みトークン</div>
+                <div className="text-center p-4 bg-gray-800 rounded-md">
+                  <div className="text-xl font-bold text-green-400">
+                    {project.stats.tokenSupply.toLocaleString()}
                   </div>
-                )}
+                  <div className="text-sm text-gray-400">発行済みトークン</div>
+                </div>
               </div>
             </div>
 

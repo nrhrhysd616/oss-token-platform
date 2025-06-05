@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/firebase/auth-context'
 
-import type { Wallet, WalletLinkRequest } from '@/types/user'
-import type { XamanPayloadStatus } from '@/types/xaman'
+import type { Wallet } from '@/types/user'
+import type { WalletLinkRequest } from '@/types/xaman'
 
 export type WalletLinkStatus = 'idle' | 'creating' | 'pending' | 'checking' | 'success' | 'error'
 
@@ -99,7 +99,8 @@ export function useWallet(): UseWalletReturn {
         id: data.payloadUuid,
         userId: user.uid,
         xamanPayloadUuid: data.payloadUuid,
-        qrData: data.qrData,
+        qrPng: data.qrPng,
+        websocketUrl: data.websocketUrl,
         status: 'created',
         createdAt: new Date(),
         expiresAt: new Date(data.expiresAt),

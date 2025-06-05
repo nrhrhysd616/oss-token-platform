@@ -48,19 +48,3 @@ export type DonationSummary = {
     }
   }
 }
-
-export type WalletLinkRequest = {
-  id: string
-  userId: string
-  xamanPayloadUuid: string
-  qrData: {
-    qr_png: string
-    qr_matrix: string
-    websocket_status: string
-  }
-  status: 'created' | 'pending' | 'signed' | 'expired' | 'cancelled'
-  createdAt: Date
-  expiresAt: Date
-  completedAt?: Date
-  walletAddress?: string
-}

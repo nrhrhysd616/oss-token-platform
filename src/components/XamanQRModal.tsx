@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
-import type { WalletLinkRequest } from '@/types/user'
+import { useEffect, useState } from 'react'
+import { useXamanWebSocket } from '@/hooks/useXamanWebSocket'
+import type { WalletLinkRequest } from '@/types/xaman'
 
 type XamanQRModalProps = {
   isOpen: boolean
@@ -17,7 +18,39 @@ export default function XamanQRModal({
   onStatusCheck,
 }: XamanQRModalProps) {
   const [timeLeft, setTimeLeft] = useState<number>(0)
-  const isCheckingRef = useRef(false)
+  const [status, setStatus] = useState<'pending' | 'signed' | 'rejected' | 'expired'>('pending')
+  const [transactionHash, setTransactionHash] = useState<string | null>(null)
+  // WebSocket接続を使用してペイロード状況を監視
+  const { isConnected, error } = useXamanWebSocket({
+    payloadUuid: linkRequest?.xamanPayloadUuid || '',
+    websocketUrl: linkRequest?.websocketUrl || '',
+    onSigned: event => {
+      console.log('Wallet link signed:', event)
+      setStatus('signed')
+      if ('txid' in event && event.txid) {
+        setTransactionHash(event.txid)
+      }
+      // 署名完了時にステータスチェックを実行
+      if (linkRequest?.xamanPayloadUuid) {
+        onStatusCheck(linkRequest.xamanPayloadUuid)
+      }
+    },
+    onRejected: event => {
+      console.log('Wallet link rejected:', event)
+      setStatus('rejected')
+      onClose()
+    },
+    onExpired: event => {
+      console.log('Wallet link expired:', event)
+      setStatus('expired')
+      onClose()
+    },
+    onOpened: event => {
+      console.log('Wallet link opened in Xaman:', event)
+      setStatus('pending')
+    },
+    enabled: isOpen && !!linkRequest?.xamanPayloadUuid && !!linkRequest?.websocketUrl,
+  })
 
   // カウントダウンタイマー
   useEffect(() => {
@@ -40,45 +73,48 @@ export default function XamanQRModal({
     return () => clearInterval(interval)
   }, [linkRequest, isOpen, onClose])
 
-  // 重複実行を防ぐステータスチェック関数
-  const checkStatus = useCallback(async () => {
-    if (!linkRequest || isCheckingRef.current) return
-
-    isCheckingRef.current = true
-    try {
-      onStatusCheck(linkRequest.xamanPayloadUuid)
-    } finally {
-      // APIのレスポンス待機時間は実行しないように、少し遅延を入れて次のチェックを許可
-      setTimeout(() => {
-        isCheckingRef.current = false
-      }, 500)
-    }
-  }, [linkRequest, onStatusCheck])
-
-  // 定期的にステータスをチェック
-  useEffect(() => {
-    if (!linkRequest || !isOpen) {
-      isCheckingRef.current = false
-      return
-    }
-
-    // 初回チェック
-    checkStatus()
-
-    // 3秒ごとにチェック
-    const interval = setInterval(checkStatus, 3000)
-
-    return () => {
-      clearInterval(interval)
-      isCheckingRef.current = false
-    }
-  }, [linkRequest, isOpen, checkStatus])
-
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
   }
+
+  // 接続状態に応じたステータスメッセージ
+  const getStatusMessage = () => {
+    if (error) {
+      return `接続エラー: ${error}`
+    }
+    if (!isConnected) {
+      return 'WebSocketに接続中...'
+    }
+    if (status === 'signed') {
+      return '署名が完了しました！'
+    }
+    if (status === 'rejected') {
+      return '署名がキャンセルされました'
+    }
+    if (status === 'expired') {
+      return 'リクエストが期限切れです'
+    }
+    return '署名を待機中...'
+  }
+
+  // ステータスに応じたスタイル
+  const getStatusStyle = () => {
+    if (error || status === 'rejected') {
+      return 'bg-red-50 border-red-200 text-red-700'
+    }
+    if (status === 'signed') {
+      return 'bg-green-50 border-green-200 text-green-700'
+    }
+    if (status === 'expired') {
+      return 'bg-yellow-50 border-yellow-200 text-yellow-700'
+    }
+    return 'bg-blue-50 border-blue-200 text-blue-700'
+  }
+
+  // スピナーの表示条件
+  const showSpinner = !isConnected || (isConnected && status === 'pending')
 
   if (!isOpen || !linkRequest) return null
 
@@ -99,11 +135,7 @@ export default function XamanQRModal({
         {/* QRコード */}
         <div className="text-center mb-6">
           <div className="bg-white p-4 rounded-lg border-2 border-gray-200 inline-block mb-4">
-            <img
-              src={linkRequest.qrData.qr_png}
-              alt="Xaman QR Code"
-              className="w-48 h-48 mx-auto"
-            />
+            <img src={linkRequest.qrPng} alt="Xaman QR Code" className="w-48 h-48 mx-auto" />
           </div>
           <p className="text-sm text-gray-600 mb-2">XamanアプリでQRコードをスキャンしてください</p>
           <p className="text-xs text-gray-500">
@@ -137,11 +169,29 @@ export default function XamanQRModal({
         </div>
 
         {/* 状態表示 */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <div className={`border rounded-lg p-3 mb-4 ${getStatusStyle()}`}>
           <div className="flex items-center">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>
-            <span className="text-sm text-blue-700">署名を待機中...</span>
+            {showSpinner && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+            )}
+            <span className="text-sm">{getStatusMessage()}</span>
           </div>
+          {/* WebSocket接続状態の詳細表示（デバッグ用） */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-2 text-xs opacity-70">
+              <div>WebSocket: {isConnected ? '接続済み' : '切断中'}</div>
+              <div>ペイロード状態: {status}</div>
+              <div>
+                Enabled:{' '}
+                {isOpen && !!linkRequest?.xamanPayloadUuid && !!linkRequest?.websocketUrl
+                  ? 'true'
+                  : 'false'}
+              </div>
+              <div>PayloadUUID: {linkRequest?.xamanPayloadUuid ? 'あり' : 'なし'}</div>
+              <div>WebSocketURL: {linkRequest?.websocketUrl ? 'あり' : 'なし'}</div>
+              {transactionHash && <div>TX Hash: {transactionHash}...</div>}
+            </div>
+          )}
         </div>
 
         {/* Xamanアプリのリンク */}

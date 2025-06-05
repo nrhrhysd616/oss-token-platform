@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, mock } from 'bun:test'
-import { convertTimestampToDate, convertWalletTimestamps } from '../src/lib/firebase/utils'
+import { convertTimestampToDate, convertTimestamps } from '../src/lib/firebase/utils'
 
 // Firebase Timestampのモック
 const mockTimestamp = {
@@ -74,7 +74,7 @@ describe('Firebase Utils', () => {
         status: 'linked',
       }
 
-      const result = convertWalletTimestamps(walletData)
+      const result = convertTimestamps(walletData)
 
       expect(result.id).toBe('wallet-123')
       expect(result.address).toBe('rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
@@ -90,9 +90,12 @@ describe('Firebase Utils', () => {
         id: 'wallet-123',
         address: 'rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
         status: 'linked',
+        linkedAt: { _seconds: 1640995200, _nanoseconds: 0 }, // Firestore形式のタイムスタンプ
+        createdAt: '2022-01-01T00:00:00.000Z', // ISO 8601形式の文字列
+        updatedAt: new Date('2022-01-01T00:00:00.000Z'), // Dateオブジェクト
       }
 
-      const result = convertWalletTimestamps(walletData)
+      const result = convertTimestamps(walletData)
 
       expect(result.id).toBe('wallet-123')
       expect(result.linkedAt).toBeInstanceOf(Date)

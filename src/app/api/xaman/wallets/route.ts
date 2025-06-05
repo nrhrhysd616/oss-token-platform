@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { WalletService } from '@/lib/xaman/WalletService'
+import { WalletLinkService, WalletLinkServiceError } from '@/services/WalletLinkService'
 import { getAdminAuth } from '@/lib/firebase/admin'
 
 /**
@@ -19,21 +19,18 @@ export async function GET(request: NextRequest) {
     const decodedToken = await getAdminAuth().verifyIdToken(token)
     const userId = decodedToken.uid
 
-    // ウォレットサービスを初期化
-    const walletService = new WalletService()
-
     // ユーザーのウォレット一覧を取得
-    const wallets = await walletService.getUserWallets(userId)
+    const result = await WalletLinkService.getUserWallets(userId)
 
     return NextResponse.json({
       success: true,
-      data: wallets,
+      data: result,
     })
   } catch (error) {
     console.error('Failed to get user wallets:', error)
 
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error instanceof WalletLinkServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -57,25 +54,23 @@ export async function POST(request: NextRequest) {
     const decodedToken = await getAdminAuth().verifyIdToken(token)
     const userId = decodedToken.uid
 
-    // ウォレットサービスを初期化
-    const walletService = new WalletService()
-
     // ウォレット連携リクエストを作成
-    const linkRequest = await walletService.createWalletLinkRequest(userId)
+    const linkRequest = await WalletLinkService.createWalletLinkRequest(userId)
 
     return NextResponse.json({
       success: true,
       data: {
         payloadUuid: linkRequest.xamanPayloadUuid,
-        qrData: linkRequest.qrData,
+        qrPng: linkRequest.qrPng,
         expiresAt: linkRequest.expiresAt,
+        websocketUrl: linkRequest.websocketUrl,
       },
     })
   } catch (error) {
     console.error('Failed to create wallet link request:', error)
 
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error instanceof WalletLinkServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

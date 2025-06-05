@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/firebase/auth-context'
-import { Project, ProjectStatus } from '@/types/project'
+import { MaintainerProject, ProjectStatus } from '@/types/project'
 import { formatDateJP } from '@/lib/firebase/utils'
 
 type ProjectsResponse = {
-  projects: Project[]
+  projects: MaintainerProject[]
   total: number
   limit: number
   offset: number
@@ -15,7 +15,7 @@ type ProjectsResponse = {
 
 export default function MaintainerProjectsPage() {
   const { user } = useAuth()
-  const [projects, setProjects] = useState<Project[]>([])
+  const [projects, setProjects] = useState<MaintainerProject[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all')
@@ -27,11 +27,15 @@ export default function MaintainerProjectsPage() {
       setLoading(true)
       const token = await user.getIdToken()
 
-      const params = new URLSearchParams()
+      const params = new URLSearchParams({
+        limit: '20',
+        offset: '0',
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      })
       if (statusFilter !== 'all') {
         params.append('status', statusFilter)
       }
-      params.append('limit', '20')
 
       const response = await fetch(`/api/management/projects?${params}`, {
         headers: {

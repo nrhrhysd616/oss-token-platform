@@ -21,20 +21,18 @@ export const createDonationSchema = z.object({
   amount: donationAmountSchema,
 })
 
-// FIXME: 現状未使用
 /**
  * 寄付セッション取得リクエストのバリデーション
  */
-export const getDonationSessionSchema = z.object({
-  sessionId: z.string().min(1, 'セッションIDが必要です'),
+export const getDonationRequestSchema = z.object({
+  requestId: z.string().min(1, 'リクエストIDが必要です'),
 })
 
-// FIXME: 現状未使用
 /**
  * 寄付セッションレスポンスのバリデーション
  */
-export const donationSessionResponseSchema = z.object({
-  session: z.object({
+export const donationRequestResponseSchema = z.object({
+  request: z.object({
     id: z.string(),
     projectId: z.string(),
     projectName: z.string().optional(),
@@ -55,13 +53,12 @@ export const donationSessionResponseSchema = z.object({
     .optional(),
 })
 
-// FIXME: 現状未使用
 /**
  * 寄付記録のバリデーション
  */
 export const donationRecordSchema = z.object({
   id: z.string(),
-  sessionId: z.string(),
+  requestId: z.string(),
   projectId: z.string(),
   projectName: z.string(),
   donorAddress: xrplAddressSchema,
@@ -80,7 +77,6 @@ export const donationRecordSchema = z.object({
   createdAt: z.date(),
 })
 
-// FIXME: 現状未使用
 /**
  * 寄付統計のバリデーション
  */
@@ -94,7 +90,6 @@ export const donationStatsSchema = z.object({
   updatedAt: z.date(),
 })
 
-// FIXME: 現状未使用
 /**
  * 寄付履歴取得のクエリパラメータ
  */
@@ -102,7 +97,7 @@ export const donationHistoryQuerySchema = z.object({
   projectId: z.string().optional(),
   donorAddress: xrplAddressSchema.optional(),
   donorUid: z.string().optional(),
-  status: statusSchema.optional(),
+  status: z.enum(['pending', 'pending_trustline', 'failed', 'completed']).optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   page: z.number().min(1).optional().default(1),
@@ -148,8 +143,8 @@ export const validateXrplAddress = (address: string): boolean => {
 
 // 型エクスポート
 export type CreateDonationRequest = z.infer<typeof createDonationSchema>
-export type GetDonationSessionRequest = z.infer<typeof getDonationSessionSchema>
-export type DonationSessionResponse = z.infer<typeof donationSessionResponseSchema>
+export type GetDonationRequestRequest = z.infer<typeof getDonationRequestSchema>
+export type DonationRequestResponse = z.infer<typeof donationRequestResponseSchema>
 export type DonationRecord = z.infer<typeof donationRecordSchema>
 export type DonationStats = z.infer<typeof donationStatsSchema>
 export type DonationHistoryQuery = z.infer<typeof donationHistoryQuerySchema>

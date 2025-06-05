@@ -1,4 +1,4 @@
-import { xamanConfig, validateXamanConfig } from './config'
+import { Xumm } from 'xumm'
 
 /**
  * Xaman API接続テスト結果
@@ -25,12 +25,9 @@ export function checkXamanHealth(): XamanHealthCheck {
 
   try {
     // 環境変数の存在チェック
-    result.apiKeyPresent = !!xamanConfig.apiKey
-    result.apiSecretPresent = !!xamanConfig.apiSecret
-    result.webhookUrlPresent = !!xamanConfig.webhookUrl
-
-    // 必須項目の検証
-    validateXamanConfig()
+    result.apiKeyPresent = !!process.env.XUMM_API_KEY
+    result.apiSecretPresent = !!process.env.XUMM_API_SECRET
+    result.webhookUrlPresent = !!process.env.XUMM_WEBHOOK_URL
 
     result.configured = result.apiKeyPresent && result.apiSecretPresent
   } catch (error) {
@@ -42,28 +39,26 @@ export function checkXamanHealth(): XamanHealthCheck {
 
 /**
  * Xaman APIの基本的な接続テスト
- * 注意: この関数は実際のAPI呼び出しを行うため、有効なAPI認証情報が必要
+ * xumm SDKのping機能を使用
  */
 export async function testXamanConnection(): Promise<{
   success: boolean
   error?: string
 }> {
   try {
-    validateXamanConfig()
+    if (!process.env.XUMM_API_KEY || !process.env.XUMM_API_SECRET) {
+      throw new Error('Missing required Xaman environment variables: XUMM_API_KEY, XUMM_API_SECRET')
+    }
 
-    // Ping エンドポイントをテスト
-    const response = await fetch(`${xamanConfig.baseUrl}/platform/ping`, {
-      method: 'GET',
-      headers: {
-        'X-API-Key': xamanConfig.apiKey,
-        'X-API-Secret': xamanConfig.apiSecret,
-      },
-    })
+    const xumm = new Xumm(process.env.XUMM_API_KEY, process.env.XUMM_API_SECRET)
 
-    if (!response.ok) {
+    // xumm SDKのping機能を使用
+    const pingResult = await xumm.ping()
+
+    if (!pingResult) {
       return {
         success: false,
-        error: `API connection failed: ${response.status} ${response.statusText}`,
+        error: 'Ping failed: No response from Xaman API',
       }
     }
 

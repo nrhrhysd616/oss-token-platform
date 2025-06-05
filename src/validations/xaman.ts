@@ -13,46 +13,6 @@ import {
 } from './common'
 
 /**
- * Xamanコールバックペイロードのバリデーション（正式なwebhook形式）
- * https://docs.xaman.dev/concepts/payloads-sign-requests/status-updates/webhooks
- */
-export const xamanCallbackSchema = z.object({
-  meta: z.object({
-    url: z.string(),
-    application_uuidv4: z.string().uuid(),
-    payload_uuidv4: xamanPayloadUuidSchema,
-    opened_by_deeplink: z.boolean(),
-  }),
-  custom_meta: z
-    .object({
-      identifier: z.string().optional(),
-      blob: z.record(z.any()).optional(),
-      instruction: z.string().optional(),
-    })
-    .optional(),
-  payloadResponse: z.object({
-    payload_uuidv4: xamanPayloadUuidSchema,
-    reference_call_uuidv4: z.string().uuid(),
-    signed: z.boolean(),
-    user_token: z.boolean(),
-    return_url: z
-      .object({
-        app: z.string().optional(),
-        web: z.string().optional(),
-      })
-      .optional(),
-    txid: transactionHashSchema.optional(),
-  }),
-  userToken: z
-    .object({
-      user_token: z.string(),
-      token_issued: z.number(),
-      token_expiration: z.number(),
-    })
-    .optional(),
-})
-
-/**
  * トラストライン設定リクエストのバリデーション
  */
 export const trustlineRequestSchema = z.object({
@@ -111,75 +71,6 @@ export const trustlineStatusResponseSchema = z.object({
     })
     .optional(),
   xamanStatus: z.any().optional(), // Xamanのステータスは動的なため
-})
-
-// FIXME: 現状未使用
-/**
- * ウォレット連携リクエストのバリデーション
- */
-export const walletLinkRequestSchema = z.object({
-  // ウォレット連携は認証が必要なため、リクエストボディは空
-})
-
-// FIXME: 現状未使用
-/**
- * ウォレット連携レスポンスのバリデーション
- */
-export const walletLinkResponseSchema = z.object({
-  success: z.boolean(),
-  data: z.object({
-    payloadUuid: xamanPayloadUuidSchema,
-    qrData: z.string(),
-    expiresAt: z.date(),
-  }),
-})
-
-/**
- * ウォレット連携ステータス確認のクエリパラメータ
- */
-export const walletLinkStatusQuerySchema = z.object({
-  payloadUuid: xamanPayloadUuidSchema,
-})
-
-// FIXME: 現状未使用
-/**
- * ウォレット連携ステータスレスポンスのバリデーション
- */
-export const walletLinkStatusResponseSchema = z.object({
-  success: z.boolean(),
-  data: z.object({
-    status: z.enum(['pending', 'completed', 'cancelled', 'expired']),
-    wallet: z
-      .object({
-        address: xrplAddressSchema,
-        publicKey: z.string(),
-        linkedAt: z.date(),
-      })
-      .optional(),
-    xamanStatus: z.any().optional(), // Xamanのステータスは動的なため
-  }),
-})
-
-// FIXME: 現状未使用
-/**
- * ウォレット情報のバリデーション
- */
-export const walletInfoSchema = z.object({
-  address: xrplAddressSchema,
-  publicKey: z.string(),
-  linkedAt: z.date(),
-  userId: z.string(),
-  isPrimary: z.boolean().optional().default(false),
-  nickname: z.string().optional(),
-})
-
-// FIXME: 現状未使用
-/**
- * ウォレット一覧レスポンスのバリデーション
- */
-export const walletListResponseSchema = z.object({
-  success: z.boolean(),
-  data: z.array(walletInfoSchema),
 })
 
 // FIXME: 現状未使用
@@ -275,16 +166,14 @@ export const validateTransactionHash = (hash: string): boolean => {
 }
 
 // 型エクスポート
-export type XamanCallback = z.infer<typeof xamanCallbackSchema>
-export type TrustlineRequest = z.infer<typeof trustlineRequestSchema>
-export type TrustlineResponse = z.infer<typeof trustlineResponseSchema>
-export type TrustlineStatusQuery = z.infer<typeof trustlineStatusQuerySchema>
-export type TrustlineStatusResponse = z.infer<typeof trustlineStatusResponseSchema>
-export type WalletLinkRequest = z.infer<typeof walletLinkRequestSchema>
-export type WalletLinkResponse = z.infer<typeof walletLinkResponseSchema>
-export type WalletLinkStatusQuery = z.infer<typeof walletLinkStatusQuerySchema>
-export type WalletLinkStatusResponse = z.infer<typeof walletLinkStatusResponseSchema>
-export type WalletInfo = z.infer<typeof walletInfoSchema>
-export type WalletListResponse = z.infer<typeof walletListResponseSchema>
-export type XamanPayloadStatus = z.infer<typeof xamanPayloadStatusSchema>
-export type TrustlineRecord = z.infer<typeof trustlineRecordSchema>
+// export type TrustlineRequest = z.infer<typeof trustlineRequestSchema>
+// export type TrustlineResponse = z.infer<typeof trustlineResponseSchema>
+// export type TrustlineStatusQuery = z.infer<typeof trustlineStatusQuerySchema>
+// export type TrustlineStatusResponse = z.infer<typeof trustlineStatusResponseSchema>
+// export type WalletLinkResponse = z.infer<typeof walletLinkResponseSchema>
+// export type WalletLinkStatusQuery = z.infer<typeof walletLinkStatusQuerySchema>
+// export type WalletLinkStatusResponse = z.infer<typeof walletLinkStatusResponseSchema>
+// export type WalletInfo = z.infer<typeof walletInfoSchema>
+// export type WalletListResponse = z.infer<typeof walletListResponseSchema>
+// export type XamanPayloadStatus = z.infer<typeof xamanPayloadStatusSchema>
+// export type TrustlineRecord = z.infer<typeof trustlineRecordSchema>

@@ -3,11 +3,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
-import { DonationService } from '@/lib/xrpl/donation-service'
-import { getActiveIssuerWallet } from '@/lib/xrpl/config'
+import { getAdminAuth } from '@/lib/firebase/admin'
+import { DonationService } from '@/services/DonationService'
 import { z } from 'zod'
-import { trustlineRequestSchema, trustlineStatusQuerySchema } from '@/validations/xaman'
+import { trustlineRequestSchema } from '@/validations/xaman'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +15,7 @@ export async function POST(request: NextRequest) {
     const validatedData = trustlineRequestSchema.parse(body)
 
     // 認証チェック（オプション - トラストライン設定は匿名でも可能）
-    let donorUid: string | null = null
+    let donorUid: string | undefined = undefined
     const authHeader = request.headers.get('Authorization')
     if (authHeader && authHeader.startsWith('Bearer ')) {
       try {
@@ -29,75 +28,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // プロジェクトの存在確認
-    const projectDoc = await getAdminDb().collection('projects').doc(validatedData.projectId).get()
-    if (!projectDoc.exists) {
-      return NextResponse.json({ error: 'プロジェクトが見つかりません' }, { status: 404 })
-    }
-
-    const projectData = projectDoc.data()
-    if (!projectData) {
-      return NextResponse.json({ error: 'プロジェクトデータが無効です' }, { status: 400 })
-    }
-
-    // プロジェクトがアクティブかチェック
-    if (projectData.status !== 'active') {
-      return NextResponse.json(
-        { error: 'このプロジェクトは現在アクティブではありません' },
-        { status: 400 }
+    // トラストライン設定リクエストの作成（プロジェクト確認とFirestore保存を含む）
+    const { request: trustlineRequest, payload: trustlinePayload } =
+      await DonationService.createTrustLineRequest(
+        validatedData.projectId,
+        validatedData.donorAddress,
+        donorUid
       )
-    }
-
-    // 寄付サービスの初期化
-    const donationService = new DonationService()
-
-    // プロジェクトのissuerAddressが設定されているかチェック
-    if (!projectData.issuerAddress) {
-      return NextResponse.json(
-        { error: 'プロジェクトのIssuerアドレスが設定されていません' },
-        { status: 400 }
-      )
-    }
-
-    // 既存のトラストラインをチェック
-    const existingTrustLine = await donationService.checkTrustLine(
-      validatedData.donorAddress,
-      projectData.tokenCode,
-      projectData.issuerAddress
-    )
-
-    if (existingTrustLine) {
-      return NextResponse.json({
-        message: 'トラストラインは既に設定されています',
-        alreadySet: true,
-      })
-    }
-
-    // トラストライン設定用Xamanペイロードの生成
-    const trustlinePayload = await donationService.createTrustLinePayload(
-      validatedData.projectId,
-      validatedData.donorAddress
-    )
-
-    // トラストライン設定リクエストをFirestoreに保存
-    const trustlineRequest = {
-      id: `trustline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      projectId: validatedData.projectId,
-      projectName: projectData.name,
-      tokenCode: projectData.tokenCode,
-      issuerAddress: projectData.issuerAddress,
-      donorAddress: validatedData.donorAddress,
-      donorUid,
-      xamanPayloadId: trustlinePayload.uuid,
-      status: 'pending',
-      createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5分後に期限切れ
-    }
-
-    await getAdminDb()
-      .collection('trustlineRequests')
-      .doc(trustlineRequest.id)
-      .set(trustlineRequest)
 
     return NextResponse.json({
       request: {
@@ -109,9 +46,8 @@ export async function POST(request: NextRequest) {
       },
       xamanPayload: {
         uuid: trustlinePayload.uuid,
-        qr_png: trustlinePayload.qr_png,
-        qr_uri: trustlinePayload.qr_uri,
-        websocket_status: trustlinePayload.websocket_status,
+        qrPng: trustlinePayload.qrPng,
+        websocketUrl: trustlinePayload.websocketUrl,
       },
     })
   } catch (error) {
@@ -137,24 +73,20 @@ export async function GET(request: NextRequest) {
 
     // 特定のリクエストIDで検索
     if (requestId) {
-      const requestDoc = await getAdminDb().collection('trustlineRequests').doc(requestId).get()
-
-      if (!requestDoc.exists) {
+      const requestData = await DonationService.getTrustLineRequest(requestId)
+      if (!requestData) {
         return NextResponse.json({ error: 'リクエストが見つかりません' }, { status: 404 })
       }
 
-      const requestData = requestDoc.data()!
-
       // リクエストの期限確認
-      if (new Date() > requestData.expiresAt.toDate()) {
+      if (new Date() > requestData.expiresAt) {
         return NextResponse.json({ error: 'リクエストが期限切れです' }, { status: 410 })
       }
 
       // Xamanペイロードのステータス確認
-      const donationService = new DonationService()
       let xamanStatus = null
       try {
-        xamanStatus = await donationService.checkPayloadStatus(requestData.xamanPayloadId)
+        xamanStatus = await DonationService.checkPayloadStatus(requestData.xamanPayloadUuid)
       } catch (error) {
         console.warn('Failed to check Xaman payload status:', error)
       }
@@ -175,12 +107,13 @@ export async function GET(request: NextRequest) {
 
     // 寄付者アドレスとプロジェクトIDでトラストライン状態を確認
     if (donorAddress && projectId) {
-      const projectDoc = await getAdminDb().collection('projects').doc(projectId).get()
-      if (!projectDoc.exists) {
+      // プロジェクト情報を取得するためにProjectServiceを使用
+      const { ProjectService } = await import('@/services/ProjectService')
+      const projectData = await ProjectService.getProjectById(projectId)
+
+      if (!projectData) {
         return NextResponse.json({ error: 'プロジェクトが見つかりません' }, { status: 404 })
       }
-
-      const projectData = projectDoc.data()!
 
       // プロジェクトのissuerAddressが設定されているかチェック
       if (!projectData.issuerAddress) {
@@ -190,9 +123,7 @@ export async function GET(request: NextRequest) {
         )
       }
 
-      const donationService = new DonationService()
-
-      const hasTrustLine = await donationService.checkTrustLine(
+      const hasTrustLine = await DonationService.checkTrustLineStatus(
         donorAddress,
         projectData.tokenCode,
         projectData.issuerAddress
