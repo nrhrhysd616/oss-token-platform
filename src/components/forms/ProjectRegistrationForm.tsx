@@ -226,6 +226,17 @@ export default function ProjectRegistrationForm() {
         {/* リポジトリ選択 */}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
           <h2 className="text-xl font-bold text-white mb-6">📁 リポジトリ選択</h2>
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-4 mb-6">
+            <div className="flex items-start space-x-3">
+              <div className="text-yellow-400 mt-0.5">⚠️</div>
+              <div>
+                <p className="text-yellow-300 font-medium mb-1">重要な注意事項</p>
+                <p className="text-yellow-200 text-sm">
+                  選択したリポジトリとトークンコードは、プロジェクト登録後に変更することができません。慎重に検討してください。
+                </p>
+              </div>
+            </div>
+          </div>
 
           <div className="space-y-6">
             <div>

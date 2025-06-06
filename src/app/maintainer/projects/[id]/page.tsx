@@ -145,9 +145,12 @@ export default function MaintainerProjectDetailPage({
             <p className="text-gray-400">{project.description}</p>
           </div>
           <div className="flex space-x-3">
-            <button className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors">
+            <Link
+              href={`/maintainer/projects/${project.id}/edit`}
+              className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+            >
               編集
-            </button>
+            </Link>
           </div>
         </div>
 
