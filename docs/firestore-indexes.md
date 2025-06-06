@@ -27,9 +27,7 @@
 **クエリ例**:
 
 ```typescript
-db.collection('projects')
-  .where('ownerUid', '==', userId)
-  .orderBy('createdAt', 'desc')
+db.collection('projects').where('ownerUid', '==', userId).orderBy('createdAt', 'desc')
 ```
 
 ### 2. status + createdAt (DESC)
@@ -55,9 +53,7 @@ db.collection('projects')
 **クエリ例**:
 
 ```typescript
-db.collection('projects')
-  .where('status', '==', 'active')
-  .orderBy('createdAt', 'desc')
+db.collection('projects').where('status', '==', 'active').orderBy('createdAt', 'desc')
 ```
 
 ### 3. ownerUid + status + createdAt (DESC)
@@ -114,9 +110,7 @@ db.collection('projects')
 **クエリ例**:
 
 ```typescript
-db.collection('projects')
-  .where('name', '==', projectName)
-  .where('ownerUid', '==', userId)
+db.collection('projects').where('name', '==', projectName).where('ownerUid', '==', userId)
 ```
 
 ### 5. repositoryUrl (単一フィールドインデックス)
@@ -145,8 +139,7 @@ db.collection('projects')
 **クエリ例**:
 
 ```typescript
-db.collection('projects')
-  .where('repositoryUrl', '==', repoUrl)
+db.collection('projects').where('repositoryUrl', '==', repoUrl)
 ```
 
 ## パフォーマンス考慮事項
