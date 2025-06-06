@@ -17,6 +17,7 @@ import type {
   DonationPayload,
   DonationStatus,
 } from '@/types/donation'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 /**
  * 寄付取引管理クラス
@@ -111,7 +112,7 @@ export class DonationManager extends BaseService {
 
       // Firestoreに保存
       const createdRequest = await this.createDocument<DonationRequest>(
-        'donationRequests',
+        FIRESTORE_COLLECTIONS.DONATION_REQUESTS,
         requestWithPayload,
         requestId
       )
@@ -143,7 +144,7 @@ export class DonationManager extends BaseService {
    * 寄付セッション取得
    */
   static async getDonationRequest(requestId: string): Promise<DonationRequest | null> {
-    return this.getDocument<DonationRequest>('donationRequests', requestId)
+    return this.getDocument<DonationRequest>(FIRESTORE_COLLECTIONS.DONATION_REQUESTS, requestId)
   }
 
   /**
@@ -163,7 +164,7 @@ export class DonationManager extends BaseService {
       if (request.status === 'completed' && request.txHash) {
         // 対応する寄付記録を取得
         const recordsSnapshot = await this.db
-          .collection('donationRecords')
+          .collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
           .where('requestId', '==', requestId)
           .where('txHash', '==', request.txHash)
           .get()
@@ -240,15 +241,18 @@ export class DonationManager extends BaseService {
       // Firestoreに保存（トランザクション使用）
       return await this.runTransaction(async transaction => {
         // 寄付記録を保存
-        const recordRef = this.db.collection('donationRecords').doc(recordId)
+        const recordRef = this.db.collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS).doc(recordId)
         transaction.set(recordRef, record)
 
         // セッションを完了状態に更新
-        transaction.update(this.db.collection('donationRequests').doc(requestId), {
-          status: 'completed' as DonationStatus,
-          txHash: xamanStatus.response.txid,
-          completedAt: new Date(),
-        })
+        transaction.update(
+          this.db.collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS).doc(requestId),
+          {
+            status: 'completed' as DonationStatus,
+            txHash: xamanStatus.response.txid,
+            completedAt: new Date(),
+          }
+        )
 
         return {
           id: recordId,

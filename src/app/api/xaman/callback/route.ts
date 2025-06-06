@@ -11,6 +11,7 @@ import { DonationService } from '@/services/DonationService'
 import type { DonationRequest } from '@/types/donation'
 import { verifyXamanWebhookRequest } from '@/lib/xaman'
 import { XummTypes } from 'xumm-sdk'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,7 +78,7 @@ async function handleDonationCallback(
   try {
     // 該当する寄付リクエストを検索
     const requestsQuery = await getAdminDb()
-      .collection('donationRequests')
+      .collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS)
       .where('xamanPayloadUuid', '==', payloadUuid)
       .limit(1)
       .get()
@@ -96,19 +97,25 @@ async function handleDonationCallback(
 
     // リクエストの期限確認
     if (DonationService.isDonationRequestExpired(requestData)) {
-      await getAdminDb().collection('donationRequests').doc(requestDoc.id).update({
-        status: 'failed',
-        error: 'Request expired',
-      })
+      await getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS)
+        .doc(requestDoc.id)
+        .update({
+          status: 'failed',
+          error: 'Request expired',
+        })
       return NextResponse.json({ error: 'リクエストが期限切れです' }, { status: 410 })
     }
 
     // 署名されていない場合（キャンセルされた場合）
     if (!signed || !txid) {
-      await getAdminDb().collection('donationRequests').doc(requestDoc.id).update({
-        status: 'failed',
-        error: 'Transaction not signed or cancelled',
-      })
+      await getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS)
+        .doc(requestDoc.id)
+        .update({
+          status: 'failed',
+          error: 'Transaction not signed or cancelled',
+        })
       return NextResponse.json({ message: 'トランザクションがキャンセルされました' })
     }
 
@@ -146,7 +153,7 @@ async function handleTrustlineCallback(
   try {
     // 該当するトラストライン設定リクエストを検索
     const requestsQuery = await getAdminDb()
-      .collection('trustlineRequests')
+      .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
       .where('xamanPayloadUuid', '==', payloadUuid)
       .limit(1)
       .get()
@@ -165,28 +172,37 @@ async function handleTrustlineCallback(
 
     // リクエストの期限確認
     if (new Date() > requestData.expiresAt.toDate()) {
-      await getAdminDb().collection('trustlineRequests').doc(requestDoc.id).update({
-        status: 'failed',
-        error: 'Request expired',
-      })
+      await getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
+        .doc(requestDoc.id)
+        .update({
+          status: 'failed',
+          error: 'Request expired',
+        })
       return NextResponse.json({ error: 'リクエストが期限切れです' }, { status: 410 })
     }
 
     // 署名されていない場合（キャンセルされた場合）
     if (!signed || !txid) {
-      await getAdminDb().collection('trustlineRequests').doc(requestDoc.id).update({
-        status: 'failed',
-        error: 'Transaction not signed or cancelled',
-      })
+      await getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
+        .doc(requestDoc.id)
+        .update({
+          status: 'failed',
+          error: 'Transaction not signed or cancelled',
+        })
       return NextResponse.json({ message: 'トラストライン設定がキャンセルされました' })
     }
 
     // トラストライン設定完了の記録
-    await getAdminDb().collection('trustlineRequests').doc(requestDoc.id).update({
-      status: 'completed',
-      txHash: txid,
-      completedAt: new Date(),
-    })
+    await getAdminDb()
+      .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
+      .doc(requestDoc.id)
+      .update({
+        status: 'completed',
+        txHash: txid,
+        completedAt: new Date(),
+      })
 
     // トラストライン設定の確認
     const hasTrustLine = await DonationService.checkTrustLineStatus(
@@ -269,7 +285,7 @@ async function saveUserToken(
 ): Promise<void> {
   try {
     await getAdminDb()
-      .collection('xamanUserTokens')
+      .collection(FIRESTORE_COLLECTIONS.XAMAN_USER_TOKENS)
       .doc(userToken.user_token)
       .set({
         token: userToken.user_token,
@@ -295,8 +311,8 @@ async function updateProjectStats(
   tokenAmount: number
 ): Promise<void> {
   try {
-    const projectRef = getAdminDb().collection('projects').doc(projectId)
-    const statsRef = getAdminDb().collection('projectStats').doc(projectId)
+    const projectRef = getAdminDb().collection(FIRESTORE_COLLECTIONS.PROJECTS).doc(projectId)
+    const statsRef = getAdminDb().collection(FIRESTORE_COLLECTIONS.PROJECT_STATS).doc(projectId)
 
     // トランザクション内で統計を更新
     await getAdminDb().runTransaction(async transaction => {

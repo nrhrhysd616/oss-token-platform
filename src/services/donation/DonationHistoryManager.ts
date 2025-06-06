@@ -8,6 +8,7 @@ import { convertTimestamps } from '@/lib/firebase/utils'
 import { donationQuerySchema, type DonationQueryParams } from '@/validations'
 import type { DonationRecord } from '@/types/donation'
 import type { Query, DocumentData } from 'firebase-admin/firestore'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 /**
  * 寄付履歴管理クラス
@@ -26,7 +27,9 @@ export class DonationHistoryManager extends BaseService {
       const validatedParams = donationQuerySchema.parse(queryParams)
 
       // ベースクエリを構築
-      let baseQuery: Query<DocumentData> = this.db.collection('donationRecords')
+      let baseQuery: Query<DocumentData> = this.db.collection(
+        FIRESTORE_COLLECTIONS.DONATION_RECORDS
+      )
 
       // フィルタリング条件を追加
       if (validatedParams.projectId) {
@@ -85,7 +88,7 @@ export class DonationHistoryManager extends BaseService {
   }> {
     try {
       const snapshot = await this.db
-        .collection('donationRecords')
+        .collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
         .where('projectId', '==', projectId)
         .get()
 
@@ -150,7 +153,7 @@ export class DonationHistoryManager extends BaseService {
   ): Promise<PaginatedResult<DonationRecord>> {
     try {
       let baseQuery: Query<DocumentData> = this.db
-        .collection('donationRecords')
+        .collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
         .where('donorAddress', '==', donorAddress)
 
       // プロジェクトフィルタリング
@@ -176,7 +179,7 @@ export class DonationHistoryManager extends BaseService {
    * 寄付記録を取得
    */
   static async getDonationRecord(recordId: string): Promise<DonationRecord | null> {
-    return this.getDocument<DonationRecord>('donationRecords', recordId)
+    return this.getDocument<DonationRecord>(FIRESTORE_COLLECTIONS.DONATION_RECORDS, recordId)
   }
 
   /**
@@ -185,7 +188,7 @@ export class DonationHistoryManager extends BaseService {
   static async getRecentDonations(limit: number = 10): Promise<DonationRecord[]> {
     try {
       const snapshot = await this.db
-        .collection('donationRecords')
+        .collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
         .orderBy('createdAt', 'desc')
         .limit(limit)
         .get()
@@ -211,7 +214,7 @@ export class DonationHistoryManager extends BaseService {
     tokenTxHash?: string
   }): Promise<DonationRecord[]> {
     try {
-      let query: Query<DocumentData> = this.db.collection('donationRecords')
+      let query: Query<DocumentData> = this.db.collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
 
       if (searchParams.txHash) {
         query = query.where('txHash', '==', searchParams.txHash)

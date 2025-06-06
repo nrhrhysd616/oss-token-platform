@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
 import { getAllRepositoriesFromInstallations } from '@/lib/github/app'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 // ユーザーが保有するすべてのリポジトリを取得するエンドポイント
 export async function GET(request: NextRequest) {
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     // Firestoreからinstallation情報を取得
     const adminDb = getAdminDb()
-    const userRef = adminDb.collection('users').doc(uid)
+    const userRef = adminDb.collection(FIRESTORE_COLLECTIONS.USERS).doc(uid)
     const userDoc = await userRef.get()
 
     if (!userDoc.exists) {

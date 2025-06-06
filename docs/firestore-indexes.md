@@ -27,7 +27,9 @@
 **クエリ例**:
 
 ```typescript
-db.collection('projects').where('ownerUid', '==', userId).orderBy('createdAt', 'desc')
+db.collection(FIRESTORE_COLLECTIONS.PROJECTS)
+  .where('ownerUid', '==', userId)
+  .orderBy('createdAt', 'desc')
 ```
 
 ### 2. status + createdAt (DESC)
@@ -53,7 +55,9 @@ db.collection('projects').where('ownerUid', '==', userId).orderBy('createdAt', '
 **クエリ例**:
 
 ```typescript
-db.collection('projects').where('status', '==', 'active').orderBy('createdAt', 'desc')
+db.collection(FIRESTORE_COLLECTIONS.PROJECTS)
+  .where('status', '==', 'active')
+  .orderBy('createdAt', 'desc')
 ```
 
 ### 3. ownerUid + status + createdAt (DESC)
@@ -80,7 +84,7 @@ db.collection('projects').where('status', '==', 'active').orderBy('createdAt', '
 **クエリ例**:
 
 ```typescript
-db.collection('projects')
+db.collection(FIRESTORE_COLLECTIONS.PROJECTS)
   .where('ownerUid', '==', userId)
   .where('status', '==', 'active')
   .orderBy('createdAt', 'desc')
@@ -110,7 +114,9 @@ db.collection('projects')
 **クエリ例**:
 
 ```typescript
-db.collection('projects').where('name', '==', projectName).where('ownerUid', '==', userId)
+db.collection(FIRESTORE_COLLECTIONS.PROJECTS)
+  .where('name', '==', projectName)
+  .where('ownerUid', '==', userId)
 ```
 
 ### 5. repositoryUrl (単一フィールドインデックス)
@@ -139,7 +145,7 @@ db.collection('projects').where('name', '==', projectName).where('ownerUid', '==
 **クエリ例**:
 
 ```typescript
-db.collection('projects').where('repositoryUrl', '==', repoUrl)
+db.collection(FIRESTORE_COLLECTIONS.PROJECTS).where('repositoryUrl', '==', repoUrl)
 ```
 
 ## パフォーマンス考慮事項

@@ -5,6 +5,7 @@
 import { BaseService, type PaginatedResult } from './shared/BaseService'
 import { ServiceError } from './shared/ServiceError'
 import { convertTimestamps } from '@/lib/firebase/utils'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 import type { XummTypes } from 'xumm-sdk'
 import type { WalletLinkRequest } from '@/types/xaman'
 import type { Wallet } from '@/types/user'
@@ -74,7 +75,7 @@ export class WalletLinkService extends BaseService {
       }
 
       return await this.createDocument<WalletLinkRequest>(
-        'walletLinkRequests',
+        FIRESTORE_COLLECTIONS.WALLET_LINK_REQUESTS,
         linkRequest,
         xamanResponse.uuid
       )
@@ -97,7 +98,10 @@ export class WalletLinkService extends BaseService {
    * ウォレット連携リクエストの状態を取得
    */
   static async getWalletLinkRequest(payloadUuid: string): Promise<WalletLinkRequest | null> {
-    return this.getDocument<WalletLinkRequest>('walletLinkRequests', payloadUuid)
+    return this.getDocument<WalletLinkRequest>(
+      FIRESTORE_COLLECTIONS.WALLET_LINK_REQUESTS,
+      payloadUuid
+    )
   }
 
   /**
@@ -105,7 +109,10 @@ export class WalletLinkService extends BaseService {
    */
   static async getUserWallets(userId: string): Promise<Wallet[]> {
     try {
-      let query: Query<DocumentData> = this.db.collection('users').doc(userId).collection('wallets')
+      let query: Query<DocumentData> = this.db
+        .collection(FIRESTORE_COLLECTIONS.USERS)
+        .doc(userId)
+        .collection(FIRESTORE_COLLECTIONS.WALLETS)
 
       query = query.where('status', '==', 'linked')
 
@@ -149,9 +156,9 @@ export class WalletLinkService extends BaseService {
 
       // payloadUuidをドキュメントIDとして直接ウォレットを取得
       const walletDoc = await this.db
-        .collection('users')
+        .collection(FIRESTORE_COLLECTIONS.USERS)
         .doc(linkRequest.userId)
-        .collection('wallets')
+        .collection(FIRESTORE_COLLECTIONS.WALLETS)
         .doc(payloadUuid)
         .get()
 
@@ -213,17 +220,17 @@ export class WalletLinkService extends BaseService {
       // === トランザクション外で必要なデータを事前に取得 ===
       // 同じアドレスの他のウォレットをチェック
       const sameAddressWalletsSnapshot = await this.db
-        .collection('users')
+        .collection(FIRESTORE_COLLECTIONS.USERS)
         .doc(userId)
-        .collection('wallets')
+        .collection(FIRESTORE_COLLECTIONS.WALLETS)
         .where('address', '==', walletAddress)
         .get()
 
       // 現在のウォレット数を取得
       const allWalletsSnapshot = await this.db
-        .collection('users')
+        .collection(FIRESTORE_COLLECTIONS.USERS)
         .doc(userId)
-        .collection('wallets')
+        .collection(FIRESTORE_COLLECTIONS.WALLETS)
         .where('status', '==', 'linked')
         .get()
 
@@ -239,9 +246,9 @@ export class WalletLinkService extends BaseService {
 
         // payloadUuidをドキュメントIDとして使用
         const walletRef = this.db
-          .collection('users')
+          .collection(FIRESTORE_COLLECTIONS.USERS)
           .doc(userId)
-          .collection('wallets')
+          .collection(FIRESTORE_COLLECTIONS.WALLETS)
           .doc(payloadUuid)
 
         // 既存ウォレット（payloadUuid）をチェック
@@ -255,7 +262,7 @@ export class WalletLinkService extends BaseService {
         }
 
         // ユーザードキュメントを読み取り
-        const userRef = this.db.collection('users').doc(userId)
+        const userRef = this.db.collection(FIRESTORE_COLLECTIONS.USERS).doc(userId)
         const userDoc = await transaction.get(userRef)
         const currentData = userDoc.data()
 
@@ -307,11 +314,15 @@ export class WalletLinkService extends BaseService {
     } finally {
       // ウォレット連携リクエストを完了状態に更新（トランザクション外で実行）
       try {
-        await this.updateDocument<WalletLinkRequest>('walletLinkRequests', payloadUuid, {
-          status: 'signed',
-          completedAt: new Date(),
-          walletAddress: xamanStatus.response?.account!,
-        })
+        await this.updateDocument<WalletLinkRequest>(
+          FIRESTORE_COLLECTIONS.WALLET_LINK_REQUESTS,
+          payloadUuid,
+          {
+            status: 'signed',
+            completedAt: new Date(),
+            walletAddress: xamanStatus.response?.account!,
+          }
+        )
       } catch (error) {
         console.error('ウォレット連携リクエスト更新エラー:', error)
         // リクエスト更新の失敗はウォレット連携全体を失敗させない

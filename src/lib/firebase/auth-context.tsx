@@ -12,6 +12,7 @@ import { auth } from './client'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { db } from './client'
 import { UserRole } from '@/types/user'
+import { FIRESTORE_COLLECTIONS } from './collections'
 
 // 認証コンテキストの型定義
 type AuthContextType = {
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // ユーザー情報をFirestoreに保存
       const user = result.user
-      const userRef = doc(db, 'users', user.uid)
+      const userRef = doc(db, FIRESTORE_COLLECTIONS.USERS, user.uid)
 
       // 既存のユーザーデータを取得
       const userDoc = await getDoc(userRef)
@@ -91,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return
 
     try {
-      const userRef = doc(db, 'users', user.uid)
+      const userRef = doc(db, FIRESTORE_COLLECTIONS.USERS, user.uid)
       await setDoc(
         userRef,
         {
@@ -111,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ユーザーデータの読み込み
   const loadUserData = async (user: User) => {
     try {
-      const userRef = doc(db, 'users', user.uid)
+      const userRef = doc(db, FIRESTORE_COLLECTIONS.USERS, user.uid)
       const userDoc = await getDoc(userRef)
 
       if (userDoc.exists()) {

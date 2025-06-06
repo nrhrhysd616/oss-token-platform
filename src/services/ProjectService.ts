@@ -5,6 +5,7 @@
 import { getAdminDb } from '../lib/firebase/admin'
 import { assignIssuerWallet } from '../lib/xrpl/config'
 import { convertTimestamps } from '../lib/firebase/utils'
+import { FIRESTORE_COLLECTIONS } from '../lib/firebase/collections'
 import {
   projectUpdateApiSchema,
   type ProjectCreateApiData,
@@ -76,7 +77,7 @@ export class ProjectService {
       }
 
       // Firestoreに保存
-      const docRef = await getAdminDb().collection('projects').add(projectDoc)
+      const docRef = await getAdminDb().collection(FIRESTORE_COLLECTIONS.PROJECTS).add(projectDoc)
 
       // Issuerウォレットを割り当て
       let issuerAddress: string
@@ -120,7 +121,10 @@ export class ProjectService {
    */
   static async getProjectById(projectId: string): Promise<Project | null> {
     try {
-      const projectDoc = await getAdminDb().collection('projects').doc(projectId).get()
+      const projectDoc = await getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+        .doc(projectId)
+        .get()
 
       if (!projectDoc.exists) {
         return null
@@ -157,7 +161,7 @@ export class ProjectService {
   ): Promise<PaginatedResult<PublicProject>> {
     try {
       let query: Query<DocumentData> = getAdminDb()
-        .collection('projects')
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
         .where('status', '==', 'active')
 
       // ソート
@@ -198,7 +202,9 @@ export class ProjectService {
       )
 
       // 総数を取得
-      const countQuery = getAdminDb().collection('projects').where('status', '==', 'active')
+      const countQuery = getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+        .where('status', '==', 'active')
       const countSnapshot = await countQuery.get()
 
       return {
@@ -227,7 +233,7 @@ export class ProjectService {
   ): Promise<PaginatedResult<Project>> {
     try {
       let query: Query<DocumentData> = getAdminDb()
-        .collection('projects')
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
         .where('ownerUid', '==', ownerUid)
 
       // ステータスフィルタリング
@@ -251,7 +257,7 @@ export class ProjectService {
 
       // 総数を取得
       let countQuery: Query<DocumentData> = getAdminDb()
-        .collection('projects')
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
         .where('ownerUid', '==', ownerUid)
 
       if (options.status) {
@@ -329,7 +335,10 @@ export class ProjectService {
       }
 
       // Firestoreを更新
-      await getAdminDb().collection('projects').doc(projectId).update(updateData)
+      await getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+        .doc(projectId)
+        .update(updateData)
 
       // 更新されたプロジェクトを取得
       const updatedProject = await this.getProjectById(projectId)
@@ -372,7 +381,7 @@ export class ProjectService {
       // - 統計データの処理
 
       // プロジェクトを削除
-      await getAdminDb().collection('projects').doc(projectId).delete()
+      await getAdminDb().collection(FIRESTORE_COLLECTIONS.PROJECTS).doc(projectId).delete()
     } catch (error) {
       if (error instanceof ProjectServiceError) {
         throw error
@@ -389,7 +398,10 @@ export class ProjectService {
    */
   static async projectExists(projectId: string): Promise<boolean> {
     try {
-      const projectDoc = await getAdminDb().collection('projects').doc(projectId).get()
+      const projectDoc = await getAdminDb()
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+        .doc(projectId)
+        .get()
       return projectDoc.exists
     } catch (error) {
       console.error('プロジェクト存在確認エラー:', error)
@@ -459,7 +471,7 @@ export class ProjectService {
     // 使用インデックス: name + ownerUid
     if (data.name) {
       let nameQuery = db
-        .collection('projects')
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
         .where('name', '==', data.name)
         .where('ownerUid', '==', ownerUid)
 
@@ -474,7 +486,9 @@ export class ProjectService {
     // トークンコードの重複チェック（全体）
     // 使用インデックス: tokenCode（自動インデックス）
     if (data.tokenCode) {
-      const tokenQuery = db.collection('projects').where('tokenCode', '==', data.tokenCode)
+      const tokenQuery = db
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+        .where('tokenCode', '==', data.tokenCode)
       const tokenSnapshot = await tokenQuery.get()
       const duplicateToken = tokenSnapshot.docs.find(doc => doc.id !== excludeProjectId)
 
@@ -486,7 +500,9 @@ export class ProjectService {
     // リポジトリURLの重複チェック（全体）
     // 使用インデックス: repositoryUrl（単一フィールドインデックス）
     if (data.repositoryUrl) {
-      const repoQuery = db.collection('projects').where('repositoryUrl', '==', data.repositoryUrl)
+      const repoQuery = db
+        .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+        .where('repositoryUrl', '==', data.repositoryUrl)
       const repoSnapshot = await repoQuery.get()
       const duplicateRepo = repoSnapshot.docs.find(doc => doc.id !== excludeProjectId)
 

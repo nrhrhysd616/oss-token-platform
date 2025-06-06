@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
 import { createAppOctokit, createInstallationOctokit } from '@/lib/github/app'
 import { setToastCookieOnResponse } from '@/lib/toast-utils'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 // GitHub App インストール後のコールバックを処理
 export async function GET(request: NextRequest) {
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Installationsコレクションに保存
     await adminDb
-      .collection('installations')
+      .collection(FIRESTORE_COLLECTIONS.INSTALLATIONS)
       .doc(installation.id.toString())
       .set(installationData, { merge: true })
 
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
 
         if (stateData.uid) {
           // ユーザーのInstallation情報を更新
-          const userRef = adminDb.collection('users').doc(stateData.uid)
+          const userRef = adminDb.collection(FIRESTORE_COLLECTIONS.USERS).doc(stateData.uid)
           const userDoc = await userRef.get()
 
           if (userDoc.exists) {
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
         const batch = adminDb.batch()
         repositories.repositories.forEach(repo => {
           const repoRef = adminDb
-            .collection('installation_repositories')
+            .collection(FIRESTORE_COLLECTIONS.INSTALLATION_REPOSITORIES)
             .doc(`${installation.id}_${repo.id}`)
 
           batch.set(repoRef, {

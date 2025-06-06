@@ -2,7 +2,7 @@
  * トラストライン設定専用モーダルコンポーネント
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useXamanWebSocket } from '@/hooks/useXamanWebSocket'
 import { useAuth } from '@/lib/firebase/auth-context'
 import type { TrustlineSetupRequest } from '@/types/xaman'
@@ -27,6 +27,9 @@ export function TrustlineSetupModal({
   const [error, setError] = useState<string | null>(null)
   const [timeLeft, setTimeLeft] = useState<number>(0)
   const [status, setStatus] = useState<'pending' | 'signed' | 'rejected' | 'expired'>('pending')
+
+  // React Strict Modeによる重複実行を防止するためのフラグ
+  const hasRequestedRef = useRef(false)
 
   // 認証状態を取得
   const { user } = useAuth()
@@ -120,9 +123,22 @@ export function TrustlineSetupModal({
   }
 
   // モーダルが開かれたときにリクエストを作成
+  // React Strict Modeでは開発環境でuseEffectが2回実行されるため、
+  // useRefを使って重複実行を防止する
   useEffect(() => {
-    if (isOpen && !trustlineRequest && !loading) {
+    if (isOpen && !trustlineRequest && !loading && !hasRequestedRef.current) {
+      hasRequestedRef.current = true
       createTrustlineRequest()
+    }
+  }, [isOpen])
+
+  // モーダルが閉じられたときに状態をリセット
+  useEffect(() => {
+    if (!isOpen) {
+      hasRequestedRef.current = false
+      setTrustlineRequest(null)
+      setError(null)
+      setStatus('pending')
     }
   }, [isOpen])
 

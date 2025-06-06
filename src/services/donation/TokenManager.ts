@@ -9,6 +9,7 @@ import { convertTokenCodeToXRPLFormat } from '@/lib/xrpl/token-utils'
 import { BaseService } from '../shared/BaseService'
 import { DonationServiceError } from '../shared/ServiceError'
 import type { DonationRecord, TokenIssueStatus } from '@/types/donation'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 /**
  * トークン発行リクエスト
@@ -149,7 +150,11 @@ export class TokenManager extends BaseService {
         tokenIssueError: issueResult.error,
       }
 
-      await this.updateDocument<DonationRecord>('donationRecords', donationRecord.id, updateData)
+      await this.updateDocument<DonationRecord>(
+        FIRESTORE_COLLECTIONS.DONATION_RECORDS,
+        donationRecord.id,
+        updateData
+      )
 
       console.log(
         `✅ Token issue ${issueResult.success ? 'completed' : 'failed'} for donation ${donationRecord.id}`
@@ -158,11 +163,15 @@ export class TokenManager extends BaseService {
       console.error('Token issue processing error:', error)
 
       // エラー時も記録を更新
-      await this.updateDocument<DonationRecord>('donationRecords', donationRecord.id, {
-        tokenIssued: false,
-        tokenIssueStatus: 'failed' as TokenIssueStatus,
-        tokenIssueError: error instanceof Error ? error.message : 'Unknown error occurred',
-      })
+      await this.updateDocument<DonationRecord>(
+        FIRESTORE_COLLECTIONS.DONATION_RECORDS,
+        donationRecord.id,
+        {
+          tokenIssued: false,
+          tokenIssueStatus: 'failed' as TokenIssueStatus,
+          tokenIssueError: error instanceof Error ? error.message : 'Unknown error occurred',
+        }
+      )
     }
   }
 

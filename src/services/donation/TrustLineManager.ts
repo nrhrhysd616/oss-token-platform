@@ -9,6 +9,7 @@ import { BaseService } from '../shared/BaseService'
 import { DonationServiceError } from '../shared/ServiceError'
 import type { XummTypes } from 'xumm-sdk'
 import type { TrustLineRequest, TrustLinePayload, TrustLineStatus } from '@/types/donation'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 /**
  * トラストライン管理クラス
@@ -67,7 +68,7 @@ export class TrustLineManager extends BaseService {
 
       // Firestoreに保存
       const savedRequest = await this.createDocument<TrustLineRequest>(
-        'trustLineRequests',
+        FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS,
         request,
         requestId
       )
@@ -137,7 +138,7 @@ export class TrustLineManager extends BaseService {
    * トラストライン設定リクエスト取得
    */
   static async getTrustLineRequest(requestId: string): Promise<TrustLineRequest | null> {
-    return this.getDocument<TrustLineRequest>('trustLineRequests', requestId)
+    return this.getDocument<TrustLineRequest>(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS, requestId)
   }
 
   /**
@@ -192,11 +193,15 @@ export class TrustLineManager extends BaseService {
       }
 
       // リクエストを完了状態に更新
-      await this.updateDocument<TrustLineRequest>('trustLineRequests', requestId, {
-        status: 'signed' as TrustLineStatus,
-        txHash: xamanStatus.response.txid,
-        completedAt: new Date(),
-      })
+      await this.updateDocument<TrustLineRequest>(
+        FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS,
+        requestId,
+        {
+          status: 'signed' as TrustLineStatus,
+          txHash: xamanStatus.response.txid,
+          completedAt: new Date(),
+        }
+      )
     } catch (error) {
       if (error instanceof DonationServiceError) {
         throw error

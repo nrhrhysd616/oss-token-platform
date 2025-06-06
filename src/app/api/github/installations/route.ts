@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserInstallations } from '@/lib/github/app'
 import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
+import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
 // ユーザーのGitHub App Installationを取得・保存するエンドポイント
 // export async function POST(request: NextRequest) {
@@ -39,7 +40,7 @@ import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
 //
 //     // Firestoreにinstallation情報を保存
 //     const adminDb = getAdminDb()
-//     const userRef = adminDb.collection('users').doc(uid)
+//     const userRef = adminDb.collection(FIRESTORE_COLLECTIONS.USERS).doc(uid)
 //     await userRef.set(
 //       {
 //         githubInstallations: installations.map(installation => ({
@@ -102,7 +103,7 @@ export async function GET(request: NextRequest) {
 
     // Firestoreからinstallation情報を取得
     const adminDb = getAdminDb()
-    const userRef = adminDb.collection('users').doc(uid)
+    const userRef = adminDb.collection(FIRESTORE_COLLECTIONS.USERS).doc(uid)
     const userDoc = await userRef.get()
 
     if (!userDoc.exists) {
