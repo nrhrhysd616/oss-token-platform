@@ -147,6 +147,10 @@ export class ProjectService {
 
   /**
    * 公開プロジェクト一覧を取得
+   *
+   * 使用インデックス:
+   * - status + createdAt (DESC): status='active' + createdAt降順ソート時
+   * - 注意: name, updatedAtソートは現在インデックス未対応
    */
   static async getPublicProjects(
     options: ProjectPublicQueryParams
@@ -211,6 +215,11 @@ export class ProjectService {
 
   /**
    * メンテナーのプロジェクト一覧を取得
+   *
+   * 使用インデックス:
+   * - ownerUid + createdAt (DESC): statusフィルタなし + createdAt降順ソート時
+   * - ownerUid + status + createdAt (DESC): statusフィルタあり + createdAt降順ソート時
+   * - 注意: name, updatedAtソートは現在インデックス未対応
    */
   static async getMaintainerProjects(
     ownerUid: string,
@@ -429,6 +438,11 @@ export class ProjectService {
 
   /**
    * 重複制約の検証
+   *
+   * 使用インデックス:
+   * - name + ownerUid: プロジェクト名の重複チェック（同一オーナー内）
+   * - repositoryUrl (単一フィールド): リポジトリURLの重複チェック（全体）
+   * - tokenCode: 自動インデックス（単一フィールド等価クエリ）
    */
   static async validateUniqueConstraints(
     data: {
@@ -442,6 +456,7 @@ export class ProjectService {
     const db = getAdminDb()
 
     // プロジェクト名の重複チェック（同一オーナー内）
+    // 使用インデックス: name + ownerUid
     if (data.name) {
       let nameQuery = db
         .collection('projects')
@@ -457,6 +472,7 @@ export class ProjectService {
     }
 
     // トークンコードの重複チェック（全体）
+    // 使用インデックス: tokenCode（自動インデックス）
     if (data.tokenCode) {
       const tokenQuery = db.collection('projects').where('tokenCode', '==', data.tokenCode)
       const tokenSnapshot = await tokenQuery.get()
@@ -468,6 +484,7 @@ export class ProjectService {
     }
 
     // リポジトリURLの重複チェック（全体）
+    // 使用インデックス: repositoryUrl（単一フィールドインデックス）
     if (data.repositoryUrl) {
       const repoQuery = db.collection('projects').where('repositoryUrl', '==', data.repositoryUrl)
       const repoSnapshot = await repoQuery.get()
