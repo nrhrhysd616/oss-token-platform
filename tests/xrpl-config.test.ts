@@ -242,7 +242,7 @@ describe('XRPL Config Tests', () => {
       const hash = generateVerificationHash('project-1', 'rDonorAddress123', 100, 1234567890)
 
       expect(typeof hash).toBe('string')
-      expect(hash).toHaveLength(8)
+      expect(hash).toHaveLength(32)
       expect(/^[0-9a-f]+$/.test(hash)).toBe(true)
     })
 

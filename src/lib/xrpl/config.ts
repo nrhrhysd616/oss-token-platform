@@ -2,6 +2,8 @@
  * XRPL設定管理
  */
 
+import crypto from 'crypto'
+
 export type XRPLWallet = {
   id: string
   address: string
@@ -171,6 +173,7 @@ export function generateDestinationTag(projectId: string): number {
 
 /**
  * 寄付検証用ハッシュ生成
+ * SHA-256を使用した暗号学的に安全なハッシュ生成
  */
 export function generateVerificationHash(
   projectId: string,
@@ -178,17 +181,10 @@ export function generateVerificationHash(
   amount: number,
   timestamp: number
 ): string {
-  const data = `${projectId}:${donorAddress}:${amount}:${timestamp}`
+  const salt = process.env.TX_VERIFICATION_HASH_SALT || 'default-salt'
+  const data = `${salt}:${projectId}:${donorAddress}:${amount}:${timestamp}`
 
-  // 簡単なハッシュ関数（本番環境では crypto.createHash を使用推奨）
-  let hash = 0
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i)
-    hash = (hash << 5) - hash + char
-    hash = hash & hash
-  }
-
-  return Math.abs(hash).toString(16).padStart(8, '0')
+  return crypto.createHash('sha256').update(data, 'utf8').digest('hex').substring(0, 32) // XRPLメモサイズ制限を考慮して32文字に制限
 }
 
 /**

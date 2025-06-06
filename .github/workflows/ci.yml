@@ -59,6 +59,7 @@ jobs:
           XRPL_TREASURY_1_ADDRESS: ${{ secrets.XRPL_TREASURY_1_ADDRESS }}
           XRPL_TREASURY_1_SECRET: ${{ secrets.XRPL_TREASURY_1_SECRET }}
           XRPL_TREASURY_1_ACTIVE: ${{ secrets.XRPL_TREASURY_1_ACTIVE }}
+          TX_VERIFICATION_HASH_SALT: ${{ secrets.TX_VERIFICATION_HASH_SALT }}
         run: bun run test
 
   build:
@@ -90,6 +91,7 @@ jobs:
           XRPL_TREASURY_1_ADDRESS: ${{ secrets.XRPL_TREASURY_1_ADDRESS }}
           XRPL_TREASURY_1_SECRET: ${{ secrets.XRPL_TREASURY_1_SECRET }}
           XRPL_TREASURY_1_ACTIVE: ${{ secrets.XRPL_TREASURY_1_ACTIVE }}
+          TX_VERIFICATION_HASH_SALT: ${{ secrets.TX_VERIFICATION_HASH_SALT }}
         run: bun run build
 
   e2e:
@@ -120,6 +122,7 @@ jobs:
           XRPL_TREASURY_1_ADDRESS: ${{ secrets.XRPL_TREASURY_1_ADDRESS }}
           XRPL_TREASURY_1_SECRET: ${{ secrets.XRPL_TREASURY_1_SECRET }}
           XRPL_TREASURY_1_ACTIVE: ${{ secrets.XRPL_TREASURY_1_ACTIVE }}
+          TX_VERIFICATION_HASH_SALT: ${{ secrets.TX_VERIFICATION_HASH_SALT }}
         run: bun run e2e-test
       - uses: actions/upload-artifact@v4
         if: always()
