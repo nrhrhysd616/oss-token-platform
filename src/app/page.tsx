@@ -8,14 +8,6 @@ import { useAuth } from '@/lib/firebase/auth-context'
 
 export default function Home() {
   const { user, loading, currentMode } = useAuth()
-  const router = useRouter()
-
-  useEffect(() => {
-    // ログイン済みユーザーは適切なダッシュボードにリダイレクト
-    if (!loading && user && currentMode) {
-      router.push(`/${currentMode}`)
-    }
-  }, [user, loading, currentMode, router])
 
   // ローディング中の表示
   if (loading) {
@@ -32,11 +24,6 @@ export default function Home() {
         </main>
       </>
     )
-  }
-
-  // ログイン済みユーザーがリダイレクト処理中の場合は何も表示しない
-  if (user && currentMode) {
-    return null
   }
 
   // 未ログインユーザー向けのランディングページ

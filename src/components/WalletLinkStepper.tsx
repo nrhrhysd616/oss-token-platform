@@ -176,70 +176,72 @@ export default function WalletLinkStepper() {
   // ログイン済み・ウォレット未連携
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <div className="space-y-6">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-white mb-2">ウォレット連携</h2>
-          <p className="text-gray-300">
-            XRPLウォレットを連携してOSSトークンの受け取りを開始しましょう
-          </p>
-        </div>
-
-        {/* ステップ表示 */}
-        <div className="flex items-center justify-center space-x-4">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm">
-              ✓
-            </div>
-            <span className="ml-2 text-sm text-green-400">GitHubログイン</span>
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-white mb-2">ウォレット連携</h2>
+            <p className="text-gray-300">
+              XRPLウォレットを連携してOSSトークンの受け取りを開始しましょう
+            </p>
           </div>
-          <div className="w-8 h-0.5 bg-gray-600"></div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-              2
-            </div>
-            <span className="ml-2 text-sm text-blue-400">ウォレット連携</span>
-          </div>
-        </div>
 
-        {/* エラー表示 */}
-        {error && (
-          <div className="bg-red-900 border border-red-700 rounded-lg p-4">
+          {/* ステップ表示 */}
+          <div className="flex items-center justify-center space-x-4">
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="text-red-300">{error}</span>
+              <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm">
+                ✓
+              </div>
+              <span className="ml-2 text-sm text-green-400">GitHubログイン</span>
+            </div>
+            <div className="w-8 h-0.5 bg-gray-600"></div>
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                2
+              </div>
+              <span className="ml-2 text-sm text-blue-400">ウォレット連携</span>
             </div>
           </div>
-        )}
 
-        {/* ウォレット連携ボタン */}
-        <div className="text-center">
-          <button
-            onClick={handleStartWalletLink}
-            disabled={linkStatus === 'creating' || linkStatus === 'pending'}
-            className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            {linkStatus === 'creating' && 'QRコード生成中...'}
-            {linkStatus === 'pending' && 'ウォレット連携待機中...'}
-            {linkStatus === 'checking' && '連携状態確認中...'}
-            {(linkStatus === 'idle' || linkStatus === 'error') && 'ウォレットを連携する'}
-          </button>
-        </div>
+          {/* エラー表示 */}
+          {error && (
+            <div className="bg-red-900 border border-red-700 rounded-lg p-4">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="text-red-300">{error}</span>
+              </div>
+            </div>
+          )}
 
-        {/* 説明 */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-          <h3 className="font-semibold text-white mb-2">ウォレット連携について</h3>
-          <ul className="text-sm text-gray-300 space-y-1">
-            <li>• XamanアプリでQRコードをスキャンして連携します</li>
-            <li>• 連携後、OSSプロジェクトへの寄付に応じてトークンを受け取れます</li>
-            <li>• 複数のウォレットを連携することも可能です</li>
-            <li>• 秘密鍵は当サービスで保存されません</li>
-          </ul>
+          {/* ウォレット連携ボタン */}
+          <div className="text-center">
+            <button
+              onClick={handleStartWalletLink}
+              disabled={linkStatus === 'creating' || linkStatus === 'pending'}
+              className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              {linkStatus === 'creating' && 'QRコード生成中...'}
+              {linkStatus === 'pending' && 'ウォレット連携待機中...'}
+              {linkStatus === 'checking' && '連携状態確認中...'}
+              {(linkStatus === 'idle' || linkStatus === 'error') && 'ウォレットを連携する'}
+            </button>
+          </div>
+
+          {/* 説明 */}
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-2">ウォレット連携について</h3>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• XamanアプリでQRコードをスキャンして連携します</li>
+              <li>• 連携後、OSSプロジェクトへの寄付に応じてトークンを受け取れます</li>
+              <li>• 複数のウォレットを連携することも可能です</li>
+              <li>• 秘密鍵は当サービスで保存されません</li>
+            </ul>
+          </div>
         </div>
       </div>
 
