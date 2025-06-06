@@ -3,6 +3,21 @@
 論点がひと目で分かるように簡潔かつ明確なタイトルを付けること\
 このエリアに概要が必要であれば記載する
 
+## ファイル命名規則
+
+ADRファイルは以下の命名規則に従うこと：
+
+`status-yyyymmdd-index-title.md`
+
+- status: ステータス（Draft, Proposed, Approved, Rejected, Deprecated, Superseded）
+- yyyymmdd: 作成日（年月日）
+- index: 同日に複数のADRがある場合の連番（01, 02, ...）
+- title: ADRのタイトル
+
+例：`Proposed-20250606-01-プライベートリポジトリ化対応について.md`
+
+この命名規則により、ファイルがステータス別にグループ化され、管理しやすくなります。
+
 ## ステータス
 
 - Draft-下書き(変更可)
