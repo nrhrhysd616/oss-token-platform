@@ -4,6 +4,7 @@
 
 import { getXRPLClient } from '@/lib/xrpl/client'
 import { convertTokenCodeToXRPLFormat } from '@/lib/xrpl/token-utils'
+import { TrustSetFlags } from 'xrpl'
 import { BaseService } from '../shared/BaseService'
 import { DonationServiceError } from '../shared/ServiceError'
 import type { XummTypes } from 'xumm-sdk'
@@ -102,6 +103,7 @@ export class TrustLineManager extends BaseService {
         issuer: issuerAddress,
         value: '1000000', // 最大信頼限度額
       },
+      Flags: TrustSetFlags.tfSetNoRipple, // リップリングを無効化
     }
 
     const payload: XummTypes.XummPostPayloadBodyJson = {
@@ -142,12 +144,12 @@ export class TrustLineManager extends BaseService {
    * トラストライン存在確認
    */
   static async checkTrustLineExists(
-    donorAddress: string,
+    walletAddress: string,
     tokenCode: string,
     issuerAddress: string
   ): Promise<boolean> {
     try {
-      const trustLines = await this.xrplClient.getTrustLines(donorAddress)
+      const trustLines = await this.xrplClient.getTrustLines(walletAddress)
 
       const currencyCode = convertTokenCodeToXRPLFormat(tokenCode)
       return trustLines.result.lines.some(

@@ -14,6 +14,8 @@ import {
 import { DonationHistoryManager } from './donation/DonationHistoryManager'
 import { BaseService, type PaginatedResult } from './shared/BaseService'
 import { DonationServiceError } from './shared/ServiceError'
+import { getXRPLClient } from '@/lib/xrpl/client'
+import { dropsToXrp } from 'xrpl'
 import type { XummTypes } from 'xumm-sdk'
 import type {
   DonationRequest,
@@ -99,6 +101,20 @@ export class DonationService extends BaseService {
     issuerAddress: string
   ): Promise<boolean> {
     return TrustLineManager.checkTrustLineExists(donorAddress, tokenCode, issuerAddress)
+  }
+
+  /**
+   * XRP残高取得
+   */
+  static async getXrpBalance(address: string): Promise<number> {
+    try {
+      const client = getXRPLClient()
+      const balanceInDrops = await client.getAccountBalance(address)
+      return dropsToXrp(parseInt(balanceInDrops))
+    } catch (error) {
+      console.error('XRP残高取得エラー:', error)
+      return 0
+    }
   }
 
   // === DONATION OPERATIONS ===

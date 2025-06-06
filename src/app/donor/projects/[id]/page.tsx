@@ -4,6 +4,9 @@ import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { PublicProject } from '@/types/project'
 import { formatDateJP } from '@/lib/firebase/utils'
+import { useWallet } from '@/hooks/useWallet'
+import { useTrustlineCheck } from '@/hooks/useTrustlineCheck'
+import { DonationStatusAlert } from '@/components/DonationStatusAlert'
 
 type PublicProjectResponse = {
   project: PublicProject
@@ -15,6 +18,28 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [donationAmount, setDonationAmount] = useState('')
+
+  // ウォレット情報を取得
+  const { primaryWallet } = useWallet()
+
+  // トラストライン状態を確認
+  const {
+    data: trustlineData,
+    loading: trustlineLoading,
+    error: trustlineError,
+    refetch: refetchTrustline,
+  } = useTrustlineCheck(primaryWallet, id)
+
+  // 寄付可能状態を判定
+  const getDonationStatus = () => {
+    if (trustlineLoading) return 'loading'
+    if (!primaryWallet) return 'wallet-not-linked'
+    if (trustlineData && !trustlineData.hasTrustLine) return 'trustline-required'
+    if (trustlineData && trustlineData.canDonate) return 'ready'
+    return 'loading'
+  }
+
+  const donationStatus = getDonationStatus()
 
   const fetchProject = async () => {
     try {
@@ -258,6 +283,17 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
             <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">🎁 寄付する</h2>
               <div className="space-y-4">
+                {/* 寄付状態アラート */}
+                <DonationStatusAlert
+                  status={donationStatus}
+                  projectId={id}
+                  wallet={primaryWallet || undefined}
+                  tokenCode={project.tokenCode}
+                  xrpBalance={trustlineData?.xrpBalance}
+                  tokenBalance={trustlineData?.tokenBalance}
+                  onTrustlineComplete={refetchTrustline}
+                />
+
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">
                     寄付額 (XRP)
@@ -273,7 +309,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                   />
                 </div>
 
-                {donationAmount && (
+                {donationAmount && donationStatus === 'ready' && (
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
                     <div className="text-sm text-gray-300">想定受け取りトークン数:</div>
                     <div className="text-yellow-400 font-semibold">
@@ -285,15 +321,19 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
 
                 <button
                   onClick={handleDonation}
-                  disabled={!donationAmount || parseFloat(donationAmount) <= 0}
+                  disabled={
+                    donationStatus !== 'ready' || !donationAmount || parseFloat(donationAmount) <= 0
+                  }
                   className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black disabled:text-gray-400 px-4 py-3 rounded-md font-medium transition-colors"
                 >
                   寄付する
                 </button>
 
-                <div className="text-xs text-gray-400 text-center">
-                  XamanウォレットまたはXRPLウォレットが必要です
-                </div>
+                {donationStatus === 'ready' && (
+                  <div className="text-xs text-gray-400 text-center">
+                    XamanウォレットまたはXRPLウォレットが必要です
+                  </div>
+                )}
               </div>
             </div>
 

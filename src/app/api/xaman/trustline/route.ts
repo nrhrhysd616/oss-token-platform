@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const validatedData = trustlineCreateApiSchema.parse(body)
 
     // 認証チェック（オプション - トラストライン設定は匿名でも可能）
-    let donorUid: string | undefined = undefined
+    let donorUid: string = 'unknown'
     const authHeader = request.headers.get('Authorization')
     if (authHeader && authHeader.startsWith('Bearer ')) {
       try {
