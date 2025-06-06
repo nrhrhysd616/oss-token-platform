@@ -56,7 +56,7 @@ export default function DonorDashboard() {
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="text-sm text-gray-400">ウォレット</p>
+                <p className="text-sm text-gray-400">登録済みウォレット</p>
                 <p className="text-white font-mono text-sm">{primaryWallet.address}</p>
               </div>
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
