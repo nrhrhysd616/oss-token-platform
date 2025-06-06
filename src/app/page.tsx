@@ -1,7 +1,45 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import WalletLinkStepper from '@/components/WalletLinkStepper'
 import Header from '@/components/Header'
+import { useAuth } from '@/lib/firebase/auth-context'
 
 export default function Home() {
+  const { user, loading, currentMode } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    // ログイン済みユーザーは適切なダッシュボードにリダイレクト
+    if (!loading && user && currentMode) {
+      router.push(`/${currentMode}`)
+    }
+  }, [user, loading, currentMode, router])
+
+  // ローディング中の表示
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen py-8">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+              <p className="text-white text-lg">読み込み中...</p>
+            </div>
+          </div>
+        </main>
+      </>
+    )
+  }
+
+  // ログイン済みユーザーがリダイレクト処理中の場合は何も表示しない
+  if (user && currentMode) {
+    return null
+  }
+
+  // 未ログインユーザー向けのランディングページ
   return (
     <>
       <Header />
