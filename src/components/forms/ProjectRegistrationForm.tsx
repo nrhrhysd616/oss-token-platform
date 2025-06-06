@@ -90,8 +90,11 @@ export default function ProjectRegistrationForm() {
     )
   }
 
-  // 利用可能なリポジトリと登録済みリポジトリを分離
-  const availableRepositories = allRepositories.filter(repo => !isRepositoryRegistered(repo))
+  // リポジトリを種類別に分離
+  const availablePublicRepositories = allRepositories.filter(
+    repo => !repo.private && !isRepositoryRegistered(repo)
+  )
+  const privateRepositories = allRepositories.filter(repo => repo.private)
   const registeredRepositories = allRepositories.filter(repo => isRepositoryRegistered(repo))
 
   // トークンコード自動生成関数
@@ -226,6 +229,22 @@ export default function ProjectRegistrationForm() {
         {/* リポジトリ選択 */}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
           <h2 className="text-xl font-bold text-white mb-6">📁 リポジトリ選択</h2>
+
+          {/* OSS限定の説明 */}
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-md p-4 mb-4">
+            <div className="flex items-start space-x-3">
+              <div className="text-blue-400 mt-0.5">🌟</div>
+              <div>
+                <p className="text-blue-300 font-medium mb-1">
+                  OSS（オープンソース）プロジェクト限定
+                </p>
+                <p className="text-blue-200 text-sm">
+                  このプラットフォームはオープンソースプロジェクトの支援を目的としています。パブリックリポジトリのみ登録可能です。
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-4 mb-6">
             <div className="flex items-start space-x-3">
               <div className="text-yellow-400 mt-0.5">⚠️</div>
@@ -251,12 +270,12 @@ export default function ProjectRegistrationForm() {
               ) : allRepositories.length > 0 ? (
                 <div className="space-y-4 max-h-64 overflow-y-auto">
                   {/* 利用可能なリポジトリ */}
-                  {availableRepositories.length > 0 && (
+                  {availablePublicRepositories.length > 0 && (
                     <div className="space-y-3">
                       <h4 className="text-sm font-medium text-green-400">
-                        📋 選択可能なリポジトリ
+                        📋 選択可能なリポジトリ（パブリック）
                       </h4>
-                      {availableRepositories.map(repo => (
+                      {availablePublicRepositories.map(repo => (
                         <div
                           key={repo.id}
                           onClick={() => handleRepositorySelect(repo)}
@@ -330,19 +349,68 @@ export default function ProjectRegistrationForm() {
                     </div>
                   )}
 
-                  {/* リポジトリがない場合 */}
-                  {availableRepositories.length === 0 && registeredRepositories.length === 0 && (
-                    <div className="text-gray-400 py-4 text-center">
-                      アクセス可能なリポジトリがありません。GitHub Appをインストールしてください。
+                  {/* プライベートリポジトリ */}
+                  {privateRepositories.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium text-red-400">
+                        🔒 選択不可なリポジトリ（プライベート）
+                      </h4>
+                      <div className="bg-red-500/10 border border-red-500/20 rounded-md p-3 mb-3">
+                        <p className="text-red-300 text-sm">
+                          ⚠️
+                          このプラットフォームはOSS（オープンソース）プロジェクトのみ登録可能です。プライベートリポジトリは選択できません。
+                        </p>
+                      </div>
+                      {privateRepositories.map(repo => (
+                        <div
+                          key={repo.id}
+                          className="p-4 border border-red-600/30 bg-red-900/10 rounded-lg opacity-60 cursor-not-allowed"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <h3 className="font-medium text-gray-400">{repo.fullName}</h3>
+                                <span className="text-xs bg-red-600 text-white px-2 py-1 rounded">
+                                  プライベート
+                                </span>
+                              </div>
+                              {repo.description && (
+                                <p className="text-sm text-gray-500 mt-1">{repo.description}</p>
+                              )}
+                              <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                {repo.language && (
+                                  <span className="flex items-center space-x-1">
+                                    <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
+                                    <span>{repo.language}</span>
+                                  </span>
+                                )}
+                                <span>⭐ {repo.stargazersCount}</span>
+                                <span>🍴 {repo.forksCount}</span>
+                                <span className="text-red-400">🔒 Private</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
 
+                  {/* リポジトリがない場合 */}
+                  {availablePublicRepositories.length === 0 &&
+                    registeredRepositories.length === 0 &&
+                    privateRepositories.length === 0 && (
+                      <div className="text-gray-400 py-4 text-center">
+                        アクセス可能なリポジトリがありません。GitHub Appをインストールしてください。
+                      </div>
+                    )}
+
                   {/* 利用可能なリポジトリがない場合 */}
-                  {availableRepositories.length === 0 && registeredRepositories.length > 0 && (
-                    <div className="text-gray-400 py-4 text-center">
-                      新規登録可能なリポジトリがありません。すべてのリポジトリが既に登録済みです。
-                    </div>
-                  )}
+                  {availablePublicRepositories.length === 0 &&
+                    (registeredRepositories.length > 0 || privateRepositories.length > 0) && (
+                      <div className="text-gray-400 py-4 text-center">
+                        新規登録可能なパブリックリポジトリがありません。
+                      </div>
+                    )}
                 </div>
               ) : (
                 <div className="text-gray-400 py-4 text-center">
