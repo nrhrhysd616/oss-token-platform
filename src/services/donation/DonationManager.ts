@@ -43,7 +43,13 @@ export class DonationManager extends BaseService {
 
       const timestamp = Date.now()
       const destinationTag = generateDestinationTag(projectId)
-      const verificationHash = generateVerificationHash(projectId, donorAddress, amount, timestamp)
+      const verificationHash = generateVerificationHash(
+        projectId,
+        'donation',
+        donorAddress,
+        amount,
+        timestamp
+      )
       const treasuryWallet = getActiveTreasuryWallet()
 
       // リクエストデータ準備

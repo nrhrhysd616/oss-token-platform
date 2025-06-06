@@ -177,12 +177,13 @@ export function generateDestinationTag(projectId: string): number {
  */
 export function generateVerificationHash(
   projectId: string,
-  donorAddress: string,
+  type: 'donation' | 'license',
+  sendAddress: string,
   amount: number,
   timestamp: number
 ): string {
   const salt = process.env.TX_VERIFICATION_HASH_SALT || 'default-salt'
-  const data = `${salt}:${projectId}:${donorAddress}:${amount}:${timestamp}`
+  const data = `${salt}:${projectId}:${type}:${sendAddress}:${amount}:${timestamp}`
 
   return crypto.createHash('sha256').update(data, 'utf8').digest('hex').substring(0, 32) // XRPLメモサイズ制限を考慮して32文字に制限
 }
