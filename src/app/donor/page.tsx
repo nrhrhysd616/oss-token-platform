@@ -1,26 +1,18 @@
 'use client'
 
 import { useAuth } from '@/lib/firebase/auth-context'
-import { useWallet } from '@/hooks/useWallet'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
 
 export default function DonorDashboard() {
   const { user, currentMode, loading } = useAuth()
-  const { primaryWallet, isLoading: walletLoading } = useWallet()
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !walletLoading) {
+    if (!loading) {
       if (!user) {
         console.error('User not authenticated')
-        router.push('/')
-        return
-      }
-
-      if (!primaryWallet) {
-        console.error('Primary wallet not found', primaryWallet)
         router.push('/')
         return
       }
@@ -30,9 +22,9 @@ export default function DonorDashboard() {
         return
       }
     }
-  }, [user, currentMode, primaryWallet, loading, walletLoading, router])
+  }, [user, currentMode, loading, router])
 
-  if (loading || walletLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -40,7 +32,7 @@ export default function DonorDashboard() {
     )
   }
 
-  if (!user || !primaryWallet || currentMode !== 'donor') {
+  if (!user || currentMode !== 'donor') {
     return null
   }
 
@@ -54,14 +46,8 @@ export default function DonorDashboard() {
               <h1 className="text-3xl font-bold text-white mb-2">🎁 寄付者ダッシュボード</h1>
               <p className="text-gray-300">OSSプロジェクトへの寄付とトークン管理</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-400">登録済みウォレット</p>
-                <p className="text-white font-mono text-sm">{primaryWallet.address}</p>
-              </div>
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm">🎁</span>
-              </div>
+            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm">🎁</span>
             </div>
           </div>
         </div>

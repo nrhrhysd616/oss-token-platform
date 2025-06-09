@@ -130,7 +130,7 @@ export default function WalletStatus({ wallet, isLoading }: WalletStatusProps) {
             rel="noopener noreferrer"
             className="text-blue-400 hover:text-blue-300 text-sm underline"
           >
-            XRPLエクスプローラーで確認
+            XRPLエクスプローラーでアドレスを確認
           </a>
         </div>
       </div>

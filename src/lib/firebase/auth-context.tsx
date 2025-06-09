@@ -22,8 +22,9 @@ type AuthContextType = {
   loading: boolean
   signInWithGithub: () => Promise<void>
   signOut: () => Promise<void>
-  switchMode: (mode: UserRole) => void
+  switchMode: (mode: UserRole) => Promise<{ success: boolean; requiresWallet?: boolean }>
   updateUserRoles: (roles: UserRole[], defaultMode: UserRole) => Promise<void>
+  checkWalletConnection: () => Promise<boolean>
 }
 
 // 認証コンテキストの作成
@@ -79,12 +80,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // モード切り替え
-  const switchMode = (mode: UserRole) => {
-    if (userRoles.includes(mode)) {
-      setCurrentMode(mode)
-      localStorage.setItem('currentMode', mode)
+  // ウォレット連携状態をチェック
+  const checkWalletConnection = async (): Promise<boolean> => {
+    if (!user) return false
+
+    try {
+      const token = await user.getIdToken()
+      const response = await fetch('/api/xaman/wallets', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) return false
+
+      const { data: wallets } = await response.json()
+      return (
+        wallets && wallets.length > 0 && wallets.some((wallet: any) => wallet.status === 'linked')
+      )
+    } catch (error) {
+      console.error('ウォレット連携状態の確認に失敗:', error)
+      return false
     }
+  }
+
+  // モード切り替え
+  const switchMode = async (
+    mode: UserRole
+  ): Promise<{ success: boolean; requiresWallet?: boolean }> => {
+    if (!userRoles.includes(mode)) {
+      return { success: false }
+    }
+
+    // maintainerモードへの切り替え時にウォレット連携をチェック
+    if (mode === 'maintainer') {
+      const hasWallet = await checkWalletConnection()
+      if (!hasWallet) {
+        return { success: false, requiresWallet: true }
+      }
+    }
+
+    setCurrentMode(mode)
+    localStorage.setItem('currentMode', mode)
+    return { success: true }
   }
 
   // ユーザーロール更新
@@ -117,8 +156,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (userDoc.exists()) {
         const userData = userDoc.data()
-        const roles = userData.roles || ['donor'] // デフォルトは寄付者
-        const defaultMode = userData.defaultMode || 'donor'
+        const roles = userData.roles || []
+        const defaultMode = userData.defaultMode || null
 
         setUserRoles(roles)
 
@@ -126,31 +165,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const savedMode = localStorage.getItem('currentMode') as UserRole
         if (savedMode && roles.includes(savedMode)) {
           setCurrentMode(savedMode)
-        } else {
+        } else if (defaultMode && roles.includes(defaultMode)) {
           setCurrentMode(defaultMode)
+        } else {
+          setCurrentMode(null)
         }
       } else {
-        // 新規ユーザーの場合、デフォルトロールを設定
-        const defaultRoles: UserRole[] = ['donor']
-        const defaultMode: UserRole = 'donor'
-
-        await setDoc(
-          userRef,
-          {
-            roles: defaultRoles,
-            defaultMode,
-          },
-          { merge: true }
-        )
-
-        setUserRoles(defaultRoles)
-        setCurrentMode(defaultMode)
+        // 新規ユーザーの場合、ロールを空にする
+        setUserRoles([])
+        setCurrentMode(null)
       }
     } catch (error) {
       console.error('ユーザーデータ読み込みエラー:', error)
-      // エラーの場合はデフォルト値を設定
-      setUserRoles(['donor'])
-      setCurrentMode('donor')
+      // エラーの場合は空のロールを設定
+      setUserRoles([])
+      setCurrentMode(null)
     }
   }
 
@@ -184,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         switchMode,
         updateUserRoles,
+        checkWalletConnection,
       }}
     >
       {children}

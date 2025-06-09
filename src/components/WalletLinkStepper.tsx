@@ -180,9 +180,7 @@ export default function WalletLinkStepper() {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-xl font-bold text-white mb-2">ウォレット連携</h2>
-            <p className="text-gray-300">
-              XRPLウォレットを連携してOSSトークンの受け取りを開始しましょう
-            </p>
+            <p className="text-gray-300">XRPLウォレットを連携して寄付を受け取りましょう</p>
           </div>
 
           {/* ステップ表示 */}
@@ -237,8 +235,8 @@ export default function WalletLinkStepper() {
             <h3 className="font-semibold text-white mb-2">ウォレット連携について</h3>
             <ul className="text-sm text-gray-300 space-y-1">
               <li>• XamanアプリでQRコードをスキャンして連携します</li>
-              <li>• 連携後、OSSプロジェクトへの寄付に応じてトークンを受け取れます</li>
-              <li>• 複数のウォレットを連携することも可能です</li>
+              <li>• 連携後、OSSプロジェクトへの寄付が連携されたウォレットに送金できます</li>
+              {/* <li>• 複数のウォレットを連携することも可能です</li> */}
               <li>• 秘密鍵は当サービスで保存されません</li>
             </ul>
           </div>

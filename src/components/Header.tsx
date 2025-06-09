@@ -80,20 +80,14 @@ export default function Header() {
                     </Link>
                   )}
 
-                  {/* モード切り替えボタン（複数ロールを持つユーザー向け） */}
-                  {userRoles.length > 1 && (
-                    <button
-                      onClick={() => {
-                        const otherMode = currentMode === 'donor' ? 'maintainer' : 'donor'
-                        switchMode(otherMode)
-                        window.location.href = `/${otherMode}`
-                      }}
-                      className="text-sm px-3 py-1.5 border border-gray-600 rounded-md hover:bg-gray-800 transition-colors"
-                      title="モードを切り替え"
-                    >
-                      {currentMode === 'donor' ? '🛠' : '🎁'}
-                    </button>
-                  )}
+                  {/* モード選択リンク（常時表示） */}
+                  <Link
+                    href="/mode-select"
+                    className="text-sm px-3 py-1.5 border border-gray-600 rounded-md hover:bg-gray-800 transition-colors"
+                    title="モードを選択・変更"
+                  >
+                    ⚙️ モード
+                  </Link>
                   <div className="relative" ref={dropdownRef}>
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
