@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
-import WalletLinkStepper from '@/components/WalletLinkStepper'
+import XamanQRModal from '@/components/XamanQRModal'
+import WalletStatus from '@/components/WalletStatus'
 import { useAuth } from '@/lib/firebase/auth-context'
 import { useWallet } from '@/hooks/useWallet'
 import { useTheme } from '@/lib/theme-context'
@@ -11,10 +12,20 @@ import { UserRole } from '@/types/user'
 
 export default function WalletRequiredPage() {
   const { user, userRoles, updateUserRoles, loading } = useAuth()
-  const { primaryWallet, isLoading: walletLoading } = useWallet()
+  const {
+    primaryWallet,
+    linkStatus,
+    linkRequest,
+    error,
+    isLoading: walletLoading,
+    createWalletLink,
+    checkLinkStatus,
+    clearError,
+  } = useWallet()
   const { colorTheme } = useTheme()
   const router = useRouter()
   const [isUpdatingRole, setIsUpdatingRole] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // カラーテーマに基づくスタイル
   const accentBg = colorTheme === 'red' ? 'bg-red-500/20' : 'bg-yellow-500/20'
@@ -44,6 +55,23 @@ export default function WalletRequiredPage() {
       handleWalletLinked()
     }
   }, [primaryWallet, walletLoading, user, userRoles, updateUserRoles, router])
+
+  const handleStartWalletLink = async () => {
+    clearError()
+    await createWalletLink()
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false)
+  }, [])
+
+  const handleStatusCheck = useCallback(
+    (payloadUuid: string) => {
+      checkLinkStatus(payloadUuid)
+    },
+    [checkLinkStatus]
+  )
 
   // ローディング中
   if (loading || walletLoading) {
@@ -113,15 +141,6 @@ export default function WalletRequiredPage() {
                     </p>
                   </div>
                 </div>
-                {/* <div className="flex items-start">
-                  <span className="text-green-400 mr-3 mt-1">✓</span>
-                  <div>
-                    <h3 className="text-white font-medium">トークン発行・管理</h3>
-                    <p className="text-gray-400 text-sm">
-                      プロジェクト専用トークンの発行と寄付者への配布を行います
-                    </p>
-                  </div>
-                </div> */}
                 <div className="flex items-start">
                   <span className="text-green-400 mr-3 mt-1">✓</span>
                   <div>
@@ -135,7 +154,7 @@ export default function WalletRequiredPage() {
             </div>
           </div>
 
-          {/* ウォレット連携ステッパー */}
+          {/* ウォレット連携セクション */}
           <div className="max-w-2xl mx-auto">
             {isUpdatingRole ? (
               <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
@@ -147,8 +166,71 @@ export default function WalletRequiredPage() {
                   </p>
                 </div>
               </div>
+            ) : primaryWallet ? (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-xl font-bold text-white mb-2">ウォレット連携完了</h2>
+                  <p className="text-gray-300">
+                    ウォレット連携が完了しました。OSS管理者ダッシュボードに移動します。
+                  </p>
+                </div>
+                <WalletStatus wallet={primaryWallet} isLoading={walletLoading} />
+              </div>
             ) : (
-              <WalletLinkStepper />
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <h2 className="text-xl font-bold text-white mb-2">XRPLウォレット連携</h2>
+                    <p className="text-gray-300">
+                      XamanアプリでQRコードをスキャンしてウォレットを連携してください
+                    </p>
+                  </div>
+
+                  {/* エラー表示 */}
+                  {error && (
+                    <div className="bg-red-900 border border-red-700 rounded-lg p-4">
+                      <div className="flex items-center">
+                        <svg
+                          className="w-5 h-5 text-red-400 mr-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="text-red-300">{error}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ウォレット連携ボタン */}
+                  <div className="text-center">
+                    <button
+                      onClick={handleStartWalletLink}
+                      disabled={linkStatus === 'creating' || linkStatus === 'pending'}
+                      className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      {linkStatus === 'creating' && 'QRコード生成中...'}
+                      {linkStatus === 'pending' && 'ウォレット連携待機中...'}
+                      {linkStatus === 'checking' && '連携状態確認中...'}
+                      {(linkStatus === 'idle' || linkStatus === 'error') && 'ウォレットを連携する'}
+                    </button>
+                  </div>
+
+                  {/* 説明 */}
+                  <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                    <h3 className="font-semibold text-white mb-2">ウォレット連携について</h3>
+                    <ul className="text-sm text-gray-300 space-y-1">
+                      <li>• XamanアプリでQRコードをスキャンして連携します</li>
+                      <li>• 連携後、OSSプロジェクトへの寄付が連携されたウォレットに送金できます</li>
+                      <li>• 秘密鍵は当サービスで保存されません</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
@@ -181,25 +263,19 @@ export default function WalletRequiredPage() {
                     安全で信頼性の高いXamanアプリを通じてウォレット連携を行います
                   </p>
                 </div>
-                {/* <div className="flex items-start">
-                  <span className="text-blue-400 mr-2 mt-0.5">•</span>
-                  <p>
-                    <strong>いつでも連携解除可能:</strong>{' '}
-                    必要に応じてウォレット連携を解除することができます
-                  </p>
-                </div> */}
-                {/* <div className="flex items-start">
-                  <span className="text-blue-400 mr-2 mt-0.5">•</span>
-                  <p>
-                    <strong>複数ウォレット対応:</strong>{' '}
-                    複数のウォレットを連携して用途に応じて使い分けることも可能です
-                  </p>
-                </div> */}
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* QRモーダル */}
+      <XamanQRModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        linkRequest={linkRequest}
+        onStatusCheck={handleStatusCheck}
+      />
     </>
   )
 }
