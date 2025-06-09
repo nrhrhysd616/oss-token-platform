@@ -11,21 +11,7 @@ export type DonationStatus = 'pending' | 'payload_created' | 'completed' | 'fail
 /**
  * トークン発行ステータス
  */
-export type TokenIssueStatus = 'pending' | 'pendingTrustline' | 'completed' | 'failed'
-
-/**
- * トラストライン設定リクエストステータス
- */
-export type TrustLineStatus = 'created' | 'pending' | 'signed' | 'expired' | 'cancelled'
-
-/**
- * Xamanペイロード（トラストライン用）
- */
-export type TrustLinePayload = {
-  uuid: string
-  qrPng: string
-  websocketUrl: string
-}
+export type TokenIssueStatus = 'pending' | 'completed' | 'failed'
 
 /**
  * Xamanペイロード（寄付用）
@@ -44,7 +30,6 @@ export type DonationPayload = {
 export type DonationRequest = {
   id: string
   projectId: string
-  donorAddress: string
   donorUid?: string
   amount: number
   destinationTag: number
@@ -81,26 +66,6 @@ export type DonationRecord = {
 }
 
 /**
- * トラストライン設定リクエスト（Firestoreドキュメント形式）
- */
-export type TrustLineRequest = {
-  id: string
-  projectId: string
-  projectName: string
-  tokenCode: string
-  issuerAddress: string
-  donorAddress: string
-  donorUid?: string
-  xamanPayloadUuid: string
-  status: TrustLineStatus
-  txHash?: string
-  completedAt?: Date
-  error?: string
-  createdAt: Date
-  expiresAt: Date
-}
-
-/**
  * プロジェクト統計（Firestoreドキュメント形式）
  */
 export type ProjectStats = {
@@ -120,7 +85,6 @@ export type ProjectStats = {
  */
 export type DonationCreateRequest = {
   projectId: string
-  donorAddress: string
   amount: number
 }
 
@@ -140,41 +104,4 @@ export type DonationCreateResponse = {
     qrPng: string
     websocketUrl: string
   }
-}
-
-/**
- * トラストライン作成リクエスト
- */
-export type TrustLineCreateRequest = {
-  projectId: string
-  donorAddress: string
-}
-
-/**
- * トラストライン作成レスポンス
- */
-export type TrustLineCreateResponse = {
-  request: {
-    id: string
-    projectId: string
-    projectName: string
-    tokenCode: string
-    expiresAt: string
-  }
-  xamanPayload: {
-    uuid: string
-    qrPng: string
-    websocketUrl: string
-  }
-}
-
-/**
- * トラストライン状態確認レスポンス
- */
-export type TrustLineStatusResponse = {
-  donorAddress: string
-  projectId: string
-  tokenCode: string
-  hasTrustLine: boolean
-  issuerAddress: string
 }

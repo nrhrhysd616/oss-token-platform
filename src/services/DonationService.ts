@@ -4,7 +4,6 @@
  */
 
 import { ProjectService } from './ProjectService'
-import { TrustLineManager } from './donation/TrustLineManager'
 import { DonationManager } from './donation/DonationManager'
 import {
   TokenManager,
@@ -17,92 +16,13 @@ import { DonationServiceError } from './shared/ServiceError'
 import { getXRPLClient } from '@/lib/xrpl/client'
 import { dropsToXrp } from 'xrpl'
 import type { XummTypes } from 'xumm-sdk'
-import type {
-  DonationRequest,
-  DonationRecord,
-  DonationPayload,
-  TrustLineRequest,
-  TrustLinePayload,
-} from '@/types/donation'
+import type { DonationRequest, DonationRecord, DonationPayload } from '@/types/donation'
 import type { DonationQueryParams } from '@/validations'
 
 /**
  * 寄付サービス統合クラス
  */
 export class DonationService extends BaseService {
-  // === TRUSTLINE OPERATIONS ===
-
-  /**
-   * トラストライン設定リクエスト作成
-   */
-  static async createTrustLineRequest(
-    projectId: string,
-    donorAddress: string,
-    donorUid?: string
-  ): Promise<{ request: TrustLineRequest; payload: TrustLinePayload }> {
-    try {
-      // プロジェクト情報を取得
-      const project = await ProjectService.getProjectById(projectId)
-      if (!project) {
-        throw new DonationServiceError(
-          `プロジェクトが見つかりません: ${projectId}`,
-          'NOT_FOUND',
-          404
-        )
-      }
-
-      // プロジェクトの基本検証
-      ProjectService.validateProject(project)
-
-      return await TrustLineManager.createTrustLineRequest(
-        projectId,
-        project.name,
-        project.tokenCode,
-        project.issuerAddress,
-        donorAddress,
-        donorUid
-      )
-    } catch (error) {
-      if (error instanceof DonationServiceError) {
-        throw error
-      }
-      console.error('トラストライン設定リクエスト作成エラー:', error)
-      throw new DonationServiceError(
-        'トラストライン設定リクエストの作成に失敗しました',
-        'INTERNAL_ERROR',
-        500
-      )
-    }
-  }
-
-  /**
-   * トラストライン設定リクエスト取得
-   */
-  static async getTrustLineRequest(requestId: string): Promise<TrustLineRequest | null> {
-    return TrustLineManager.getTrustLineRequest(requestId)
-  }
-
-  /**
-   * トラストライン設定完了処理
-   */
-  static async completeTrustLineRequest(
-    requestId: string,
-    xamanStatus: XummTypes.XummGetPayloadResponse
-  ): Promise<void> {
-    return TrustLineManager.completeTrustLineRequest(requestId, xamanStatus)
-  }
-
-  /**
-   * トラストライン存在確認
-   */
-  static async checkTrustLineStatus(
-    donorAddress: string,
-    tokenCode: string,
-    issuerAddress: string
-  ): Promise<boolean> {
-    return TrustLineManager.checkTrustLineExists(donorAddress, tokenCode, issuerAddress)
-  }
-
   /**
    * XRP残高取得
    */
@@ -124,7 +44,6 @@ export class DonationService extends BaseService {
    */
   static async createDonationRequestWithPayload(
     projectId: string,
-    donorAddress: string,
     amount: number,
     donorUid?: string
   ): Promise<{ request: DonationRequest; payload: DonationPayload }> {
@@ -142,12 +61,7 @@ export class DonationService extends BaseService {
       // プロジェクトの基本検証
       ProjectService.validateProject(project)
 
-      return await DonationManager.createDonationRequestWithPayload(
-        projectId,
-        donorAddress,
-        amount,
-        donorUid
-      )
+      return await DonationManager.createDonationRequestWithPayload(projectId, amount, donorUid)
     } catch (error) {
       if (error instanceof DonationServiceError) {
         throw error
@@ -410,13 +324,6 @@ export class DonationService extends BaseService {
    */
   static validateDonationAmount(amount: number): boolean {
     return DonationManager.validateDonationAmount(amount)
-  }
-
-  /**
-   * トラストライン設定リクエストの期限確認
-   */
-  static isTrustLineRequestExpired(request: TrustLineRequest): boolean {
-    return TrustLineManager.isRequestExpired(request)
   }
 
   // === PRIVATE METHODS ===

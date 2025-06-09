@@ -10,7 +10,6 @@ export const FIRESTORE_COLLECTIONS = {
   PROJECTS: 'projects',
   DONATION_REQUESTS: 'donationRequests',
   DONATION_RECORDS: 'donationRecords',
-  TRUSTLINE_REQUESTS: 'trustlineRequests',
   WALLET_LINK_REQUESTS: 'walletLinkRequests',
   INSTALLATIONS: 'installations',
   INSTALLATION_REPOSITORIES: 'installationRepositories', // キャメルケースに統一

@@ -32,7 +32,6 @@ export async function POST(request: NextRequest) {
     const { request: donationRequest, payload } =
       await DonationService.createDonationRequestWithPayload(
         validatedData.projectId,
-        validatedData.donorAddress,
         validatedData.amount,
         donorUid
       )

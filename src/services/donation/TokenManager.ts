@@ -2,7 +2,7 @@
  * トークン発行専用マネージャー
  */
 
-import { Payment, IssuedCurrencyAmount } from 'xrpl'
+import { CheckCreate, IssuedCurrencyAmount } from 'xrpl'
 import { getXRPLClient } from '@/lib/xrpl/client'
 import { getXRPLConfig } from '@/lib/xrpl/config'
 import { convertTokenCodeToXRPLFormat } from '@/lib/xrpl/token-utils'
@@ -42,7 +42,7 @@ export class TokenManager extends BaseService {
   // === TOKEN OPERATIONS ===
 
   /**
-   * トークンを発行して受信者に送付
+   * CreateCheckトランザクションでトークンを発行
    */
   static async issueTokenToRecipient(
     request: TokenIssueRequest,
@@ -62,20 +62,21 @@ export class TokenManager extends BaseService {
         value: request.amount.toString(),
       }
 
-      // Paymentトランザクションの作成
-      const paymentTransaction: Payment = {
-        TransactionType: 'Payment',
+      // CheckCreateトランザクションの作成
+      const checkTransaction: CheckCreate = {
+        TransactionType: 'CheckCreate',
         Account: issuerWallet.address,
         Destination: request.recipientAddress,
-        Amount: tokenAmount,
+        SendMax: tokenAmount,
+        Expiration: Math.floor(Date.now() / 1000) + 60 * 24 * 60 * 60, // 60日後
       }
 
       // メモフィールドの追加（オプション）
       if (request.memo) {
-        paymentTransaction.Memos = [
+        checkTransaction.Memos = [
           {
             Memo: {
-              MemoType: Buffer.from('token_issue', 'utf8').toString('hex').toUpperCase(),
+              MemoType: Buffer.from('token_check', 'utf8').toString('hex').toUpperCase(),
               MemoData: Buffer.from(request.memo, 'utf8').toString('hex').toUpperCase(),
             },
           },
@@ -83,7 +84,7 @@ export class TokenManager extends BaseService {
       }
 
       // トランザクションの送信
-      const result = await this.xrplClient.submitTransaction(paymentTransaction, issuerWallet)
+      const result = await this.xrplClient.submitTransaction(checkTransaction, issuerWallet)
 
       // メタデータから結果を確認
       const meta = result.result.meta as any
@@ -105,7 +106,7 @@ export class TokenManager extends BaseService {
         }
       }
     } catch (error) {
-      console.error('Token issue error:', error)
+      console.error('Token check creation error:', error)
 
       return {
         success: false,
@@ -230,23 +231,8 @@ export class TokenManager extends BaseService {
         errors.push('Invalid token amount')
       }
 
-      // 受信者のトラストライン確認
-      try {
-        const trustLines = await this.xrplClient.getTrustLines(request.recipientAddress)
-        const currencyCode = convertTokenCodeToXRPLFormat(tokenCode)
-        const hasTrustLine = trustLines.result.lines.some(
-          line =>
-            line.currency === currencyCode &&
-            line.account === issuerWallet.address &&
-            parseFloat(line.limit) >= request.amount
-        )
-
-        if (!hasTrustLine) {
-          errors.push('Recipient does not have sufficient trust line for this token')
-        }
-      } catch (error) {
-        errors.push('Unable to verify recipient trust lines')
-      }
+      // CreateCheckトランザクションではトラストラインは不要
+      // 受信者は後でCheckCashトランザクションを実行してトークンを受け取る
 
       return {
         valid: errors.length === 0,

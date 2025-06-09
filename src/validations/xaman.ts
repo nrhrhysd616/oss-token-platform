@@ -27,16 +27,6 @@ export const walletLinkQuerySchema = z.object({
 export type WalletLinkQueryParams = z.infer<typeof walletLinkQuerySchema>
 
 /**
- * トラストライン設定API用バリデーションスキーマ
- */
-export const trustlineCreateApiSchema = z.object({
-  projectId: projectIdSchema,
-  donorAddress: xrplAddressSchema,
-})
-
-export type TrustlineCreateApiData = z.infer<typeof trustlineCreateApiSchema>
-
-/**
  * XRP金額のバリデーション（寄付用）
  */
 export const donationAmountSchema = z
@@ -49,7 +39,6 @@ export const donationAmountSchema = z
  */
 export const donationCreateApiSchema = z.object({
   projectId: projectIdSchema,
-  donorAddress: xrplAddressSchema,
   amount: donationAmountSchema,
 })
 
@@ -71,7 +60,7 @@ export const donationQuerySchema = z.object({
   projectId: z.string().optional(),
   donorAddress: xrplAddressSchema.optional(),
   donorUid: z.string().optional(),
-  status: z.enum(['pending', 'pending_trustline', 'failed', 'completed']).optional(),
+  status: z.enum(['pending', 'failed', 'completed']).optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   page: z.number().min(1).optional().default(1),

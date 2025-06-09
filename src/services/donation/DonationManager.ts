@@ -32,7 +32,6 @@ export class DonationManager extends BaseService {
    */
   static async createDonationRequestWithPayload(
     projectId: string,
-    donorAddress: string,
     amount: number,
     donorUid?: string
   ): Promise<{ request: DonationRequest; payload: DonationPayload }> {
@@ -44,20 +43,13 @@ export class DonationManager extends BaseService {
 
       const timestamp = Date.now()
       const destinationTag = generateDestinationTag(projectId)
-      const verificationHash = generateVerificationHash(
-        projectId,
-        'donation',
-        donorAddress,
-        amount,
-        timestamp
-      )
+      const verificationHash = generateVerificationHash(projectId, 'donation', amount, timestamp)
       const treasuryWallet = getActiveTreasuryWallet()
 
       // リクエストデータ準備
       const requestId = `donation_${timestamp}_${Math.random().toString(36).substr(2, 9)}`
       const request: Omit<DonationRequest, 'id'> = {
         projectId,
-        donorAddress,
         donorUid,
         amount,
         destinationTag,
@@ -70,7 +62,6 @@ export class DonationManager extends BaseService {
       // Xamanペイロード準備
       const paymentTransaction: XummTypes.XummJsonTransaction = {
         TransactionType: 'Payment',
-        Account: donorAddress,
         Destination: treasuryWallet.address,
         DestinationTag: destinationTag,
         Amount: (amount * 1000000).toString(), // XRPをdropsに変換
@@ -211,8 +202,18 @@ export class DonationManager extends BaseService {
         )
       }
 
+      // 実際の署名者アドレスを取得
+      const donorAddress = xamanStatus.response?.account || xamanStatus.response?.signer
+      if (!donorAddress) {
+        throw new DonationServiceError('署名者アドレスが取得できません', 'VALIDATION_ERROR', 400)
+      }
+
       // トランザクションの検証
-      const isValid = await this.verifyDonationTransaction(xamanStatus.response.txid, request)
+      const isValid = await this.verifyDonationTransaction(
+        xamanStatus.response.txid,
+        request,
+        donorAddress
+      )
       if (!isValid) {
         throw new DonationServiceError(
           '寄付トランザクションの検証に失敗しました',
@@ -226,7 +227,7 @@ export class DonationManager extends BaseService {
       const record: Omit<DonationRecord, 'id'> = {
         requestId,
         projectId: request.projectId,
-        donorAddress: request.donorAddress,
+        donorAddress, // 実際の署名者アドレスを記録
         donorUid: request.donorUid,
         amount: request.amount,
         txHash: xamanStatus.response.txid,
@@ -294,7 +295,8 @@ export class DonationManager extends BaseService {
    */
   private static async verifyDonationTransaction(
     txHash: string,
-    expectedRequest: DonationRequest
+    expectedRequest: DonationRequest,
+    donorAddress: string
   ): Promise<boolean> {
     try {
       console.log(`🔍 Verifying transaction: ${txHash}`)
@@ -313,10 +315,8 @@ export class DonationManager extends BaseService {
       }
 
       // 送信者の検証
-      if (txData.Account !== expectedRequest.donorAddress) {
-        console.log(
-          `❌ Invalid sender: expected ${expectedRequest.donorAddress}, got ${txData.Account}`
-        )
+      if (txData.Account !== donorAddress) {
+        console.log(`❌ Invalid sender: expected ${donorAddress}, got ${txData.Account}`)
         return false
       }
 

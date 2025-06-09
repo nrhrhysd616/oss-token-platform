@@ -44,12 +44,6 @@ export async function POST(request: NextRequest) {
       return donationResult
     }
 
-    // 次にトラストライン設定を確認
-    const trustlineResult = await handleTrustlineCallback(payloadUuid, signed, txid)
-    if (trustlineResult) {
-      return trustlineResult
-    }
-
     // 最後にウォレット連携を確認
     const walletResult = await handleWalletLinkCallback(payloadUuid, signed, txid)
     if (walletResult) {
@@ -139,98 +133,6 @@ async function handleDonationCallback(
   } catch (error) {
     console.error('Donation callback error:', error)
     return NextResponse.json({ error: '寄付処理でエラーが発生しました' }, { status: 500 })
-  }
-}
-
-/**
- * トラストラインコールバックの処理
- */
-async function handleTrustlineCallback(
-  payloadUuid: string,
-  signed: boolean,
-  txid: string | undefined
-): Promise<NextResponse | null> {
-  try {
-    // 該当するトラストライン設定リクエストを検索
-    const requestsQuery = await getAdminDb()
-      .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
-      .where('xamanPayloadUuid', '==', payloadUuid)
-      .limit(1)
-      .get()
-
-    if (requestsQuery.empty) {
-      return null // トラストライン設定ではない
-    }
-
-    const requestDoc = requestsQuery.docs[0]
-    const requestData = requestDoc.data()
-
-    // リクエストが既に完了している場合はスキップ
-    if (requestData.status === 'completed') {
-      return NextResponse.json({ message: '既に処理済みです' })
-    }
-
-    // リクエストの期限確認
-    if (new Date() > requestData.expiresAt.toDate()) {
-      await getAdminDb()
-        .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
-        .doc(requestDoc.id)
-        .update({
-          status: 'failed',
-          error: 'Request expired',
-        })
-      return NextResponse.json({ error: 'リクエストが期限切れです' }, { status: 410 })
-    }
-
-    // 署名されていない場合（キャンセルされた場合）
-    if (!signed || !txid) {
-      await getAdminDb()
-        .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
-        .doc(requestDoc.id)
-        .update({
-          status: 'failed',
-          error: 'Transaction not signed or cancelled',
-        })
-      return NextResponse.json({ message: 'トラストライン設定がキャンセルされました' })
-    }
-
-    // トラストライン設定完了の記録
-    await getAdminDb()
-      .collection(FIRESTORE_COLLECTIONS.TRUSTLINE_REQUESTS)
-      .doc(requestDoc.id)
-      .update({
-        status: 'completed',
-        txHash: txid,
-        completedAt: new Date(),
-      })
-
-    // トラストライン設定の確認
-    const hasTrustLine = await DonationService.checkTrustLineStatus(
-      requestData.donorAddress,
-      requestData.tokenCode,
-      requestData.issuerAddress
-    )
-
-    if (hasTrustLine) {
-      return NextResponse.json({
-        message: 'トラストラインが正常に設定されました',
-        trustline: {
-          projectId: requestData.projectId,
-          projectName: requestData.projectName,
-          tokenCode: requestData.tokenCode,
-          donorAddress: requestData.donorAddress,
-          txHash: txid,
-        },
-      })
-    } else {
-      return NextResponse.json({
-        message: 'トランザクションは完了しましたが、トラストラインの確認に失敗しました',
-        warning: 'しばらく待ってから再度確認してください',
-      })
-    }
-  } catch (error) {
-    console.error('Trustline callback error:', error)
-    return NextResponse.json({ error: 'トラストライン処理でエラーが発生しました' }, { status: 500 })
   }
 }
 

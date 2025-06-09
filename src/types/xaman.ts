@@ -36,20 +36,3 @@ export type WalletLinkRequest = {
   completedAt?: Date
   walletAddress?: string
 }
-
-/**
- * トラストライン設定リクエストの型定義
- */
-export type TrustlineSetupRequest = {
-  id: string
-  projectId: string
-  projectName: string
-  tokenCode: string
-  xamanPayloadUuid: string
-  qrPng: string // QRコード画像URL
-  websocketUrl: string // WebSocketのURL
-  status: 'created' | 'pending' | 'signed' | 'expired' | 'cancelled'
-  createdAt: Date
-  expiresAt: Date
-  completedAt?: Date
-}

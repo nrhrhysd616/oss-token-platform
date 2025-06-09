@@ -3,7 +3,6 @@
  */
 
 import { z } from 'zod'
-import { xrplAddressSchema } from './xrpl'
 
 /**
  * プロジェクトIDのバリデーション
@@ -117,13 +116,3 @@ export const projectPublicQuerySchema = projectQuerySchema.extend({
 })
 
 export type ProjectPublicQueryParams = z.infer<typeof projectPublicQuerySchema>
-
-/**
- * トラストライン状態確認用バリデーションスキーマ
- */
-export const trustlineCheckSchema = z.object({
-  donorAddress: xrplAddressSchema,
-  projectId: projectIdSchema,
-})
-
-export type TrustlineCheckParams = z.infer<typeof trustlineCheckSchema>
