@@ -12,6 +12,7 @@ import type { DonationRequest } from '@/types/donation'
 import { verifyXamanWebhookRequest } from '@/lib/xaman'
 import { XummTypes } from 'xumm-sdk'
 import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
+import { convertTimestamps } from '@/lib/firebase/utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,7 +83,11 @@ async function handleDonationCallback(
     }
 
     const requestDoc = requestsQuery.docs[0]
-    const requestData = requestDoc.data() as DonationRequest
+    // FirestoreのTimestamp型をDate型に変換
+    const requestData = convertTimestamps({
+      id: requestDoc.id,
+      ...requestDoc.data(),
+    }) as DonationRequest
 
     // リクエストが既に完了している場合はスキップ
     if (requestData.status === 'completed') {

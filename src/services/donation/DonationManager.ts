@@ -46,8 +46,7 @@ export class DonationManager extends BaseService {
       const verificationHash = generateVerificationHash(projectId, 'donation', amount, timestamp)
       const treasuryWallet = getActiveTreasuryWallet()
 
-      // リクエストデータ準備
-      const requestId = `donation_${timestamp}_${Math.random().toString(36).substr(2, 9)}`
+      // リクエストデータ準備（IDは後でXamanペイロードUUIDを使用）
       const request: Omit<DonationRequest, 'id'> = {
         projectId,
         donorUid,
@@ -83,10 +82,13 @@ export class DonationManager extends BaseService {
           expire: 10, // 10分で期限切れ
         },
         custom_meta: {
-          identifier: this.generateIdentifier('dn-', requestId),
+          identifier: this.generateIdentifier('dn-', verificationHash),
           blob: {
             purpose: 'donation',
-            requestId,
+            projectId,
+            amount,
+            verificationHash,
+            timestamp,
           },
         },
       }
@@ -101,11 +103,11 @@ export class DonationManager extends BaseService {
         status: 'payload_created' as const,
       }
 
-      // Firestoreに保存
+      // FirestoreにXamanペイロードUUIDをIDとして保存
       const createdRequest = await this.createDocument<DonationRequest>(
         FIRESTORE_COLLECTIONS.DONATION_REQUESTS,
         requestWithPayload,
-        requestId
+        xamanResponse.uuid
       )
 
       const payload: DonationPayload = {
@@ -147,27 +149,21 @@ export class DonationManager extends BaseService {
     try {
       const request = await this.getDonationRequest(requestId)
       if (!request) {
-        requestId
         return { completed: false }
       }
 
       // セッションが既に完了状態かチェック
       if (request.status === 'completed' && request.txHash) {
-        // 対応する寄付記録を取得
-        const recordsSnapshot = await this.db
-          .collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
-          .where('requestId', '==', requestId)
-          .where('txHash', '==', request.txHash)
-          .get()
+        // verificationHashをIDとして直接寄付記録を取得
+        const record = await this.getDocument<DonationRecord>(
+          FIRESTORE_COLLECTIONS.DONATION_RECORDS,
+          request.verificationHash
+        )
 
-        if (!recordsSnapshot.empty) {
-          const doc = recordsSnapshot.docs[0]
+        if (record) {
           return {
             completed: true,
-            record: {
-              id: doc.id,
-              ...doc.data(),
-            } as DonationRecord,
+            record,
           }
         }
       }
@@ -222,8 +218,7 @@ export class DonationManager extends BaseService {
         )
       }
 
-      // 寄付記録を作成
-      const recordId = `record_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      // 寄付記録を作成（verificationHashをIDとして使用）
       const record: Omit<DonationRecord, 'id'> = {
         requestId,
         projectId: request.projectId,
@@ -241,8 +236,10 @@ export class DonationManager extends BaseService {
 
       // Firestoreに保存（トランザクション使用）
       return await this.runTransaction(async transaction => {
-        // 寄付記録を保存
-        const recordRef = this.db.collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS).doc(recordId)
+        // 寄付記録をverificationHashをIDとして保存
+        const recordRef = this.db
+          .collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
+          .doc(request.verificationHash)
         transaction.set(recordRef, record)
 
         // セッションを完了状態に更新
@@ -256,7 +253,7 @@ export class DonationManager extends BaseService {
         )
 
         return {
-          id: recordId,
+          id: request.verificationHash,
           ...record,
         } as DonationRecord
       })
@@ -299,7 +296,7 @@ export class DonationManager extends BaseService {
     donorAddress: string
   ): Promise<boolean> {
     try {
-      console.log(`🔍 Verifying transaction: ${txHash}`)
+      console.log(`🔍 Verifying transaction hash: ${txHash}`)
       const txResponse = await this.xrplClient.getTransaction(txHash)
       const tx = txResponse.result
 

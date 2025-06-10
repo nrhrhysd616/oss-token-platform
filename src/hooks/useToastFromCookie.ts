@@ -14,11 +14,13 @@ export const useToastFromCookie = () => {
     const handleToastMessages = () => {
       const messages = getAllToastMessages()
 
-      messages.forEach(({ type, message }) => {
+      messages.forEach(({ type, message, duration }) => {
+        const toastOptions = duration ? { duration } : {}
+
         if (type === 'success') {
-          toast.success(message)
+          toast.success(message, toastOptions)
         } else {
-          toast.error(message)
+          toast.error(message, toastOptions)
         }
       })
     }

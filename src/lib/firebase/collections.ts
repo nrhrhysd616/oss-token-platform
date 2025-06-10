@@ -11,6 +11,7 @@ export const FIRESTORE_COLLECTIONS = {
   DONATION_REQUESTS: 'donationRequests',
   DONATION_RECORDS: 'donationRecords',
   WALLET_LINK_REQUESTS: 'walletLinkRequests',
+  // TODO: このコレクションは現状保存のみに利用されている。ユーザー情報にインストール情報を含んでいるため、削除できるようであれば削除予定
   INSTALLATIONS: 'installations',
   INSTALLATION_REPOSITORIES: 'installationRepositories', // キャメルケースに統一
   XAMAN_USER_TOKENS: 'xamanUserTokens',

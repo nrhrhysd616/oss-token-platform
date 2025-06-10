@@ -13,4 +13,5 @@ export type ToastCookieKey =
 export type ToastMessage = {
   type: ToastType
   message: string
+  duration?: number // オプショナルなduration（ミリ秒）
 }

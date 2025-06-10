@@ -2,8 +2,11 @@
 
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 import { PublicProject } from '@/types/project'
 import { formatDateJP } from '@/lib/firebase/utils'
+import { useDonation } from '@/hooks/useDonation'
+import DonationQRModal from '@/components/DonationQRModal'
 
 type PublicProjectResponse = {
   project: PublicProject
@@ -15,6 +18,15 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [donationAmount, setDonationAmount] = useState('')
+  const [showDonationModal, setShowDonationModal] = useState(false)
+
+  // 寄付フック
+  const {
+    state: donationState,
+    createDonation,
+    checkDonationStatus,
+    reset: resetDonation,
+  } = useDonation()
 
   const fetchProject = async () => {
     try {
@@ -44,15 +56,42 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
     fetchProject()
   }, [id])
 
-  const handleDonation = () => {
-    // TODO: 寄付機能を実装する必要があります
-    // 優先度: 高 - プラットフォームの核となる機能
-    // - ユーザーのウォレット連携確認
-    // - XRPLトランザクションの作成
-    // - 寄付トランザクションの送信
-    // - トークンの発行と送付
-    // - 寄付履歴の記録
-    alert(`${donationAmount} XRPの寄付機能は後で実装されます`)
+  const handleDonation = async () => {
+    if (!donationAmount || parseFloat(donationAmount) <= 0) {
+      return
+    }
+
+    try {
+      await createDonation(id, parseFloat(donationAmount))
+      setShowDonationModal(true)
+    } catch (error) {
+      console.error('寄付リクエスト作成エラー:', error)
+      // エラーは useDonation フックで管理されているため、ここでは何もしない
+    }
+  }
+
+  const handleDonationCompleted = async (txHash: string) => {
+    console.log('寄付完了:', { txHash })
+
+    // 寄付成功のtoastを直接表示
+    toast.success(
+      'トークンの小切手が送付されます。トークンを受け取るためのCheckCashトランザクションをXamanから実行してください。',
+      { duration: 8000 }
+    )
+
+    // プロジェクト情報を再取得して統計を更新
+    await fetchProject()
+
+    // モーダルの自動クローズはDonationQRModal側で制御されるため、ここでは状態をリセットするだけ
+    setTimeout(() => {
+      setDonationAmount('')
+      resetDonation()
+    }, 6000) // モーダルが閉じた後にリセット
+  }
+
+  const handleCloseModal = () => {
+    setShowDonationModal(false)
+    resetDonation()
   }
 
   if (loading) {
@@ -303,8 +342,9 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
                     <div className="text-sm text-gray-300">想定受け取りトークン数:</div>
                     <div className="text-yellow-400 font-semibold">
-                      {(parseFloat(donationAmount) / project.stats.currentPrice).toFixed(2)}{' '}
-                      {project.tokenCode}
+                      {parseFloat(donationAmount).toFixed(2)} {project.tokenCode}
+                      {/* TODO: 価格算出アルゴリズム実装後に動的計算に変更 */}
+                      {/* 現在は1:1の固定レートで表示 */}
                     </div>
                   </div>
                 )}
@@ -373,6 +413,39 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
             </div>
           </div>
         </div>
+
+        {/* 寄付エラー表示 */}
+        {donationState.error && (
+          <div className="fixed bottom-4 right-4 bg-red-500/90 text-white p-4 rounded-lg shadow-lg max-w-md">
+            <div className="flex items-start">
+              <svg
+                className="w-5 h-5 text-white mt-0.5 mr-2 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div>
+                <h4 className="font-medium">寄付エラー</h4>
+                <p className="text-sm mt-1">{donationState.error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 寄付QRモーダル */}
+        <DonationQRModal
+          isOpen={showDonationModal}
+          onClose={handleCloseModal}
+          donationRequest={donationState.donationRequest}
+          onDonationCompleted={handleDonationCompleted}
+        />
       </div>
     </div>
   )

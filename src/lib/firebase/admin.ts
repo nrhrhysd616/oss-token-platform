@@ -12,13 +12,19 @@ let adminAuth: Auth
  */
 function initializeAdminApp(): App {
   if (!getApps().length) {
-    return initializeApp({
+    const app = initializeApp({
       credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       }),
     })
+
+    // アプリ初期化時にFirestoreの設定も同時に行う
+    const firestore = getFirestore(app)
+    firestore.settings({ ignoreUndefinedProperties: true })
+
+    return app
   }
   return getApps()[0]
 }
@@ -32,7 +38,7 @@ export function getAdminDb(): Firestore {
       adminApp = initializeAdminApp()
     }
 
-    // Firestoreインスタンスを取得
+    // Firestoreインスタンスを取得（設定は初期化時に完了済み）
     adminDb = getFirestore(adminApp)
 
     // エミュレータ環境の場合、環境変数で自動的に接続される

@@ -158,7 +158,7 @@ export class TokenManager extends BaseService {
       )
 
       console.log(
-        `✅ Token issue ${issueResult.success ? 'completed' : 'failed'} for donation ${donationRecord.id}`
+        `✅ Token issue ${issueResult.success ? 'completed' : 'failed'} for donation record id: ${donationRecord.id}`
       )
     } catch (error) {
       console.error('Token issue processing error:', error)

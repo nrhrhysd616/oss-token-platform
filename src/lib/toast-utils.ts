@@ -8,12 +8,20 @@ import { NextResponse } from 'next/server'
 /**
  * Cookieにtoastメッセージを設定
  */
-export const setToastCookie = (type: ToastType, message: string, prefix?: string): void => {
+export const setToastCookie = (
+  type: ToastType,
+  message: string,
+  prefix?: string,
+  duration?: number
+): void => {
   const cookieKey: ToastCookieKey = prefix
     ? (`${prefix}-${type}` as ToastCookieKey)
     : (`toast-${type}` as ToastCookieKey)
 
-  document.cookie = `${cookieKey}=${encodeURIComponent(message)}; path=/; max-age=60`
+  // durationが指定されている場合はJSONとして保存
+  const cookieValue = duration ? JSON.stringify({ message, duration }) : message
+
+  document.cookie = `${cookieKey}=${encodeURIComponent(cookieValue)}; path=/; max-age=60`
 }
 
 /**
@@ -49,11 +57,23 @@ export const getAllToastMessages = (): ToastMessage[] => {
   const messages: ToastMessage[] = []
 
   toastCookieKeys.forEach(cookieKey => {
-    const message = getToastFromCookie(cookieKey)
-    if (message) {
+    const cookieValue = getToastFromCookie(cookieKey)
+    if (cookieValue) {
       // cookieキーからtoastタイプを判定
       const type: ToastType = cookieKey.includes('success') ? 'success' : 'error'
-      messages.push({ type, message })
+
+      // JSONとして保存されているかチェック
+      try {
+        const parsed = JSON.parse(cookieValue)
+        if (parsed.message && typeof parsed.duration === 'number') {
+          messages.push({ type, message: parsed.message, duration: parsed.duration })
+        } else {
+          messages.push({ type, message: cookieValue })
+        }
+      } catch {
+        // JSONでない場合は通常の文字列として扱う
+        messages.push({ type, message: cookieValue })
+      }
 
       // cookieを削除
       clearToastCookie(cookieKey)

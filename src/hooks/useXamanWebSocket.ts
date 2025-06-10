@@ -8,10 +8,7 @@ import type { XamanWebSocketEvent } from '@/types/xaman'
 type UseXamanWebSocketOptions = {
   payloadUuid: string
   websocketUrl: string
-  onSigned?: (event: XamanWebSocketEvent) => void
-  onRejected?: (event: XamanWebSocketEvent) => void
-  onExpired?: (event: XamanWebSocketEvent) => void
-  onOpened?: (event: XamanWebSocketEvent) => void
+  onMessage?: (event: XamanWebSocketEvent) => void
   enabled?: boolean
 }
 
@@ -23,10 +20,7 @@ type UseXamanWebSocketReturn = {
 export function useXamanWebSocket({
   payloadUuid,
   websocketUrl,
-  onSigned,
-  onRejected,
-  onExpired,
-  onOpened,
+  onMessage,
   enabled = true,
 }: UseXamanWebSocketOptions): UseXamanWebSocketReturn {
   const [isConnected, setIsConnected] = useState(false)
@@ -62,16 +56,8 @@ export function useXamanWebSocket({
           return
         }
 
-        // イベントタイプに応じてコールバックを実行
-        if ('signed' in data && data.signed === true) {
-          onSigned?.(data)
-        } else if ('signed' in data && data.signed === false) {
-          onRejected?.(data)
-        } else if ('expired' in data && data.expired === true) {
-          onExpired?.(data)
-        } else if ('opened' in data && data.opened === true) {
-          onOpened?.(data)
-        }
+        // 汎用的なメッセージコールバック
+        onMessage?.(data)
       } catch (err) {
         console.error('Failed to parse WebSocket message:', err)
         setError('メッセージの解析に失敗しました')

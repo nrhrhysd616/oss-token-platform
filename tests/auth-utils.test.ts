@@ -1,40 +1,33 @@
 import { describe, test, expect, beforeEach, mock } from 'bun:test'
-import { convertTimestampToDate, convertTimestamps } from '../src/lib/firebase/utils'
+import {
+  convertTimestampToDate,
+  convertTimestamps,
+  formatDateJP,
+  formatDateTimeJP,
+} from '../src/lib/firebase/utils'
 
-// Firebase Timestampのモック
+// Firebase Admin SDKのTimestamp型をモック
 const mockTimestamp = {
-  _seconds: 1640995200, // 2022-01-01 00:00:00 UTC
-  _nanoseconds: 0,
+  toDate: () => new Date(1640995200 * 1000), // 2022-01-01 00:00:00 UTC
 }
 
-const mockFirebaseTimestamp = {
-  toDate: () => new Date(1640995200 * 1000),
+// 別のタイムスタンプ値用のモック
+const mockTimestamp2 = {
+  toDate: () => new Date(1641081600 * 1000), // 2022-01-02 00:00:00 UTC
 }
 
 describe('Firebase Utils', () => {
   describe('convertTimestampToDate', () => {
-    test('should convert Firestore timestamp format to Date', () => {
+    test('should convert Firestore timestamp to Date using toDate method', () => {
       const result = convertTimestampToDate(mockTimestamp)
       expect(result).toBeInstanceOf(Date)
       expect(result.getTime()).toBe(1640995200 * 1000)
     })
 
-    test('should handle Firebase Admin SDK Timestamp', () => {
-      // Firebase Admin SDKのTimestamp型をシミュレート
-      const mockTimestampInstance = {
-        toDate: () => new Date(1640995200 * 1000),
-        constructor: { name: 'Timestamp' },
-      }
-
-      // instanceof チェックをバイパスするため、直接toDateメソッドを持つオブジェクトをテスト
-      const result = convertTimestampToDate(mockTimestampInstance as any)
+    test('should handle different Firestore timestamp instances', () => {
+      const result = convertTimestampToDate(mockTimestamp2)
       expect(result).toBeInstanceOf(Date)
-
-      // 実際の関数の動作では、instanceof Timestampに引っかからないため現在時刻が返される
-      // これは期待される動作なので、現在時刻の範囲内であることを確認
-      const now = Date.now()
-      expect(result.getTime()).toBeGreaterThanOrEqual(now - 1000) // 1秒前から
-      expect(result.getTime()).toBeLessThanOrEqual(now + 1000) // 1秒後まで
+      expect(result.getTime()).toBe(1641081600 * 1000)
     })
 
     test('should return Date as-is when already Date type', () => {
@@ -63,7 +56,7 @@ describe('Firebase Utils', () => {
     })
   })
 
-  describe('convertWalletTimestamps', () => {
+  describe('convertTimestamps', () => {
     test('should convert all timestamp fields in wallet data', () => {
       const walletData = {
         id: 'wallet-123',
@@ -85,22 +78,118 @@ describe('Firebase Utils', () => {
       expect(result.linkedAt.getTime()).toBe(1640995200 * 1000)
     })
 
-    test('should handle wallet data with missing timestamp fields', () => {
-      const walletData = {
-        id: 'wallet-123',
-        address: 'rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        status: 'linked',
-        linkedAt: { _seconds: 1640995200, _nanoseconds: 0 }, // Firestore形式のタイムスタンプ
+    test('should handle data with different timestamp formats', () => {
+      const testData = {
+        id: 'test-123',
+        name: 'Test Item',
+        status: 'active',
+        linkedAt: mockTimestamp, // Firestoreのタイムスタンプインスタンス
         createdAt: '2022-01-01T00:00:00.000Z', // ISO 8601形式の文字列
         updatedAt: new Date('2022-01-01T00:00:00.000Z'), // Dateオブジェクト
       }
 
-      const result = convertTimestamps(walletData)
+      const result = convertTimestamps(testData)
 
-      expect(result.id).toBe('wallet-123')
+      expect(result.id).toBe('test-123')
       expect(result.linkedAt).toBeInstanceOf(Date)
       expect(result.createdAt).toBeInstanceOf(Date)
       expect(result.updatedAt).toBeInstanceOf(Date)
+      expect(result.linkedAt.getTime()).toBe(1640995200 * 1000)
+    })
+
+    test('should handle data with no timestamp fields', () => {
+      const testData = {
+        id: 'test-456',
+        name: 'Test Item',
+        status: 'active',
+      }
+
+      const result = convertTimestamps(testData)
+
+      expect(result.id).toBe('test-456')
+      expect(result.name).toBe('Test Item')
+      expect(result.status).toBe('active')
+    })
+
+    test('should handle null/undefined data', () => {
+      expect(convertTimestamps(null)).toBeNull()
+      expect(convertTimestamps(undefined)).toBeUndefined()
+    })
+
+    test('should convert only specified fields when fields parameter is provided', () => {
+      const testData = {
+        id: 'test-789',
+        createdAt: mockTimestamp,
+        updatedAt: mockTimestamp2,
+        linkedAt: mockTimestamp,
+      }
+
+      const result = convertTimestamps(testData, ['createdAt', 'updatedAt'])
+
+      expect(result.createdAt).toBeInstanceOf(Date)
+      expect(result.updatedAt).toBeInstanceOf(Date)
+      expect(result.createdAt.getTime()).toBe(1640995200 * 1000)
+      expect(result.updatedAt.getTime()).toBe(1641081600 * 1000)
+      // linkedAtは変換されない（fieldsに含まれていないため）
+      expect(result.linkedAt).toBe(mockTimestamp)
+      expect(typeof result.linkedAt.toDate).toBe('function')
+    })
+  })
+
+  describe('formatDateJP', () => {
+    test('should format Firestore timestamp to Japanese date format', () => {
+      const result = formatDateJP(mockTimestamp as any)
+      expect(result).toBe('2022/01/01')
+    })
+
+    test('should format Date object to Japanese date format', () => {
+      const date = new Date('2022-12-25T15:30:45.123Z')
+      const result = formatDateJP(date)
+      expect(result).toBe('2022/12/25')
+    })
+
+    test('should format ISO string to Japanese date format', () => {
+      const result = formatDateJP('2022-06-15T10:20:30.000Z')
+      expect(result).toBe('2022/06/15')
+    })
+
+    test('should handle null/undefined by returning current date format', () => {
+      const today = new Date()
+      const expectedFormat = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`
+
+      const resultNull = formatDateJP(null)
+      const resultUndefined = formatDateJP(undefined)
+
+      // 現在日付なので、テスト実行時の日付と一致するはず
+      expect(resultNull).toMatch(/^\d{4}\/\d{2}\/\d{2}$/)
+      expect(resultUndefined).toMatch(/^\d{4}\/\d{2}\/\d{2}$/)
+    })
+  })
+
+  describe('formatDateTimeJP', () => {
+    test('should format Firestore timestamp to Japanese datetime format', () => {
+      const result = formatDateTimeJP(mockTimestamp as any)
+      expect(result).toBe('2022/01/01 00:00:00') // UTCでの表示
+    })
+
+    test('should format Date object to Japanese datetime format', () => {
+      const date = new Date('2022-12-25T15:30:45.123Z')
+      const result = formatDateTimeJP(date)
+      expect(result).toBe('2022/12/25 15:30:45') // UTCでの表示
+    })
+
+    test('should format ISO string to Japanese datetime format', () => {
+      const result = formatDateTimeJP('2022-06-15T10:20:30.000Z')
+      expect(result).toBe('2022/06/15 10:20:30') // UTCでの表示
+    })
+
+    test('should handle null/undefined by returning current datetime format', () => {
+      const resultNull = formatDateTimeJP(null)
+      const resultUndefined = formatDateTimeJP(undefined)
+
+      // 現在日時なので、正しい形式であることを確認
+      expect(resultNull).toMatch(/^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/)
+      expect(resultUndefined).toMatch(/^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/)
     })
   })
 })

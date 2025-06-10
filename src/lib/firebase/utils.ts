@@ -4,34 +4,26 @@
 
 /**
  * FirestoreのTimestampをDate型に変換
+ * Firestoreの標準toDate()メソッドを活用
  * @param timestamp Firestoreのタイムスタンプまたは既存のDate型
  * @returns Date型のオブジェクト
  */
-export const convertTimestampToDate = (
-  timestamp:
-    | Date
-    | { _seconds: number; _nanoseconds: number }
-    | { seconds: number; nanoseconds: number }
-    | string
-    | null
-    | undefined
-): Date => {
+export const convertTimestampToDate = (timestamp: any): Date => {
   // nullまたはundefinedの場合は現在時刻を返す
   if (!timestamp) {
     return new Date()
   }
-  // Firestoreのタイムスタンプ形式の場合（内部形式）
-  if (timestamp && typeof timestamp === 'object' && '_seconds' in timestamp) {
-    return new Date(timestamp._seconds * 1000)
+
+  // FirestoreのTimestamp型の場合（toDate()メソッドを使用）
+  if (typeof timestamp?.toDate === 'function') {
+    return timestamp.toDate()
   }
-  // Firestoreのタイムスタンプ形式の場合（公開形式）
-  if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
-    return new Date(timestamp.seconds * 1000)
-  }
+
   // 既にDate型の場合
   if (timestamp instanceof Date) {
     return timestamp
   }
+
   // 文字列の場合
   if (typeof timestamp === 'string') {
     const date = new Date(timestamp)
@@ -41,6 +33,7 @@ export const convertTimestampToDate = (
     }
     return date
   }
+
   // その他の場合は現在時刻を返す
   return new Date()
 }
