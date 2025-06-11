@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useDonationWebSocket } from '@/hooks/useDonationWebSocket'
+import { useXamanWebSocket } from '@/hooks/useXamanWebSocket'
 import type { DonationCreateResponse } from '@/types/donation'
 
 type DonationQRModalProps = {
@@ -22,7 +22,7 @@ export default function DonationQRModal({
   const [transactionHash, setTransactionHash] = useState<string | null>(null)
 
   // WebSocket接続を使用してペイロード状況を監視
-  const { isConnected, error } = useDonationWebSocket({
+  const { isConnected, error } = useXamanWebSocket({
     payloadUuid: donationRequest?.xamanPayload.uuid || '',
     websocketUrl: donationRequest?.xamanPayload.websocketUrl || '',
     onMessage: event => {

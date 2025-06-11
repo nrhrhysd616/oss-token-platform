@@ -16,9 +16,11 @@ export const FIRESTORE_COLLECTIONS = {
   INSTALLATION_REPOSITORIES: 'installationRepositories', // キャメルケースに統一
   XAMAN_USER_TOKENS: 'xamanUserTokens',
   PROJECT_STATS: 'projectStats',
+  SETTINGS: 'settings',
 
   // サブコレクション
   WALLETS: 'wallets',
+  PRICE_HISTORY: 'priceHistory',
 } as const
 
 /**

@@ -2,6 +2,8 @@
  * プロジェクト関連の型定義
  */
 
+import type { QualityScore, TokenPrice } from './pricing'
+
 export type ProjectStatus = 'draft' | 'active' | 'suspended'
 
 export type Project = {
@@ -19,6 +21,9 @@ export type Project = {
   createdAt: Date
   updatedAt: Date
   status: ProjectStatus
+  // TODO: オプションフィールドだが必須化予定
+  qualityScore?: QualityScore
+  currentPrice?: TokenPrice
 }
 
 /**

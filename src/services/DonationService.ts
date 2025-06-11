@@ -4,6 +4,7 @@
  */
 
 import { ProjectService } from './ProjectService'
+import { PricingService } from './PricingService'
 import { DonationManager } from './donation/DonationManager'
 import {
   TokenManager,
@@ -101,6 +102,12 @@ export class DonationService extends BaseService {
       // エラーが発生しても寄付完了処理は成功とする
       this.processTokenIssueForDonation(donationRecord).catch(error => {
         console.error('Token auto-issue failed for donation:', donationRecord.id, error)
+      })
+
+      // 寄付完了後、価格履歴を更新（非同期）
+      // エラーが発生しても寄付完了処理は成功とする
+      PricingService.updatePriceHistory(donationRecord.projectId, 'donation').catch(error => {
+        console.error('Price update failed for donation:', donationRecord.id, error)
       })
 
       return donationRecord
