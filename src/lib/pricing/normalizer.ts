@@ -75,8 +75,8 @@ function logarithmicNormalize(value: number, min: number, max: number): number {
  * → 25日だと古いので低スコア（約0.2）が付く
  */
 function inverseNormalize(value: number, min: number, max: number): number {
-  if (min <= 0) {
-    throw new Error('Min value must be positive for inverse normalization')
+  if (min < 0) {
+    throw new Error('Min value must be non-negative for inverse normalization')
   }
 
   // 値を逆転：小さな値ほど大きな値になるよう変換
@@ -227,12 +227,20 @@ export function validateNormalizationConfig(parameter: QualityParameter): void {
     )
   }
 
-  // 対数正規化と逆数正規化では最小値が正の数である必要がある
-  // （対数の定義域制約と逆数計算のため）
-  if (type === 'logarithmic' || type === 'inverse') {
+  // 対数正規化では最小値が正の数である必要がある（対数の定義域制約のため）
+  if (type === 'logarithmic') {
     if (minValue <= 0) {
       throw new Error(
-        `Invalid min value for ${parameter.id}: must be positive for ${type} normalization`
+        `Invalid min value for ${parameter.id}: must be positive for logarithmic normalization`
+      )
+    }
+  }
+
+  // 逆数正規化では最小値が非負である必要がある
+  if (type === 'inverse') {
+    if (minValue < 0) {
+      throw new Error(
+        `Invalid min value for ${parameter.id}: must be non-negative for inverse normalization`
       )
     }
   }

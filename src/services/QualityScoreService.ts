@@ -55,10 +55,10 @@ export class QualityScoreService extends BaseService {
       }
 
       // Installation IDを取得
-      const installationId = project.installationId
+      const installationId = project.githubInstallationId
       if (!installationId) {
         throw new QualityScoreServiceError(
-          `Installation ID not found for project: ${projectId}`,
+          `GitHub Installation ID not found for project: ${projectId}`,
           'VALIDATION_ERROR',
           400
         )

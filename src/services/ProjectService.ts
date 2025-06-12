@@ -6,6 +6,7 @@ import { getAdminDb } from '../lib/firebase/admin'
 import { assignIssuerWallet } from '../lib/xrpl/config'
 import { convertTimestamps } from '../lib/firebase/utils'
 import { FIRESTORE_COLLECTIONS } from '../lib/firebase/collections'
+import { QualityScoreService } from './QualityScoreService'
 import {
   projectUpdateApiSchema,
   type ProjectCreateApiData,
@@ -100,11 +101,21 @@ export class ProjectService {
         updatedAt: new Date(),
       })
 
-      return {
+      const project = {
         id: docRef.id,
         ...projectDoc,
         issuerAddress,
       }
+
+      // 品質スコアを更新（非同期、失敗してもプロジェクト作成は成功）
+      QualityScoreService.updateQualityScore(docRef.id).catch(qualityScoreError => {
+        console.error(
+          `品質スコアの更新に失敗しました (プロジェクトID: ${docRef.id}):`,
+          qualityScoreError
+        )
+      })
+
+      return project
     } catch (error) {
       if (error instanceof ProjectServiceError) {
         throw error
