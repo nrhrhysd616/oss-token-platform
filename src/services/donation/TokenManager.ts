@@ -8,6 +8,7 @@ import { getXRPLConfig } from '@/lib/xrpl/config'
 import { convertTokenCodeToXRPLFormat } from '@/lib/xrpl/token-utils'
 import { BaseService } from '../shared/BaseService'
 import { DonationServiceError } from '../shared/ServiceError'
+import { PricingService } from '../PricingService'
 import type { DonationRecord, TokenIssueStatus } from '@/types/donation'
 import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 
@@ -127,15 +128,35 @@ export class TokenManager extends BaseService {
     issuerAddress: string
   ): Promise<void> {
     try {
-      // トークン発行量を計算（寄付額と同額のトークンを発行）
-      const tokenAmount = donationRecord.amount
+      // プロジェクトのトークン価格を取得
+      const tokenPrice = await PricingService.calculateTokenPrice(donationRecord.projectId)
+
+      // トークン価格の妥当性チェック
+      if (!tokenPrice.xrp || tokenPrice.xrp <= 0) {
+        throw new Error(`Invalid token price: ${tokenPrice.xrp} XRP`)
+      }
+
+      // トークン発行量を計算（寄付額 ÷ トークン単価）
+      const tokenAmount = donationRecord.amount / tokenPrice.xrp
+
+      // XRPLトークンの精度に合わせて小数点以下6桁で丸める
+      const roundedTokenAmount = Math.round(tokenAmount * 1000000) / 1000000
+
+      // 発行枚数の妥当性チェック
+      if (roundedTokenAmount <= 0 || !Number.isFinite(roundedTokenAmount)) {
+        throw new Error(`Invalid calculated token amount: ${roundedTokenAmount}`)
+      }
+
+      console.log(
+        `💰 Token calculation: ${donationRecord.amount} XRP ÷ ${tokenPrice.xrp} XRP/token = ${roundedTokenAmount} tokens`
+      )
 
       // トークン発行リクエストを作成
       const tokenRequest: TokenIssueRequest = {
         projectId: donationRecord.projectId,
-        amount: tokenAmount,
+        amount: roundedTokenAmount,
         recipientAddress: donationRecord.donorAddress,
-        memo: `Donation reward for ${donationRecord.amount} XRP donation`,
+        memo: `Donation reward: ${donationRecord.amount} XRP → ${roundedTokenAmount} tokens (rate: ${tokenPrice.xrp} XRP/token)`,
       }
 
       // トークンを発行
@@ -144,7 +165,7 @@ export class TokenManager extends BaseService {
       // 寄付記録を更新
       const updateData: Partial<DonationRecord> = {
         tokenIssued: issueResult.success,
-        tokenAmount: issueResult.success ? tokenAmount : undefined,
+        tokenAmount: issueResult.success ? roundedTokenAmount : undefined,
         tokenTxHash: issueResult.txHash,
         tokenIssuedAt: issueResult.success ? new Date() : undefined,
         tokenIssueStatus: issueResult.success ? 'completed' : 'failed',
@@ -158,7 +179,7 @@ export class TokenManager extends BaseService {
       )
 
       console.log(
-        `✅ Token issue ${issueResult.success ? 'completed' : 'failed'} for donation record id: ${donationRecord.id}`
+        `✅ Token issue ${issueResult.success ? 'completed' : 'failed'} for donation record id: ${donationRecord.id} (${roundedTokenAmount} tokens)`
       )
     } catch (error) {
       console.error('Token issue processing error:', error)

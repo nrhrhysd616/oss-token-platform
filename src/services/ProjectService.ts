@@ -7,6 +7,8 @@ import { assignIssuerWallet } from '../lib/xrpl/config'
 import { convertTimestamps } from '../lib/firebase/utils'
 import { FIRESTORE_COLLECTIONS } from '../lib/firebase/collections'
 import { QualityScoreService } from './QualityScoreService'
+import { PricingService } from './PricingService'
+import { DonationService } from './DonationService'
 import {
   projectUpdateApiSchema,
   type ProjectCreateApiData,
@@ -161,6 +163,46 @@ export class ProjectService {
   }
 
   /**
+   * 公開プロジェクトIDから公開プロジェクト情報を取得（統計情報付き）
+   */
+  static async getPublicProjectById(projectId: string): Promise<PublicProject | null> {
+    try {
+      // 基本プロジェクト情報を取得
+      const project = await this.getProjectById(projectId)
+
+      if (!project || project.status !== 'active') {
+        return null
+      }
+
+      // 統計情報を取得
+      const stats = await this.getPublicProjectStats(projectId)
+
+      // 公開情報のみを返却
+      return {
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        repositoryUrl: project.repositoryUrl,
+        githubOwner: project.githubOwner,
+        githubRepo: project.githubRepo,
+        tokenCode: project.tokenCode,
+        donationUsages: project.donationUsages,
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt,
+        status: project.status,
+        stats,
+      }
+    } catch (error) {
+      console.error('公開プロジェクト取得エラー:', error)
+      throw new ProjectServiceError(
+        `公開プロジェクトの取得に失敗しました: ${projectId}`,
+        'INTERNAL_ERROR',
+        500
+      )
+    }
+  }
+
+  /**
    * 公開プロジェクト一覧を取得
    *
    * 使用インデックス:
@@ -191,7 +233,6 @@ export class ProjectService {
             ...doc.data(),
           }) as Project
 
-          // TODO: 実際の統計情報を取得する処理を実装
           const stats: PublicProjectStats = await this.getPublicProjectStats(projectData.id)
 
           // 公開情報のみを返却
@@ -303,7 +344,7 @@ export class ProjectService {
       // 各プロジェクトに統計情報を追加
       const maintainerProjects = await Promise.all(
         result.items.map(async project => {
-          // 統計情報を取得（現在はダミーデータ）
+          // 統計情報を取得
           const stats = await this.getMaintainerProjectStats(project.id)
 
           return {
@@ -386,13 +427,50 @@ export class ProjectService {
         )
       }
 
-      // TODO: 関連データの削除処理を実装
-      // - 寄付記録の処理
-      // - トークン発行記録の処理
-      // - 統計データの処理
+      // 関連データの削除処理
+      const db = getAdminDb()
+      const batch = db.batch()
 
-      // プロジェクトを削除
-      await getAdminDb().collection(FIRESTORE_COLLECTIONS.PROJECTS).doc(projectId).delete()
+      try {
+        // 1. 価格履歴を削除
+        const priceHistorySnapshot = await db
+          .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+          .doc(projectId)
+          .collection(FIRESTORE_COLLECTIONS.PRICE_HISTORY)
+          .get()
+
+        priceHistorySnapshot.docs.forEach(doc => {
+          batch.delete(doc.ref)
+        })
+
+        // 2. 品質スコア履歴を削除
+        const qualityScoreSnapshot = await db
+          .collection(FIRESTORE_COLLECTIONS.PROJECTS)
+          .doc(projectId)
+          .collection('qualityScores')
+          .get()
+
+        qualityScoreSnapshot.docs.forEach(doc => {
+          batch.delete(doc.ref)
+        })
+
+        // 3. プロジェクト本体を削除
+        const projectRef = db.collection(FIRESTORE_COLLECTIONS.PROJECTS).doc(projectId)
+        batch.delete(projectRef)
+
+        // バッチ実行
+        await batch.commit()
+
+        console.log(`プロジェクト削除完了: ${projectId}`)
+      } catch (batchError) {
+        console.error('バッチ削除エラー:', batchError)
+        // バッチ削除に失敗した場合は個別削除を試行
+        await db.collection(FIRESTORE_COLLECTIONS.PROJECTS).doc(projectId).delete()
+      }
+
+      // 注意: 寄付記録とトークン発行記録は履歴として保持
+      // これらのデータは監査やレポート目的で重要なため、論理削除または保持する
+      console.log(`プロジェクト削除完了 (寄付記録は保持): ${projectId}`)
     } catch (error) {
       if (error instanceof ProjectServiceError) {
         throw error
@@ -525,44 +603,110 @@ export class ProjectService {
 
   /**
    * 公開プロジェクトの統計情報を取得
-   * TODO: 実際の統計データを計算する処理を実装
    */
   private static async getPublicProjectStats(projectId: string): Promise<PublicProjectStats> {
-    // TODO: 実際の統計情報を取得する処理を実装
-    return {
-      totalDonations: 0,
-      donorCount: 0,
-      currentPrice: 1.0,
-      priceHistory: [
-        { date: '2024-01-01', price: 1.0 },
-        { date: '2024-01-02', price: 1.1 },
-        { date: '2024-01-03', price: 1.2 },
-      ],
+    try {
+      // 寄付統計を取得
+      const donationStats = await DonationService.getProjectDonationStats(projectId)
+
+      // 現在価格を取得
+      let currentPrice = 1.0
+      try {
+        const tokenPrice = await PricingService.calculateTokenPrice(projectId)
+        currentPrice = tokenPrice.xrp
+      } catch (error) {
+        console.warn(`価格取得に失敗しました (プロジェクトID: ${projectId}):`, error)
+        // 価格取得に失敗した場合はデフォルト値を使用
+      }
+
+      // 価格履歴を取得
+      let priceHistory: Array<{ date: string; price: number }> = []
+      try {
+        const priceHistoryData = await PricingService.getPriceHistory(projectId, 30)
+        priceHistory = priceHistoryData.map(record => ({
+          date: record.date.toISOString(),
+          price: record.priceXRP,
+        }))
+      } catch (error) {
+        console.warn(`価格履歴取得に失敗しました (プロジェクトID: ${projectId}):`, error)
+        // 価格履歴取得に失敗した場合は空配列を使用
+      }
+
+      return {
+        totalDonations: donationStats.totalAmount,
+        donorCount: donationStats.donorCount,
+        currentPrice,
+        priceHistory,
+      }
+    } catch (error) {
+      console.error(`統計情報取得エラー (プロジェクトID: ${projectId}):`, error)
+      // エラーが発生した場合はデフォルト値を返す
+      return {
+        totalDonations: 0,
+        donorCount: 0,
+        currentPrice: 1.0,
+        priceHistory: [],
+      }
     }
   }
 
   /**
    * メンテナー向けプロジェクトの統計情報を取得
-   * TODO: 実際の統計データを計算する処理を実装
    */
   private static async getMaintainerProjectStats(
     projectId: string
   ): Promise<MaintainerProjectStats> {
-    // TODO: 実際の統計情報を取得する処理を実装
-    // - Firestoreから該当プロジェクトの寄付履歴を取得
-    // - XRPLから該当トークンの詳細情報（供給量、価格等）を取得
-    // - 最近の寄付履歴の取得と表示
-    return {
-      totalDonations: 0,
-      donorCount: 0,
-      currentPrice: 1.0,
-      priceHistory: [
-        { date: '2024-01-01', price: 1.0 },
-        { date: '2024-01-02', price: 1.1 },
-        { date: '2024-01-03', price: 1.2 },
-      ],
-      tokenSupply: 0,
-      recentDonations: [],
+    try {
+      // 公開統計を取得
+      const publicStats = await this.getPublicProjectStats(projectId)
+
+      // トークン総発行量を取得
+      let tokenSupply = 0
+      try {
+        tokenSupply = await DonationService.getTotalTokenSupply(projectId)
+      } catch (error) {
+        console.warn(`トークン総発行量取得に失敗しました (プロジェクトID: ${projectId}):`, error)
+        // トークン総発行量取得に失敗した場合はデフォルト値を使用
+      }
+
+      // 最近の寄付履歴を取得
+      let recentDonations: Array<{
+        amount: number
+        donorAddress: string
+        timestamp: string
+        txHash: string
+      }> = []
+      try {
+        const recentDonationsData = await DonationService.getRecentDonations(10)
+        recentDonations = recentDonationsData
+          .filter(donation => donation.projectId === projectId)
+          .map(donation => ({
+            amount: donation.amount,
+            donorAddress: donation.donorAddress,
+            timestamp: donation.createdAt.toISOString(),
+            txHash: donation.txHash,
+          }))
+      } catch (error) {
+        console.warn(`最近の寄付履歴取得に失敗しました (プロジェクトID: ${projectId}):`, error)
+        // 最近の寄付履歴取得に失敗した場合は空配列を使用
+      }
+
+      return {
+        ...publicStats,
+        tokenSupply,
+        recentDonations,
+      }
+    } catch (error) {
+      console.error(`メンテナー統計情報取得エラー (プロジェクトID: ${projectId}):`, error)
+      // エラーが発生した場合はデフォルト値を返す
+      return {
+        totalDonations: 0,
+        donorCount: 0,
+        currentPrice: 1.0,
+        priceHistory: [],
+        tokenSupply: 0,
+        recentDonations: [],
+      }
     }
   }
 }

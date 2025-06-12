@@ -5,7 +5,6 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
-import { PublicProject, PublicProjectStats } from '@/types/project'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -15,44 +14,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'プロジェクトIDが必要です' }, { status: 400 })
     }
 
-    // ProjectServiceを使用してプロジェクトを取得
-    const projectData = await ProjectService.getProjectById(id)
+    // ProjectServiceを使用して公開プロジェクト情報を取得（統計情報付き）
+    const publicProject = await ProjectService.getPublicProjectById(id)
 
-    if (!projectData || projectData.status !== 'active') {
+    if (!publicProject) {
       return NextResponse.json({ error: 'プロジェクトが見つかりません' }, { status: 404 })
-    }
-
-    // TODO: 統計情報を実際のデータから取得する処理を実装する必要があります
-    // 優先度: 中 - プロジェクト詳細ページでの重要な情報表示
-    // - 該当プロジェクトの寄付履歴をFirestoreから取得
-    // - XRPLから該当トークンの現在価格を取得
-    // - 価格履歴の計算と表示
-    const stats: PublicProjectStats = {
-      totalDonations: 0, // TODO: 実際の寄付総額を計算
-      donorCount: 0, // TODO: 実際の寄付者数を計算
-      currentPrice: 1.0, // TODO: XRPLから現在価格を取得
-      priceHistory: [
-        // TODO: 実際の価格履歴データを取得
-        { date: '2024-01-01', price: 1.0 },
-        { date: '2024-01-02', price: 1.1 },
-        { date: '2024-01-03', price: 1.2 },
-      ],
-    }
-
-    // 公開情報のみを返却（ownerUid, githubInstallationId, issuerAddressを除外）
-    const publicProject: PublicProject = {
-      id: projectData.id,
-      name: projectData.name,
-      description: projectData.description,
-      repositoryUrl: projectData.repositoryUrl,
-      githubOwner: projectData.githubOwner,
-      githubRepo: projectData.githubRepo,
-      tokenCode: projectData.tokenCode,
-      donationUsages: projectData.donationUsages,
-      createdAt: projectData.createdAt,
-      updatedAt: projectData.updatedAt,
-      status: projectData.status,
-      stats,
     }
 
     return NextResponse.json({

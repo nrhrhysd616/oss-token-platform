@@ -223,7 +223,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                         </div>
                         <div className="text-right">
                           <div className="text-yellow-400 font-semibold text-lg">
-                            {project.stats.currentPrice} XRP
+                            {project.stats.currentPrice.toFixed(6)} XRP
                           </div>
                           <div className="text-sm text-gray-400">現在価格</div>
                         </div>
@@ -342,9 +342,8 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
                     <div className="text-sm text-gray-300">想定受け取りトークン数:</div>
                     <div className="text-yellow-400 font-semibold">
-                      {parseFloat(donationAmount).toFixed(2)} {project.tokenCode}
-                      {/* TODO: 価格算出アルゴリズム実装後に動的計算に変更 */}
-                      {/* 現在は1:1の固定レートで表示 */}
+                      {(parseFloat(donationAmount) / project.stats.currentPrice).toFixed(6)}{' '}
+                      {project.tokenCode}
                     </div>
                   </div>
                 )}
@@ -383,7 +382,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                   </div>
                   <div className="text-center p-3 bg-gray-800 rounded-md">
                     <div className="text-lg font-semibold text-white">
-                      {project.stats.currentPrice}
+                      {project.stats.currentPrice.toFixed(6)}
                     </div>
                     <div className="text-xs text-gray-400">現在価格</div>
                   </div>

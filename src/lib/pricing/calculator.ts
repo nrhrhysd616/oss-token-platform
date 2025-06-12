@@ -27,8 +27,9 @@ export function calculateRLUSDPrice(
 
   const priceRLUSD = basePrice + qualityTerm + donationTerm
 
-  // 価格は正の値を保証
-  return Math.max(priceRLUSD, basePrice)
+  // 価格は正の値を保証し、小数点以下4桁で丸める
+  const finalPrice = Math.max(priceRLUSD, basePrice)
+  return Math.round(finalPrice * 10000) / 10000
 }
 
 /**
@@ -39,7 +40,9 @@ export function convertRLUSDToXRP(rlusdPrice: number, xrpToRlusdRate: number): n
     throw new Error('Invalid XRP to RLUSD rate')
   }
 
-  return rlusdPrice / xrpToRlusdRate
+  const xrpPrice = rlusdPrice / xrpToRlusdRate
+  // XRP価格は小数点以下6桁で丸める（XRPの一般的な精度）
+  return Math.round(xrpPrice * 1000000) / 1000000
 }
 
 /**
