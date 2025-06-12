@@ -2,7 +2,7 @@
  * ウォレット連携関連の共通サービス
  */
 
-import { BaseService, type PaginatedResult } from './shared/BaseService'
+import { BaseService } from './shared/BaseService'
 import { ServiceError } from './shared/ServiceError'
 import { convertTimestamps } from '@/lib/firebase/utils'
 import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'

@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 最後にウォレット連携を確認
-    const walletResult = await handleWalletLinkCallback(payloadUuid, signed, txid)
+    const walletResult = await handleWalletLinkCallback(payloadUuid, signed)
     if (walletResult) {
       return walletResult
     }
@@ -146,8 +146,7 @@ async function handleDonationCallback(
  */
 async function handleWalletLinkCallback(
   payloadUuid: string,
-  signed: boolean,
-  txid: string | undefined
+  signed: boolean
 ): Promise<NextResponse | null> {
   try {
     // ウォレット連携リクエストを取得
@@ -206,48 +205,5 @@ async function saveUserToken(
   } catch (error) {
     console.error('Failed to save user token:', error)
     // ユーザートークンの保存失敗はコールバック処理全体を失敗させない
-  }
-}
-
-/**
- * プロジェクト統計の更新
- */
-async function updateProjectStats(
-  projectId: string,
-  donationAmount: number,
-  tokenAmount: number
-): Promise<void> {
-  try {
-    const projectRef = getAdminDb().collection(FIRESTORE_COLLECTIONS.PROJECTS).doc(projectId)
-    const statsRef = getAdminDb().collection(FIRESTORE_COLLECTIONS.PROJECT_STATS).doc(projectId)
-
-    // トランザクション内で統計を更新
-    await getAdminDb().runTransaction(async transaction => {
-      const statsDoc = await transaction.get(statsRef)
-
-      if (statsDoc.exists) {
-        const currentStats = statsDoc.data()!
-        transaction.update(statsRef, {
-          totalDonations: (currentStats.totalDonations || 0) + donationAmount,
-          donorCount: (currentStats.donorCount || 0) + 1,
-          totalTokensIssued: (currentStats.totalTokensIssued || 0) + tokenAmount,
-          lastDonationAt: new Date(),
-          updatedAt: new Date(),
-        })
-      } else {
-        transaction.set(statsRef, {
-          projectId,
-          totalDonations: donationAmount,
-          donorCount: 1,
-          totalTokensIssued: tokenAmount,
-          lastDonationAt: new Date(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-      }
-    })
-  } catch (error) {
-    console.error('Failed to update project stats:', error)
-    // 統計更新の失敗は寄付処理全体を失敗させない
   }
 }

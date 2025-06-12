@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
-import { ProjectUpdateApiData, projectUpdateApiSchema } from '@/validations/project'
+import { projectUpdateApiSchema } from '@/validations/project'
 import { MaintainerProject, MaintainerProjectStats } from '@/types/project'
 import { z } from 'zod'
 

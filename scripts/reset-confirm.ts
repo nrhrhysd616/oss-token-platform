@@ -35,7 +35,7 @@ async function confirmReset(): Promise<void> {
       const currentProject = execSync('bun firebase use', { encoding: 'utf8' }).trim()
       console.log(`🎯 現在のプロジェクト: ${currentProject}`)
     } catch (error) {
-      console.warn('⚠️  Firebaseプロジェクトの確認に失敗しました')
+      console.warn('⚠️  Firebaseプロジェクトの確認に失敗しました', error)
     }
 
     console.log('')

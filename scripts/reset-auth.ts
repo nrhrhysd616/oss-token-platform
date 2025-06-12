@@ -2,7 +2,6 @@
 
 import { initializeApp, cert } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
-import { readFileSync } from 'fs'
 
 /**
  * Firebase Auth の全ユーザーを削除するスクリプト

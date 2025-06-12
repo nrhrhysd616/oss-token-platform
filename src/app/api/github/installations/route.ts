@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserInstallations } from '@/lib/github/app'
 import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
 import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 

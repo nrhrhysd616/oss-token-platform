@@ -8,8 +8,6 @@ import {
   validateXRPLConfig,
   generateDestinationTag,
   generateVerificationHash,
-  type XRPLConfig,
-  type XRPLWallet,
 } from '../src/lib/xrpl/config'
 
 describe('XRPL Config Tests', () => {

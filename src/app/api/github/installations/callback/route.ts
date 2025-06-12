@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
+import { getAdminDb } from '@/lib/firebase/admin'
 import { createAppOctokit, createInstallationOctokit } from '@/lib/github/app'
 import { setToastCookieOnResponse } from '@/lib/toast-utils'
 import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
