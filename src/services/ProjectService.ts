@@ -417,11 +417,11 @@ export class ProjectService extends BaseService {
     const currentPrice = tokenPrice.xrp
 
     // 価格履歴を取得
-    let priceHistory: Array<{ date: string; price: number }> = []
+    let priceHistory: { price: number; createdAt: string }[] = []
     const priceHistoryData = await PricingService.getPriceHistory(projectId, 30)
     priceHistory = priceHistoryData.map(record => ({
-      date: record.createdAt.toISOString(),
       price: record.priceXRP,
+      createdAt: record.createdAt.toISOString(),
     }))
 
     return {

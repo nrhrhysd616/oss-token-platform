@@ -47,8 +47,8 @@ export type PublicProjectStats = {
   donorCount: number
   currentPrice: number
   priceHistory: Array<{
-    date: string
     price: number
+    createdAt: string
   }>
 }
 

@@ -315,7 +315,7 @@ db.collection(FIRESTORE_COLLECTIONS.DONATION_RECORDS)
 db.collection(FIRESTORE_COLLECTIONS.PROJECTS)
   .doc(projectId)
   .collection(FIRESTORE_COLLECTIONS.PRICE_HISTORY)
-  .orderBy('date', 'desc')
+  .orderBy('createdAt', 'desc')
 ```
 
 ## パフォーマンス考慮事項

@@ -251,7 +251,7 @@ export default function MaintainerProjectDetailPage({
                           rel="noopener noreferrer"
                           className="text-xs text-gray-400 hover:text-gray-300"
                         >
-                          TX: {donation.txHash.slice(0, 8)}...
+                          TXHash: {donation.txHash}
                         </a>
                       </div>
                     </div>

@@ -6,8 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { ProjectService } from '@/services/ProjectService'
+import { DonationService } from '@/services/DonationService'
+import { PricingService } from '@/services/PricingService'
 import { projectUpdateApiSchema } from '@/validations/project'
-import { MaintainerProject, MaintainerProjectStats } from '@/types/project'
+import { MaintainerProject, MaintainerProjectStats, Project } from '@/types/project'
 import { z } from 'zod'
 import { ServiceError } from '@/services/shared/ServiceError'
 
@@ -31,20 +33,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // ProjectServiceを使用してプロジェクトを取得（所有者チェック込み）
     const projectData = await ProjectService.checkProjectOwnership(id, decodedToken.uid)
 
-    // 統計情報を取得（現在はダミーデータ）
-    const stats: MaintainerProjectStats = {
-      totalXrpDonations: 0, // TODO: 実際の寄付総額を計算
-      donorCount: 0, // TODO: 実際の寄付者数を計算
-      currentPrice: 1.0, // TODO: XRPLから現在価格を取得
-      priceHistory: [
-        // TODO: 実際の価格履歴データを取得
-        { date: '2024-01-01', price: 1.0 },
-        { date: '2024-01-02', price: 1.1 },
-        { date: '2024-01-03', price: 1.2 },
-      ],
-      tokenSupply: 0, // TODO: XRPLから実際のトークン供給量を取得
-      recentDonations: [], // TODO: 実際の寄付履歴をFirestoreから取得
-    }
+    // 統計情報を取得
+    const stats = await getMaintainerProjectStats(projectData)
 
     // 管理者向け全情報を返却
     const maintainerProject: MaintainerProject = {
@@ -116,6 +106,86 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     return NextResponse.json({ error: 'プロジェクトの更新に失敗しました' }, { status: 500 })
+  }
+}
+
+/**
+ * メンテナー向けプロジェクト統計情報を取得
+ */
+async function getMaintainerProjectStats(project: Project): Promise<MaintainerProjectStats> {
+  try {
+    // 寄付履歴を取得
+    const donationHistory = await DonationService.getDonationHistory({
+      projectId: project.id,
+    })
+
+    // 統計情報を計算
+    const totalXrpDonations = donationHistory.reduce((sum, donation) => sum + donation.xrpAmount, 0)
+
+    // 寄付者数を計算（重複排除）
+    const uniqueDonors = new Set(donationHistory.map(donation => donation.donorAddress))
+    const donorCount = uniqueDonors.size
+
+    // 現在価格を取得
+    let currentPrice = 1.0 // デフォルト価格
+    try {
+      const tokenPrice = await PricingService.calculateTokenPrice(project.id)
+      currentPrice = tokenPrice.xrp
+    } catch (error) {
+      console.warn(`価格計算に失敗しました (${project.id}):`, error)
+    }
+
+    // 価格履歴を取得
+    let priceHistory: Array<{ price: number; createdAt: string }> = []
+    try {
+      const priceHistoryRecords = await PricingService.getPriceHistory(project.id, 30)
+      priceHistory = priceHistoryRecords.map(record => ({
+        price: record.priceXRP,
+        createdAt: record.createdAt.toISOString().split('T')[0],
+      }))
+    } catch (error) {
+      console.warn(`価格履歴取得に失敗しました (${project.id}):`, error)
+    }
+
+    // トークン供給量を取得
+    let tokenSupply = 0
+    try {
+      tokenSupply = await DonationService.getTotalTokenSupply(project.id)
+    } catch (error) {
+      console.warn(`トークン供給量取得に失敗しました (${project.id}):`, error)
+    }
+
+    // 最近の寄付（最新10件）
+    const recentDonations = donationHistory
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 10)
+      .map(donation => ({
+        xrpAmount: donation.xrpAmount,
+        donorAddress: donation.donorAddress,
+        timestamp: donation.createdAt.toISOString(),
+        txHash: donation.txHash,
+      }))
+
+    return {
+      totalXrpDonations,
+      donorCount,
+      currentPrice,
+      priceHistory,
+      tokenSupply,
+      recentDonations,
+    }
+  } catch (error) {
+    console.error(`統計情報取得エラー (${project.id}):`, error)
+
+    // エラーが発生した場合はデフォルト値を返す
+    return {
+      totalXrpDonations: 0,
+      donorCount: 0,
+      currentPrice: 1.0,
+      priceHistory: [],
+      tokenSupply: 0,
+      recentDonations: [],
+    }
   }
 }
 

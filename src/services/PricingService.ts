@@ -116,7 +116,6 @@ export class PricingService extends BaseService {
 
     // 価格履歴レコードを作成
     const priceHistoryRecord: Omit<PriceHistoryRecord, 'id'> = {
-      date: new Date(),
       priceRLUSD: tokenPrice.rlusd,
       priceXRP: tokenPrice.xrp,
       qualityScore: qualityScore.overall,
@@ -191,7 +190,7 @@ export class PricingService extends BaseService {
     // パス文字列を使用してベースクエリを作成
     const baseQuery = this.createQueryByPath(collectionPath.projectPriceHistory(projectId))
 
-    const snapshot = await baseQuery.limit(limit).orderBy('date', 'desc').get()
+    const snapshot = await baseQuery.limit(limit).orderBy('createdAt', 'desc').get()
 
     return snapshot.docs.map(doc =>
       convertTimestamps({

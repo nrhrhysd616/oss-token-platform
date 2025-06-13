@@ -71,7 +71,6 @@ export type TokenPrice = {
  */
 export type PriceHistoryRecord = {
   id: string
-  date: Date
   priceRLUSD: number
   priceXRP: number
   qualityScore: number
