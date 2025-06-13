@@ -140,14 +140,29 @@ export function GitHubAppSetup() {
 
           <div className="text-sm text-gray-500">
             <strong>権限:</strong>
-            <ul className="mt-1 space-y-1">
+            <div className="mt-2 flex flex-wrap gap-2">
               {Object.entries(appInfo.permissions).map(([permission, level]) => (
-                <li key={permission} className="flex justify-between">
-                  <span>{permission}</span>
-                  <span className="font-medium">{level}</span>
-                </li>
+                <div
+                  key={permission}
+                  className="flex items-center gap-1 bg-gray-50 rounded-lg px-3 py-2"
+                >
+                  <span className="text-gray-700 text-sm">{permission}</span>
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      level === 'write'
+                        ? 'bg-orange-100 text-orange-800'
+                        : level === 'read'
+                          ? 'bg-blue-100 text-blue-800'
+                          : level === 'admin'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {level}
+                  </span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       )}
