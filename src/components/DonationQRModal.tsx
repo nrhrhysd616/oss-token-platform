@@ -162,11 +162,6 @@ export default function DonationQRModal({
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
           <div className="text-sm text-gray-600 mb-2">寄付金額</div>
           <div className="text-2xl font-bold text-gray-900">{donationRequest.xrpAmount} XRP</div>
-          {/* <div className="text-sm text-gray-600 mt-2"> */}
-          {/* 受け取り予定トークン: {donationRequest.request.xrpAmount} トークン */}
-          {/* TODO: 価格算出アルゴリズム実装後に動的計算に変更 */}
-          {/* 現在は1:1の固定レートで表示 */}
-          {/* </div> */}
         </div>
 
         {/* QRコード */}

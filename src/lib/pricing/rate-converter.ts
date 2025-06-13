@@ -3,34 +3,33 @@
  */
 
 import type { ExchangeRate } from '@/types/pricing'
+import { getXRPLClient } from '@/lib/xrpl/client'
 
 /**
- * XRP/RLUSD レートを取得（モック実装）
- * 実際の実装では外部APIからレートを取得
+ * XRP/RLUSD レートを取得（XRPL Order Bookから実際のレートを取得）
  */
 export async function getXRPToRLUSDRate(): Promise<ExchangeRate> {
-  try {
-    // TODO: 実際のレート取得APIに置き換える
-    // 例: CoinGecko API, XRPL DEX, etc.
+  const xrplClient = getXRPLClient()
 
-    // モック実装: 固定レート（1 XRP = 0.5 RLUSD）
-    // 2025/06/11 22:40現在
-    const mockRate = 2.32 // 例: 1 XRP = 2.32 RLUSD
+  try {
+    let rate = await xrplClient.getXRPToRLUSDRate()
+
+    // 2025/06/14現在、テストネットとメインネットでRLUSDの価格が2100倍異なるため、
+    // テストネットでは価格を2100倍してメインネットと同じスケールに調整
+    if (process.env.XRPL_NETWORK === 'testnet') {
+      rate = rate * 2100
+    }
 
     return {
-      rate: mockRate,
+      rate,
       timestamp: new Date(),
-      source: 'mock',
+      source: 'xrpl-orderbook',
     }
   } catch (error) {
-    console.error('Failed to fetch XRP/RLUSD rate:', error)
+    console.error('Failed to fetch XRP/RLUSD rate from XRPL:', error)
 
-    // フォールバック: デフォルトレート
-    return {
-      rate: 0.5, // デフォルト値
-      timestamp: new Date(),
-      source: 'fallback',
-    }
+    // レート取得に失敗した場合はエラーを投げる（寄付を停止）
+    throw new Error('XRP/RLUSDレートの取得に失敗しました。現在寄付を受け付けることができません。')
   }
 }
 
@@ -133,48 +132,4 @@ export function isRateValid(rate: ExchangeRate, maxAgeMs: number = 60 * 60 * 100
   const rateAge = now.getTime() - rate.timestamp.getTime()
 
   return rateAge <= maxAgeMs && rate.rate > 0
-}
-
-/**
- * 複数のレートソースから最適なレートを選択
- */
-export async function getBestXRPToRLUSDRate(sources: string[] = ['mock']): Promise<ExchangeRate> {
-  const rates: ExchangeRate[] = []
-
-  // 各ソースからレートを取得
-  for (const source of sources) {
-    try {
-      let rate: ExchangeRate
-
-      switch (source) {
-        case 'mock':
-          rate = await getXRPToRLUSDRate()
-          break
-        // TODO: 他のソースを追加
-        // case 'coingecko':
-        //   rate = await getCoinGeckoRate()
-        //   break
-        // case 'xrpl-dex':
-        //   rate = await getXRPLDEXRate()
-        //   break
-        default:
-          continue
-      }
-
-      if (isRateValid(rate)) {
-        rates.push(rate)
-      }
-    } catch (error) {
-      console.warn(`Failed to get rate from ${source}:`, error)
-    }
-  }
-
-  if (rates.length === 0) {
-    throw new Error('No valid exchange rates available')
-  }
-
-  // 最新のレートを選択（より高度なロジックも可能）
-  return rates.reduce((latest, current) =>
-    current.timestamp > latest.timestamp ? current : latest
-  )
 }

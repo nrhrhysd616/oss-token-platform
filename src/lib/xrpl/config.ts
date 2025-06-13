@@ -209,3 +209,24 @@ export function assignIssuerWallet(projectId: string): XRPLWallet {
   const index = Math.abs(hash) % activeIssuers.length
   return activeIssuers[index]
 }
+
+/**
+ * 現在のネットワークに対応するRLUSDのIssuerアドレスを取得
+ */
+export function getRLUSDIssuerAddress(): string {
+  const config = getXRPLConfig()
+
+  if (config.network === 'mainnet') {
+    const issuer = process.env.XRPL_RLUSD_ISSUER_MAINNET
+    if (!issuer) {
+      throw new Error('XRPL_RLUSD_ISSUER_MAINNET environment variable is not set')
+    }
+    return issuer
+  } else {
+    const issuer = process.env.XRPL_RLUSD_ISSUER_TESTNET
+    if (!issuer) {
+      throw new Error('XRPL_RLUSD_ISSUER_TESTNET environment variable is not set')
+    }
+    return issuer
+  }
+}

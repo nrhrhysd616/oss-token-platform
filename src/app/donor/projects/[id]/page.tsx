@@ -90,6 +90,39 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
     resetDonation()
   }
 
+  const handleXShare = () => {
+    if (!project) return
+
+    const text = `${project.name} - ${project.description}`
+    const url = window.location.href
+    const hashtags = 'OSS,寄付,XRPL'
+    const xUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${hashtags}`
+    window.open(xUrl, '_blank')
+  }
+
+  const handleCopyLink = async () => {
+    try {
+      // モダンブラウザのClipboard APIを使用
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(window.location.href)
+        toast.success('リンクをコピーしました')
+      } else {
+        // Clipboard APIが利用できない場合は、URLを表示してユーザーに手動コピーを促す
+        const url = window.location.href
+        toast.error(`リンクを手動でコピーしてください: ${url}`, {
+          duration: 10000,
+        })
+      }
+    } catch (err) {
+      console.error('クリップボードコピーエラー:', err)
+      // エラーが発生した場合も、URLを表示してユーザーに手動コピーを促す
+      const url = window.location.href
+      toast.error(`リンクを手動でコピーしてください: ${url}`, {
+        duration: 10000,
+      })
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white p-6">
@@ -390,18 +423,16 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
             <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">シェア</h2>
               <div className="space-y-3">
-                {/* TODO: Twitterシェア機能を実装する必要があります */}
-                {/* 優先度: 低 - ソーシャル機能の拡張 */}
-                {/* - Twitter Web Intent APIの使用 */}
-                {/* - プロジェクト情報を含むツイート文の生成 */}
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors">
-                  Twitterでシェア
+                <button
+                  onClick={handleXShare}
+                  className="w-full bg-black hover:bg-gray-900 text-white px-4 py-2 rounded-md transition-colors border border-gray-600"
+                >
+                  Xでシェア
                 </button>
-                {/* TODO: リンクコピー機能を実装する必要があります */}
-                {/* 優先度: 低 - ユーザビリティ向上機能 */}
-                {/* - Clipboard APIの使用 */}
-                {/* - コピー完了の通知表示 */}
-                <button className="w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors">
+                <button
+                  onClick={handleCopyLink}
+                  className="w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+                >
                   リンクをコピー
                 </button>
               </div>
