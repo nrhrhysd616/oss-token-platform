@@ -31,7 +31,7 @@ export type DonationRequest = {
   id: string
   projectId: string
   donorUid?: string
-  amount: number
+  xrpAmount: number
   destinationTag: number
   verificationHash: string
   status: DonationStatus
@@ -51,7 +51,7 @@ export type DonationRecord = {
   projectId: string
   donorAddress: string
   donorUid?: string
-  amount: number
+  xrpAmount: number
   txHash: string
   destinationTag: number
   verificationHash: string
@@ -66,16 +66,15 @@ export type DonationRecord = {
 }
 
 /**
- * プロジェクト統計（Firestoreドキュメント形式）
+ * プロジェクト寄付統計
+ * 寄付履歴から集計した統計情報
  */
-export type ProjectStats = {
-  projectId: string
+export type ProjectDonationStats = {
   totalDonations: number
+  totalXrpAmount: number
   donorCount: number
   totalTokensIssued: number
   lastDonationAt?: Date
-  createdAt: Date
-  updatedAt: Date
 }
 
 // === API Request/Response 型定義 ===
@@ -85,23 +84,5 @@ export type ProjectStats = {
  */
 export type DonationCreateRequest = {
   projectId: string
-  amount: number
-}
-
-/**
- * 寄付セッション作成レスポンス
- */
-export type DonationCreateResponse = {
-  request: {
-    id: string
-    projectId: string
-    amount: number
-    destinationTag: number
-    expiresAt: string
-  }
-  xamanPayload: {
-    uuid: string
-    qrPng: string
-    websocketUrl: string
-  }
+  xrpAmount: number
 }

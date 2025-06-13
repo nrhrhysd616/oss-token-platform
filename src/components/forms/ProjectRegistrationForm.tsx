@@ -15,6 +15,7 @@ import { useGitHubApp } from '@/hooks/useGitHubApp'
 import { GitHubRepository } from '@/types/github'
 import { Project } from '@/types/project'
 import { setToastCookie } from '@/lib/toast-utils'
+import { PaginatedResult } from '@/services/shared/BaseService'
 
 // Installation IDを含むリポジトリ型
 type RepositoryWithInstallation = GitHubRepository & { installationId: number }
@@ -63,8 +64,8 @@ export default function ProjectRegistrationForm() {
       })
 
       if (response.ok) {
-        const data = await response.json()
-        setRegisteredProjects(data.projects || [])
+        const data = (await response.json()) as PaginatedResult<Project>
+        setRegisteredProjects(data.items || [])
       }
     } catch (error) {
       console.error('Failed to fetch registered projects:', error)
@@ -194,7 +195,7 @@ export default function ProjectRegistrationForm() {
           ...data,
           donationUsages: filteredDonationUsages,
           repositoryUrl: selectedRepository.htmlUrl,
-          githubInstallationId: selectedRepository.installationId.toString(),
+          githubInstallationId: selectedRepository.installationId,
           githubOwner: selectedRepository.owner.login,
           githubRepo: selectedRepository.name,
         }),

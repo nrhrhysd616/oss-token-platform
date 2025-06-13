@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useXamanWebSocket } from '@/hooks/useXamanWebSocket'
-import type { DonationCreateResponse } from '@/types/donation'
+import type { DonationPayload, DonationRequest } from '@/types/donation'
 
 type DonationQRModalProps = {
   isOpen: boolean
   onClose: () => void
-  donationRequest: DonationCreateResponse | null
+  donationRequest: DonationRequest | null
+  payload: DonationPayload | null
   onDonationCompleted: (txHash: string) => void
 }
 
@@ -15,6 +16,7 @@ export default function DonationQRModal({
   isOpen,
   onClose,
   donationRequest,
+  payload,
   onDonationCompleted,
 }: DonationQRModalProps) {
   const [timeLeft, setTimeLeft] = useState<number>(0)
@@ -23,8 +25,8 @@ export default function DonationQRModal({
 
   // WebSocket接続を使用してペイロード状況を監視
   const { isConnected, error } = useXamanWebSocket({
-    payloadUuid: donationRequest?.xamanPayload.uuid || '',
-    websocketUrl: donationRequest?.xamanPayload.websocketUrl || '',
+    payloadUuid: donationRequest?.xamanPayloadUuid || '',
+    websocketUrl: payload?.websocketUrl || '',
     onMessage: event => {
       console.log('WebSocket message received:', event)
 
@@ -61,8 +63,8 @@ export default function DonationQRModal({
     enabled:
       status !== 'signed' &&
       isOpen &&
-      !!donationRequest?.xamanPayload.uuid &&
-      !!donationRequest?.xamanPayload.websocketUrl,
+      !!donationRequest?.xamanPayloadUuid &&
+      !!payload?.websocketUrl,
   })
 
   // フォールバック用のカウントダウンタイマー（WebSocketからexpires_in_secondsが来ない場合）
@@ -71,7 +73,7 @@ export default function DonationQRModal({
 
     const updateTimer = () => {
       const now = new Date().getTime()
-      const expiresAt = new Date(donationRequest.request.expiresAt).getTime()
+      const expiresAt = new Date(donationRequest.expiresAt).getTime()
       const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000))
 
       // WebSocketからの値がない場合のみフォールバック計算を使用
@@ -159,24 +161,18 @@ export default function DonationQRModal({
         {/* 寄付情報 */}
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
           <div className="text-sm text-gray-600 mb-2">寄付金額</div>
-          <div className="text-2xl font-bold text-gray-900">
-            {donationRequest.request.amount} XRP
-          </div>
-          <div className="text-sm text-gray-600 mt-2">
-            受け取り予定トークン: {donationRequest.request.amount} トークン
-            {/* TODO: 価格算出アルゴリズム実装後に動的計算に変更 */}
-            {/* 現在は1:1の固定レートで表示 */}
-          </div>
+          <div className="text-2xl font-bold text-gray-900">{donationRequest.xrpAmount} XRP</div>
+          {/* <div className="text-sm text-gray-600 mt-2"> */}
+          {/* 受け取り予定トークン: {donationRequest.request.xrpAmount} トークン */}
+          {/* TODO: 価格算出アルゴリズム実装後に動的計算に変更 */}
+          {/* 現在は1:1の固定レートで表示 */}
+          {/* </div> */}
         </div>
 
         {/* QRコード */}
         <div className="text-center mb-6">
           <div className="bg-white p-4 rounded-lg border-2 border-gray-200 inline-block mb-4">
-            <img
-              src={donationRequest.xamanPayload.qrPng}
-              alt="Xaman QR Code"
-              className="w-48 h-48 mx-auto"
-            />
+            <img src={payload?.qrPng} alt="Xaman QR Code" className="w-48 h-48 mx-auto" />
           </div>
           <p className="text-sm text-gray-600 mb-2">XamanアプリでQRコードをスキャンしてください</p>
           <p className="text-xs text-gray-500">
@@ -234,10 +230,8 @@ export default function DonationQRModal({
             <div className="mt-2 text-xs opacity-70">
               <div>WebSocket: {isConnected ? '接続済み' : '切断中'}</div>
               <div>ペイロード状態: {status}</div>
-              <div>PayloadUUID: {donationRequest?.xamanPayload.uuid ? 'あり' : 'なし'}</div>
-              <div>
-                WebSocketURL: {donationRequest?.xamanPayload.websocketUrl ? 'あり' : 'なし'}
-              </div>
+              <div>PayloadUUID: {donationRequest?.xamanPayloadUuid ? 'あり' : 'なし'}</div>
+              <div>WebSocketURL: {payload?.websocketUrl ? 'あり' : 'なし'}</div>
             </div>
           )}
         </div>

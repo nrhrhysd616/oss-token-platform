@@ -125,7 +125,7 @@ export default function WalletStatus({ wallet, isLoading }: WalletStatusProps) {
       <div className="mt-4 pt-3 border-t border-gray-700">
         <div className="flex space-x-2">
           <a
-            href={`https://livenet.xrpl.org/accounts/${wallet.address}`}
+            href={`${process.env.NEXT_PUBLIC_XRPL_EXPLORER_BASE_URL}accounts/${wallet.address}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-400 hover:text-blue-300 text-sm underline"

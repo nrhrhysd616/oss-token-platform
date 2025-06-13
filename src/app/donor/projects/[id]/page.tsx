@@ -8,16 +8,12 @@ import { formatDateJP } from '@/lib/firebase/utils'
 import { useDonation } from '@/hooks/useDonation'
 import DonationQRModal from '@/components/DonationQRModal'
 
-type PublicProjectResponse = {
-  project: PublicProject
-}
-
 export default function DonorProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const [project, setProject] = useState<PublicProject | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [donationAmount, setDonationAmount] = useState('')
+  const [donationXrpAmount, setDonationXrpAmount] = useState('')
   const [showDonationModal, setShowDonationModal] = useState(false)
 
   // 寄付フック
@@ -43,8 +39,8 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
         throw new Error('プロジェクトの取得に失敗しました')
       }
 
-      const data: PublicProjectResponse = await response.json()
-      setProject(data.project)
+      const data = (await response.json()) as PublicProject
+      setProject(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました')
     } finally {
@@ -57,12 +53,12 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
   }, [id])
 
   const handleDonation = async () => {
-    if (!donationAmount || parseFloat(donationAmount) <= 0) {
+    if (!donationXrpAmount || parseFloat(donationXrpAmount) <= 0) {
       return
     }
 
     try {
-      await createDonation(id, parseFloat(donationAmount))
+      await createDonation(id, parseFloat(donationXrpAmount))
       setShowDonationModal(true)
     } catch (error) {
       console.error('寄付リクエスト作成エラー:', error)
@@ -84,7 +80,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
 
     // モーダルの自動クローズはDonationQRModal側で制御されるため、ここでは状態をリセットするだけ
     setTimeout(() => {
-      setDonationAmount('')
+      setDonationXrpAmount('')
       resetDonation()
     }, 6000) // モーダルが閉じた後にリセット
   }
@@ -332,17 +328,17 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                     min="1"
                     step="0.1"
                     placeholder="10"
-                    value={donationAmount}
-                    onChange={e => setDonationAmount(e.target.value)}
+                    value={donationXrpAmount}
+                    onChange={e => setDonationXrpAmount(e.target.value)}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
                   />
                 </div>
 
-                {donationAmount && parseFloat(donationAmount) > 0 && (
+                {donationXrpAmount && parseFloat(donationXrpAmount) > 0 && (
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
                     <div className="text-sm text-gray-300">想定受け取りトークン数:</div>
                     <div className="text-yellow-400 font-semibold">
-                      {(parseFloat(donationAmount) / project.stats.currentPrice).toFixed(6)}{' '}
+                      {(parseFloat(donationXrpAmount) / project.stats.currentPrice).toFixed(6)}{' '}
                       {project.tokenCode}
                     </div>
                   </div>
@@ -350,7 +346,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
 
                 <button
                   onClick={handleDonation}
-                  disabled={!donationAmount || parseFloat(donationAmount) <= 0}
+                  disabled={!donationXrpAmount || parseFloat(donationXrpAmount) <= 0}
                   className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black disabled:text-gray-400 px-4 py-3 rounded-md font-medium transition-colors"
                 >
                   寄付する
@@ -368,7 +364,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
               <div className="space-y-4">
                 <div className="text-center p-4 bg-gray-800 rounded-md">
                   <div className="text-2xl font-bold text-yellow-400">
-                    {project.stats.totalDonations} XRP
+                    {project.stats.totalXrpDonations} XRP
                   </div>
                   <div className="text-sm text-gray-400">総寄付額</div>
                 </div>
@@ -443,6 +439,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
           isOpen={showDonationModal}
           onClose={handleCloseModal}
           donationRequest={donationState.donationRequest}
+          payload={donationState.payload}
           onDonationCompleted={handleDonationCompleted}
         />
       </div>

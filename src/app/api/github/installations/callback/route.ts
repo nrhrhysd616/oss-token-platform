@@ -85,43 +85,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Installation対象のリポジトリ情報も取得・保存
-    if (installation.repository_selection === 'selected') {
-      try {
-        // Installation認証用のOctokitインスタンスを作成
-        const installationOctokit = await createInstallationOctokit(installation.id)
-        const { data: repositories } =
-          await installationOctokit.rest.apps.listReposAccessibleToInstallation()
-
-        // リポジトリ情報を保存
-        const batch = adminDb.batch()
-        repositories.repositories.forEach(repo => {
-          const repoRef = adminDb
-            .collection(FIRESTORE_COLLECTIONS.INSTALLATION_REPOSITORIES)
-            .doc(`${installation.id}_${repo.id}`)
-
-          batch.set(repoRef, {
-            installationId: installation.id,
-            repositoryId: repo.id,
-            repositoryName: repo.name,
-            repositoryFullName: repo.full_name,
-            repositoryPrivate: repo.private,
-            repositoryDescription: repo.description,
-            repositoryLanguage: repo.language,
-            repositoryStars: repo.stargazers_count,
-            repositoryForks: repo.forks_count,
-            repositoryUpdatedAt: repo.updated_at ? new Date(repo.updated_at) : new Date(),
-            addedAt: new Date(),
-          })
-        })
-
-        await batch.commit()
-      } catch (error) {
-        console.error('リポジトリ情報取得エラー:', error)
-        // リポジトリ情報の取得に失敗してもInstallation保存は成功
-      }
-    }
-
     // 成功時のリダイレクト
     let successMessage = 'GitHub Appのインストールが完了しました'
     if (setupAction === 'update') {

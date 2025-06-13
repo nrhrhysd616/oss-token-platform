@@ -3,13 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PublicProject } from '@/types/project'
-
-type ProjectsResponse = {
-  projects: PublicProject[]
-  total: number
-  limit: number
-  offset: number
-}
+import { PaginatedResult } from '@/services/shared/BaseService'
 
 export default function DonorProjectsPage() {
   const [projects, setProjects] = useState<PublicProject[]>([])
@@ -22,17 +16,15 @@ export default function DonorProjectsPage() {
       setLoading(true)
 
       const params = new URLSearchParams()
-      params.append('status', 'active') // 公開プロジェクトのみ
-      params.append('limit', '20')
-
+      // TODO: インデックスなど適切に設定次第、クエリパラメータを設定
       const response = await fetch(`/api/projects?${params}`)
 
       if (!response.ok) {
         throw new Error('プロジェクトの取得に失敗しました')
       }
 
-      const data: ProjectsResponse = await response.json()
-      setProjects(data.projects)
+      const data: PaginatedResult<PublicProject> = await response.json()
+      setProjects(data.items)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました')
     } finally {
@@ -45,6 +37,7 @@ export default function DonorProjectsPage() {
   }, [])
 
   // 検索フィルタリング
+  // TODO: プロジェクト数が増えてくると、取ってきた50件のなかで検索しても仕方ないので、API側での検索機能を実装する
   const filteredProjects = projects.filter(
     project =>
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -191,7 +184,7 @@ export default function DonorProjectsPage() {
                     <div className="grid grid-cols-2 gap-4 pt-3 border-t border-gray-800">
                       <div className="text-center">
                         <div className="text-yellow-400 font-semibold">
-                          {project.stats.totalDonations} XRP
+                          {project.stats.totalXrpDonations} XRP
                         </div>
                         <div className="text-xs text-gray-500">総寄付額</div>
                       </div>

@@ -5,10 +5,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
-import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
+import { ProjectService } from '@/services/ProjectService'
 import { projectUpdateApiSchema } from '@/validations/project'
 import { MaintainerProject, MaintainerProjectStats } from '@/types/project'
 import { z } from 'zod'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     // 統計情報を取得（現在はダミーデータ）
     const stats: MaintainerProjectStats = {
-      totalDonations: 0, // TODO: 実際の寄付総額を計算
+      totalXrpDonations: 0, // TODO: 実際の寄付総額を計算
       donorCount: 0, // TODO: 実際の寄付者数を計算
       currentPrice: 1.0, // TODO: XRPLから現在価格を取得
       priceHistory: [
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   } catch (error) {
     console.error('Maintainer project fetch error:', error)
 
-    if (error instanceof ProjectServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 
@@ -103,7 +104,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   } catch (error) {
     console.error('Project update error:', error)
 
-    if (error instanceof ProjectServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 
@@ -118,39 +119,39 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-
-    if (!id) {
-      return NextResponse.json({ error: 'プロジェクトIDが必要です' }, { status: 400 })
-    }
-
-    // 認証チェック
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
-    }
-
-    const idToken = authHeader.split('Bearer ')[1]
-    const decodedToken = await getAdminAuth().verifyIdToken(idToken)
-
-    // ProjectServiceを使用してプロジェクトを削除
-    await ProjectService.deleteProject(id, decodedToken.uid)
-
-    return NextResponse.json({
-      message: 'Project deleted successfully',
-    })
-  } catch (error) {
-    console.error('Project delete error:', error)
-
-    if (error instanceof ProjectServiceError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode })
-    }
-
-    return NextResponse.json({ error: 'プロジェクトの削除に失敗しました' }, { status: 500 })
-  }
-}
+// export async function DELETE(
+//   request: NextRequest,
+//   { params }: { params: Promise<{ id: string }> }
+// ) {
+//   try {
+//     const { id } = await params
+//
+//     if (!id) {
+//       return NextResponse.json({ error: 'プロジェクトIDが必要です' }, { status: 400 })
+//     }
+//
+//     // 認証チェック
+//     const authHeader = request.headers.get('Authorization')
+//     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//       return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
+//     }
+//
+//     const idToken = authHeader.split('Bearer ')[1]
+//     const decodedToken = await getAdminAuth().verifyIdToken(idToken)
+//
+//     // ProjectServiceを使用してプロジェクトを削除
+//     await ProjectService.deleteProject(id, decodedToken.uid)
+//
+//     return NextResponse.json({
+//       message: 'Project deleted successfully',
+//     })
+//   } catch (error) {
+//     console.error('Project delete error:', error)
+//
+//     if (error instanceof ProjectServiceError) {
+//       return NextResponse.json({ error: error.message }, { status: error.statusCode })
+//     }
+//
+//     return NextResponse.json({ error: 'プロジェクトの削除に失敗しました' }, { status: 500 })
+//   }
+// }

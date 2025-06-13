@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
 import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
+import { GitHubInstallation } from '@/types/github'
 
 // ユーザーのGitHub App Installationを取得・保存するエンドポイント
 // export async function POST(request: NextRequest) {
@@ -118,13 +119,7 @@ export async function GET(request: NextRequest) {
     const userData = userDoc.data()
     const installations = userData?.githubInstallations || []
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        installations,
-        lastUpdate: userData?.lastInstallationUpdate,
-      },
-    })
+    return NextResponse.json<GitHubInstallation[]>(installations)
   } catch (error) {
     console.error('Installation情報取得エラー:', error)
     return NextResponse.json(

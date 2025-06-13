@@ -43,23 +43,23 @@ export function useWallet(): UseWalletReturn {
       // Firebase認証トークンを取得
       const token = await user.getIdToken()
       // ウォレット一覧を取得
-      const walletsResponse = await fetch('/api/xaman/wallets', {
+      const response = await fetch('/api/xaman/wallets', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
 
-      if (!walletsResponse.ok) {
-        const errorData = await walletsResponse.json()
+      if (!response.ok) {
+        const errorData = await response.json()
         throw new Error(errorData.error || 'ウォレット一覧の取得に失敗しました')
       }
 
-      const { data: userWallets } = await walletsResponse.json()
+      const wallets = (await response.json()) as Wallet[]
       // isPrimaryプロパティでプライマリウォレットを特定
-      const primary = userWallets.find((wallet: Wallet) => wallet.isPrimary) || null
+      const primary = wallets.find(wallet => wallet.isPrimary) || null
 
-      setWallets(userWallets)
+      setWallets(wallets)
       setPrimaryWallet(primary)
     } catch (err) {
       console.error('Failed to refresh wallets:', err)
@@ -143,14 +143,14 @@ export function useWallet(): UseWalletReturn {
           setLinkRequest(null)
           // ウォレット一覧を更新（内部実装で依存関係を回避）
           try {
-            const walletsResponse = await fetch('/api/xaman/wallets', {
+            const response = await fetch('/api/xaman/wallets', {
               method: 'GET',
               headers: { Authorization: `Bearer ${token}` },
             })
-            if (walletsResponse.ok) {
-              const { data: userWallets } = await walletsResponse.json()
-              const primary = userWallets.find((wallet: Wallet) => wallet.isPrimary) || null
-              setWallets(userWallets)
+            if (response.ok) {
+              const wallets = (await response.json()) as Wallet[]
+              const primary = wallets.find(wallet => wallet.isPrimary) || null
+              setWallets(wallets)
               setPrimaryWallet(primary)
             }
           } catch (refreshError) {

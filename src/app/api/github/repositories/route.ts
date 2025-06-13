@@ -41,24 +41,14 @@ export async function GET(request: NextRequest) {
     const installations = userData?.githubInstallations || []
 
     if (installations.length === 0) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          repositories: [],
-        },
-      })
+      return NextResponse.json([])
     }
 
     // 新しいヘルパー関数を使用して簡潔に処理
     const installationIds = installations.map((installation: any) => installation.id)
     const allRepositories = await getAllRepositoriesFromInstallations(installationIds)
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        repositories: allRepositories,
-      },
-    })
+    return NextResponse.json(allRepositories)
   } catch (error) {
     console.error('全リポジトリ取得エラー:', error)
     return NextResponse.json(

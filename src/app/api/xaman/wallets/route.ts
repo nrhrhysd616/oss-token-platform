@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { WalletLinkService, WalletLinkServiceError } from '@/services/WalletLinkService'
+import { WalletLinkService } from '@/services/WalletLinkService'
 import { getAdminAuth } from '@/lib/firebase/admin'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 /**
  * ユーザーのウォレット一覧を取得
@@ -22,14 +23,11 @@ export async function GET(request: NextRequest) {
     // ユーザーのウォレット一覧を取得
     const result = await WalletLinkService.getUserWallets(userId)
 
-    return NextResponse.json({
-      success: true,
-      data: result,
-    })
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Failed to get user wallets:', error)
 
-    if (error instanceof WalletLinkServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 
@@ -69,7 +67,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Failed to create wallet link request:', error)
 
-    if (error instanceof WalletLinkServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 

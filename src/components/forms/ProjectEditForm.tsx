@@ -4,7 +4,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
@@ -55,6 +55,7 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     if (donationUsages.length > 1) {
       const newUsages = donationUsages.filter((_, i) => i !== index)
       setDonationUsages(newUsages)
+      setValue('donationUsages', newUsages, { shouldDirty: true })
     }
   }
 
@@ -62,6 +63,7 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     const newUsages = [...donationUsages]
     newUsages[index] = value
     setDonationUsages(newUsages)
+    setValue('donationUsages', newUsages, { shouldDirty: true })
   }
 
   const onSubmit = async (data: ProjectUpdateFormData) => {
@@ -101,11 +103,10 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     } catch (error) {
       console.error('Project update error:', error)
 
-      // cookieにエラーメッセージを保存
+      // エラー時は現在のページでトーストを表示
       const errorMessage =
         error instanceof Error ? error.message : 'プロジェクトの更新に失敗しました'
-      setToastCookie('error', errorMessage)
-      router.push(`/maintainer/projects/${project.id}`)
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

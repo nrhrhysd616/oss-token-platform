@@ -3,19 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/firebase/auth-context'
-import { MaintainerProject, ProjectStatus } from '@/types/project'
+import { Project, ProjectStatus } from '@/types/project'
 import { formatDateJP } from '@/lib/firebase/utils'
-
-type ProjectsResponse = {
-  projects: MaintainerProject[]
-  total: number
-  limit: number
-  offset: number
-}
+import { PaginatedResult } from '@/services/shared/BaseService'
 
 export default function MaintainerProjectsPage() {
   const { user } = useAuth()
-  const [projects, setProjects] = useState<MaintainerProject[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all')
@@ -47,8 +41,8 @@ export default function MaintainerProjectsPage() {
         throw new Error('プロジェクトの取得に失敗しました')
       }
 
-      const data: ProjectsResponse = await response.json()
-      setProjects(data.projects)
+      const data = (await response.json()) as PaginatedResult<Project>
+      setProjects(data.items)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました')
     } finally {

@@ -14,14 +14,13 @@ export type Project = {
   ownerUid: string
   githubOwner: string
   githubRepo: string
-  githubInstallationId: string
+  githubInstallationId: number
   tokenCode: string
   issuerAddress: string
   donationUsages: string[]
   createdAt: Date
   updatedAt: Date
   status: ProjectStatus
-  // TODO: オプションフィールドだが必須化予定
   qualityScore?: QualityScore
   currentPrice?: TokenPrice
 }
@@ -44,7 +43,7 @@ export type MaintainerProject = Project & {
  * 公開プロジェクト統計情報
  */
 export type PublicProjectStats = {
-  totalDonations: number
+  totalXrpDonations: number
   donorCount: number
   currentPrice: number
   priceHistory: Array<{
@@ -59,7 +58,7 @@ export type PublicProjectStats = {
 export type MaintainerProjectStats = PublicProjectStats & {
   tokenSupply: number
   recentDonations: Array<{
-    amount: number
+    xrpAmount: number
     donorAddress: string
     timestamp: string
     txHash: string

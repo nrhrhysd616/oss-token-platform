@@ -13,6 +13,7 @@ import { verifyXamanWebhookRequest } from '@/lib/xaman'
 import { XummTypes } from 'xumm-sdk'
 import { FIRESTORE_COLLECTIONS } from '@/lib/firebase/collections'
 import { convertTimestamps } from '@/lib/firebase/utils'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,6 +56,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Payload not found in any system' }, { status: 404 })
   } catch (error) {
     console.error('Failed to process Xaman callback:', error)
+
+    if (error instanceof ServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
+
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
@@ -71,8 +77,9 @@ async function handleDonationCallback(
   txid: string | undefined
 ): Promise<NextResponse | null> {
   try {
+    const db = getAdminDb()
     // 該当する寄付リクエストを検索
-    const requestsQuery = await getAdminDb()
+    const requestsQuery = await db
       .collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS)
       .where('xamanPayloadUuid', '==', payloadUuid)
       .limit(1)
@@ -96,47 +103,39 @@ async function handleDonationCallback(
 
     // リクエストの期限確認
     if (DonationService.isDonationRequestExpired(requestData)) {
-      await getAdminDb()
-        .collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS)
-        .doc(requestDoc.id)
-        .update({
-          status: 'failed',
-          error: 'Request expired',
-        })
+      await db.collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS).doc(requestDoc.id).update({
+        status: 'failed',
+        error: 'Request expired',
+      })
       return NextResponse.json({ error: 'リクエストが期限切れです' }, { status: 410 })
     }
 
     // 署名されていない場合（キャンセルされた場合）
     if (!signed || !txid) {
-      await getAdminDb()
-        .collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS)
-        .doc(requestDoc.id)
-        .update({
-          status: 'failed',
-          error: 'Transaction not signed or cancelled',
-        })
+      await db.collection(FIRESTORE_COLLECTIONS.DONATION_REQUESTS).doc(requestDoc.id).update({
+        status: 'failed',
+        error: 'Transaction not signed or cancelled',
+      })
       return NextResponse.json({ message: 'トランザクションがキャンセルされました' })
     }
 
     // Xamanステータスを取得
-    const xamanStatus = await DonationService.checkPayloadStatus(payloadUuid)
+    const xamanStatus = await DonationService.checkXamanPayloadStatus(payloadUuid)
 
     // DonationServiceの統合機能を使用して寄付完了処理を実行
     const donationRecord = await DonationService.completeDonationRequest(requestDoc.id, xamanStatus)
 
     return NextResponse.json({
       message: '寄付が完了しました。トークン発行処理を開始しています。',
-      donation: {
-        id: donationRecord.id,
-        requestId: donationRecord.requestId,
-        projectId: donationRecord.projectId,
-        amount: donationRecord.amount,
-        txHash: donationRecord.txHash,
-        createdAt: donationRecord.createdAt,
-      },
+      record: donationRecord,
     })
   } catch (error) {
     console.error('Donation callback error:', error)
+
+    if (error instanceof ServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
+
     return NextResponse.json({ error: '寄付処理でエラーが発生しました' }, { status: 500 })
   }
 }
@@ -161,8 +160,8 @@ async function handleWalletLinkCallback(
       if (xamanStatus.meta.signed && xamanStatus.response) {
         await WalletLinkService.completeWalletLink(payloadUuid, xamanStatus)
         return NextResponse.json({
-          success: true,
           message: 'Wallet link completed successfully',
+          walletLinkRequest: linkRequest,
         })
       }
     }

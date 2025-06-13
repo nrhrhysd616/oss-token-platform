@@ -181,9 +181,6 @@ export default function MaintainerDashboard() {
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">🪙 トークン管理</h2>
-              <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                新規トークン発行
-              </button>
             </div>
             <div className="text-center py-8">
               <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">

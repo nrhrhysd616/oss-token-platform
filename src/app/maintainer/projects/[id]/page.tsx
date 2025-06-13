@@ -242,7 +242,9 @@ export default function MaintainerProjectDetailPage({
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-yellow-400 font-semibold">{donation.amount} XRP</div>
+                        <div className="text-yellow-400 font-semibold">
+                          {donation.xrpAmount} XRP
+                        </div>
                         <a
                           href={`https://testnet.xrpl.org/transactions/${donation.txHash}`}
                           target="_blank"
@@ -269,7 +271,7 @@ export default function MaintainerProjectDetailPage({
               <div className="space-y-4">
                 <div className="text-center p-4 bg-gray-800 rounded-md">
                   <div className="text-2xl font-bold text-yellow-400">
-                    {project.stats.totalDonations} XRP
+                    {project.stats.totalXrpDonations} XRP
                   </div>
                   <div className="text-sm text-gray-400">総寄付額</div>
                 </div>

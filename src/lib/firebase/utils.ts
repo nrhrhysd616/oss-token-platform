@@ -92,6 +92,7 @@ const TIMESTAMP_FIELDS = [
   'linkedAt',
   'lastLinkedAt',
   'lastDonationAt',
+  'lastUpdated',
   'suspendedAt',
   'issuedAt',
 ] as const

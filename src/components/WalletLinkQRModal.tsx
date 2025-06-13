@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react'
 import { useXamanWebSocket } from '@/hooks/useXamanWebSocket'
 import type { WalletLinkRequest } from '@/types/xaman'
 
-type XamanQRModalProps = {
+type WalletLinkQRModalProps = {
   isOpen: boolean
   onClose: () => void
   linkRequest: WalletLinkRequest | null
   onStatusCheck: (payloadUuid: string) => void
 }
 
-export default function XamanQRModal({
+export default function WalletLinkQRModal({
   isOpen,
   onClose,
   linkRequest,
   onStatusCheck,
-}: XamanQRModalProps) {
+}: WalletLinkQRModalProps) {
   const [timeLeft, setTimeLeft] = useState<number>(0)
   const [status, setStatus] = useState<'pending' | 'signed' | 'rejected' | 'expired'>('pending')
   const [transactionHash, setTransactionHash] = useState<string | null>(null)

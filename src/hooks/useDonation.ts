@@ -2,19 +2,20 @@
 
 import { useState, useCallback } from 'react'
 import { useAuth } from '@/lib/firebase/auth-context'
-import type { DonationCreateResponse, DonationRecord } from '@/types/donation'
+import type { DonationPayload, DonationRecord, DonationRequest } from '@/types/donation'
 
 type DonationState = {
   isLoading: boolean
   error: string | null
-  donationRequest: DonationCreateResponse | null
+  donationRequest: DonationRequest | null
+  payload: DonationPayload | null
   donationRecord: DonationRecord | null
   isCompleted: boolean
 }
 
 type UseDonationReturn = {
   state: DonationState
-  createDonation: (projectId: string, amount: number) => Promise<void>
+  createDonation: (projectId: string, xrpAmount: number) => Promise<void>
   checkDonationStatus: (requestId: string) => Promise<void>
   reset: () => void
 }
@@ -25,12 +26,13 @@ export function useDonation(): UseDonationReturn {
     isLoading: false,
     error: null,
     donationRequest: null,
+    payload: null,
     donationRecord: null,
     isCompleted: false,
   })
 
   const createDonation = useCallback(
-    async (projectId: string, amount: number) => {
+    async (projectId: string, xrpAmount: number) => {
       setState(prev => ({
         ...prev,
         isLoading: true,
@@ -57,7 +59,7 @@ export function useDonation(): UseDonationReturn {
           },
           body: JSON.stringify({
             projectId,
-            amount,
+            xrpAmount,
           }),
         })
 
@@ -66,12 +68,16 @@ export function useDonation(): UseDonationReturn {
           throw new Error(errorData.error || '寄付リクエストの作成に失敗しました')
         }
 
-        const data = await response.json()
+        const data = (await response.json()) as {
+          request: DonationRequest
+          payload: DonationPayload
+        }
 
         setState(prev => ({
           ...prev,
           isLoading: false,
-          donationRequest: data.data,
+          donationRequest: data.request,
+          payload: data.payload,
         }))
       } catch (error) {
         console.error('寄付リクエスト作成エラー:', error)
@@ -94,14 +100,18 @@ export function useDonation(): UseDonationReturn {
         throw new Error(errorData.error || '寄付状態の確認に失敗しました')
       }
 
-      const data = await response.json()
+      const data = (await response.json()) as {
+        completed: boolean
+        request: DonationRequest
+        record: DonationRecord | null
+      }
 
       // 寄付が完了している場合は、寄付記録を取得
-      if (data.data.completed && data.data.record) {
+      if (data.completed && data.record) {
         setState(prev => ({
           ...prev,
           isCompleted: true,
-          donationRecord: data.data.record,
+          donationRecord: data.record,
         }))
       }
     } catch (error) {
@@ -118,6 +128,7 @@ export function useDonation(): UseDonationReturn {
       isLoading: false,
       error: null,
       donationRequest: null,
+      payload: null,
       donationRecord: null,
       isCompleted: false,
     })

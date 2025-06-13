@@ -4,9 +4,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
-import { DonationService, DonationServiceError } from '@/services/DonationService'
+import { DonationService } from '@/services/DonationService'
 import { donationCreateApiSchema } from '@/validations'
 import { z } from 'zod'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,31 +35,18 @@ export async function POST(request: NextRequest) {
     const { request: donationRequest, payload } =
       await DonationService.createDonationRequestWithPayload(
         validatedData.projectId,
-        validatedData.amount,
+        validatedData.xrpAmount,
         donorUid
       )
 
     return NextResponse.json({
-      success: true,
-      data: {
-        request: {
-          id: donationRequest.id,
-          projectId: donationRequest.projectId,
-          amount: donationRequest.amount,
-          destinationTag: donationRequest.destinationTag,
-          expiresAt: donationRequest.expiresAt.toISOString(),
-        },
-        xamanPayload: {
-          uuid: payload.uuid,
-          qrPng: payload.qrPng,
-          websocketUrl: payload.websocketUrl,
-        },
-      },
+      request: donationRequest,
+      payload,
     })
   } catch (error) {
     console.error('Donation request creation error:', error)
 
-    if (error instanceof DonationServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 

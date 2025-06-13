@@ -3,7 +3,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { DonationService, DonationServiceError } from '@/services/DonationService'
+import { DonationService } from '@/services/DonationService'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 export async function GET(
   request: NextRequest,
@@ -17,13 +18,13 @@ export async function GET(
     }
 
     // リクエスト情報を取得
-    const requestData = await DonationService.getDonationRequest(requestId)
-    if (!requestData) {
+    const donationRequest = await DonationService.getDonationRequest(requestId)
+    if (!donationRequest) {
       return NextResponse.json({ error: 'Request not found' }, { status: 404 })
     }
 
     // リクエストの期限確認
-    if (DonationService.isDonationRequestExpired(requestData)) {
+    if (DonationService.isDonationRequestExpired(donationRequest)) {
       return NextResponse.json({ error: 'Request expired' }, { status: 410 })
     }
 
@@ -31,26 +32,14 @@ export async function GET(
     const { completed, record } = await DonationService.isDonationCompleted(requestId)
 
     return NextResponse.json({
-      success: true,
-      data: {
-        request: {
-          id: requestData.id,
-          projectId: requestData.projectId,
-          amount: requestData.amount,
-          status: requestData.status,
-          destinationTag: requestData.destinationTag,
-          createdAt: requestData.createdAt,
-          expiresAt: requestData.expiresAt,
-          txHash: requestData.txHash,
-        },
-        completed,
-        record: record || null,
-      },
+      completed,
+      request: donationRequest,
+      record: record || null,
     })
   } catch (error) {
     console.error('Donation request fetch error:', error)
 
-    if (error instanceof DonationServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 

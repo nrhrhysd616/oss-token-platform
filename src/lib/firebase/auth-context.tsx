@@ -11,7 +11,7 @@ import {
 import { auth } from './client'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { db } from './client'
-import { UserRole } from '@/types/user'
+import { UserRole, Wallet } from '@/types/user'
 import { FIRESTORE_COLLECTIONS } from './collections'
 
 // 認証コンテキストの型定義
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!response.ok) return false
 
-      const { data: wallets } = await response.json()
+      const wallets = (await response.json()) as Wallet[]
       return (
         wallets && wallets.length > 0 && wallets.some((wallet: any) => wallet.status === 'linked')
       )

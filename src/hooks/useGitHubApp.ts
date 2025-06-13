@@ -46,12 +46,12 @@ export function useGitHubApp() {
         },
       })
 
-      const data = await response.json()
+      const data = (await response.json()) as GitHubInstallation[]
 
-      if (data.success) {
-        setInstallations(data.data.installations)
+      if (response.ok) {
+        setInstallations(data)
       } else {
-        console.error('Installation情報取得エラー:', data.error)
+        console.error('Installation情報取得エラー:', response.body)
       }
     } catch (error) {
       console.error('Installation情報取得エラー:', error)
@@ -74,12 +74,12 @@ export function useGitHubApp() {
         },
       })
 
-      const data = await response.json()
+      const data = (await response.json()) as (GitHubRepository & { installationId: number })[]
 
-      if (data.success) {
-        setAllRepositories(data.data.repositories)
+      if (response.ok) {
+        setAllRepositories(data)
       } else {
-        console.error('全リポジトリ取得エラー:', data.error)
+        console.error('全リポジトリ取得エラー:', response.body)
         setAllRepositories([])
       }
     } catch (error) {

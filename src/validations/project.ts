@@ -59,7 +59,7 @@ export const projectCreateApiSchema = projectCreateFormSchema.extend({
   repositoryUrl: z.string().url('有効なURLを入力してください'),
   githubOwner: z.string().min(1, 'GitHubオーナーは必須です'),
   githubRepo: z.string().min(1, 'GitHubリポジトリ名は必須です'),
-  githubInstallationId: z.string().min(1, 'GitHub Installation IDは必須です'),
+  githubInstallationId: z.number().min(1, 'GitHub Installation IDは必須です'),
 })
 
 export type ProjectCreateApiData = z.infer<typeof projectCreateApiSchema>
@@ -86,7 +86,7 @@ export const projectQuerySchema = z.object({
   limit: z
     .string()
     .nullable()
-    .transform(val => (val ? parseInt(val, 10) : 10))
+    .transform(val => (val ? parseInt(val, 10) : 100))
     .pipe(z.number().min(1).max(100)),
   offset: z
     .string()

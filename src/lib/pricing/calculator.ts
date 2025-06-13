@@ -10,7 +10,7 @@ import type { PricingParameters, TokenPrice, ExchangeRate } from '@/types/pricin
  */
 export function calculateRLUSDPrice(
   qualityScore: number,
-  totalDonationsXRP: number,
+  totalDonationXrpAmount: number,
   parameters: PricingParameters,
   xrpToRlusdRate: number
 ): number {
@@ -18,7 +18,7 @@ export function calculateRLUSDPrice(
 
   // XRP寄付をRLUSD換算
   // TODO: 現在のレートを常に利用しているが、当時のRLUSD量で算出するべき。ADRに起票済み
-  const totalDonationsRLUSD = totalDonationsXRP * xrpToRlusdRate
+  const totalDonationsRLUSD = totalDonationXrpAmount * xrpToRlusdRate
 
   // 価格式の計算
   // P_RL = P0 + αQ + β*log(1 + F_RL/F0)
@@ -50,13 +50,13 @@ export function convertRLUSDToXRP(rlusdPrice: number, xrpToRlusdRate: number): n
  */
 export function calculateTokenPrice(
   qualityScore: number,
-  totalDonationsXRP: number,
+  totalDonationXrpAmount: number,
   parameters: PricingParameters,
   exchangeRate: ExchangeRate
 ): TokenPrice {
   const rlusdPrice = calculateRLUSDPrice(
     qualityScore,
-    totalDonationsXRP,
+    totalDonationXrpAmount,
     parameters,
     exchangeRate.rate
   )
@@ -75,7 +75,7 @@ export function calculateTokenPrice(
  */
 export function validatePricingInputs(
   qualityScore: number,
-  totalDonationsXRP: number,
+  totalDonationXrpAmount: number,
   parameters: PricingParameters,
   exchangeRate: ExchangeRate
 ): void {
@@ -83,7 +83,7 @@ export function validatePricingInputs(
     throw new Error('Quality score must be between 0 and 1')
   }
 
-  if (totalDonationsXRP < 0) {
+  if (totalDonationXrpAmount < 0) {
     throw new Error('Total donations must be non-negative')
   }
 

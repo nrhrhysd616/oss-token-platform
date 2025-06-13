@@ -4,7 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
+import { ProjectService } from '@/services/ProjectService'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -21,13 +22,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'プロジェクトが見つかりません' }, { status: 404 })
     }
 
-    return NextResponse.json({
-      project: publicProject,
-    })
+    return NextResponse.json(publicProject)
   } catch (error) {
     console.error('Public project fetch error:', error)
 
-    if (error instanceof ProjectServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 

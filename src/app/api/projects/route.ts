@@ -4,9 +4,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
+import { ProjectService } from '@/services/ProjectService'
 import { projectPublicQuerySchema } from '@/validations/project'
 import { z } from 'zod'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,16 +23,11 @@ export async function GET(request: NextRequest) {
     // ProjectServiceを使用して公開プロジェクト一覧を取得
     const result = await ProjectService.getPublicProjects(queryParams)
 
-    return NextResponse.json({
-      projects: result.items,
-      total: result.total,
-      limit: result.limit,
-      offset: result.offset,
-    })
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Public projects fetch error:', error)
 
-    if (error instanceof ProjectServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 

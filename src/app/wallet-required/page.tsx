@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
-import XamanQRModal from '@/components/XamanQRModal'
+import WalletLinkQRModal from '@/components/WalletLinkQRModal'
 import WalletStatus from '@/components/WalletStatus'
 import { useAuth } from '@/lib/firebase/auth-context'
 import { useWallet } from '@/hooks/useWallet'
@@ -270,7 +270,7 @@ export default function WalletRequiredPage() {
       </main>
 
       {/* QRモーダル */}
-      <XamanQRModal
+      <WalletLinkQRModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         linkRequest={linkRequest}

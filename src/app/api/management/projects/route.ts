@@ -5,9 +5,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/lib/firebase/admin'
-import { ProjectService, ProjectServiceError } from '@/services/ProjectService'
+import { ProjectService } from '@/services/ProjectService'
 import { projectCreateApiSchema, projectQuerySchema } from '@/validations/project'
 import { z } from 'zod'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Project creation error:', error)
 
-    if (error instanceof ProjectServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 
@@ -78,22 +79,14 @@ export async function GET(request: NextRequest) {
       sortOrder: searchParams.get('sortOrder'),
     })
 
-    // ProjectServiceを使用してプロジェクト一覧を取得（統計情報・権限情報付き）
-    const result = await ProjectService.getMaintainerProjectsWithDetails(
-      decodedToken.uid,
-      queryParams
-    )
+    // ProjectServiceを使用してプロジェクト一覧を取得（メンテナーのプロジェクト一覧には不要なので統計情報・権限情報は含まない）
+    const result = await ProjectService.getMaintainerProjects(decodedToken.uid, queryParams)
 
-    return NextResponse.json({
-      projects: result.items,
-      total: result.total,
-      limit: result.limit,
-      offset: result.offset,
-    })
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Maintainer projects fetch error:', error)
 
-    if (error instanceof ProjectServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 

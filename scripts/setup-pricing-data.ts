@@ -83,7 +83,6 @@ async function setupPricingParameters(param: PricingParameters) {
 async function setupQualityParameters(params: QualityParameter[]) {
   const db = getAdminDb()
 
-  // TODO: weightの合計が1になっているか確認し、なっていなければエラー終了
   const totalWeight = params.reduce((sum, param) => sum + param.weight, 0)
   if (totalWeight !== 1) {
     throw new Error(`品質指標パラメータの重みの合計が1ではありません: ${totalWeight}`)

@@ -126,7 +126,9 @@ async function fetchIssueMetrics(
   // オープンなIssue数を取得
   const issuesResponse = await fetch(
     `https://api.github.com/repos/${owner}/${repo}/issues?state=open&per_page=100`,
-    { headers }
+    {
+      headers,
+    }
   )
 
   if (!issuesResponse.ok) {

@@ -3,6 +3,7 @@
  */
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { getAllToastMessages } from '@/lib/toast-utils'
 
@@ -10,6 +11,8 @@ import { getAllToastMessages } from '@/lib/toast-utils'
  * Cookieからtoastメッセージを取得して表示し、cookieを削除するフック
  */
 export const useToastFromCookie = () => {
+  const pathname = usePathname()
+
   useEffect(() => {
     const handleToastMessages = () => {
       const messages = getAllToastMessages()
@@ -25,7 +28,7 @@ export const useToastFromCookie = () => {
       })
     }
 
-    // コンポーネントマウント時にメッセージをチェック
+    // コンポーネントマウント時とパス変更時にメッセージをチェック
     handleToastMessages()
-  }, [])
+  }, [pathname])
 }

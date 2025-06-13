@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { WalletLinkService, WalletLinkServiceError } from '@/services/WalletLinkService'
+import { WalletLinkService } from '@/services/WalletLinkService'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { walletLinkQuerySchema } from '@/validations'
 import { z } from 'zod'
+import { ServiceError } from '@/services/shared/ServiceError'
 
 /**
  * ウォレット連携ステータスを確認
@@ -86,7 +87,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Failed to check wallet link status:', error)
 
-    if (error instanceof WalletLinkServiceError) {
+    if (error instanceof ServiceError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode })
     }
 

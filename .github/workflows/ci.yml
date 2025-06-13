@@ -15,6 +15,7 @@ env:
   NEXT_PUBLIC_FIREBASE_APP_ID: demo-your-app-id
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: your-measurement-id
   NEXT_PUBLIC_GITHUB_APP_NAME: github-app-name
+  NEXT_PUBLIC_XRPL_EXPLORER_BASE_URL: https://testnet.xrpl.org/
 
 jobs:
   lint:
