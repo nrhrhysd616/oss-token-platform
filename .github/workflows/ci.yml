@@ -54,6 +54,8 @@ jobs:
           XUMM_API_KEY: ${{ secrets.XUMM_API_KEY }}
           XUMM_API_SECRET: ${{ secrets.XUMM_API_SECRET }}
           XRPL_NETWORK: ${{ secrets.XRPL_NETWORK }}
+          XRPL_RLUSD_ISSUER_TESTNET: ${{ secrets.XRPL_RLUSD_ISSUER_TESTNET }}
+          XRPL_RLUSD_ISSUER_MAINNET: ${{ secrets.XRPL_RLUSD_ISSUER_MAINNET }}
           XRPL_ISSUER_1_ADDRESS: ${{ secrets.XRPL_ISSUER_1_ADDRESS }}
           XRPL_ISSUER_1_SECRET: ${{ secrets.XRPL_ISSUER_1_SECRET }}
           XRPL_ISSUER_1_ACTIVE: ${{ secrets.XRPL_ISSUER_1_ACTIVE }}
@@ -86,6 +88,8 @@ jobs:
           XUMM_API_KEY: ${{ secrets.XUMM_API_KEY }}
           XUMM_API_SECRET: ${{ secrets.XUMM_API_SECRET }}
           XRPL_NETWORK: ${{ secrets.XRPL_NETWORK }}
+          XRPL_RLUSD_ISSUER_TESTNET: ${{ secrets.XRPL_RLUSD_ISSUER_TESTNET }}
+          XRPL_RLUSD_ISSUER_MAINNET: ${{ secrets.XRPL_RLUSD_ISSUER_MAINNET }}
           XRPL_ISSUER_1_ADDRESS: ${{ secrets.XRPL_ISSUER_1_ADDRESS }}
           XRPL_ISSUER_1_SECRET: ${{ secrets.XRPL_ISSUER_1_SECRET }}
           XRPL_ISSUER_1_ACTIVE: ${{ secrets.XRPL_ISSUER_1_ACTIVE }}
