@@ -404,7 +404,7 @@ graph LR
 
     subgraph "開発環境"
         D[localhost:3000]
-        E[Firebase Emulator]
+        E[Firebase Development]
         F[XRPL Testnet]
     end
 
@@ -467,7 +467,7 @@ graph TD
 ### テスト戦略
 
 - 単体テスト（Bun Test）
-- 統合テスト（Firebase Emulator）
+- 統合テスト
 - E2E テスト（Playwright）
 - パフォーマンステスト
 
@@ -485,11 +485,11 @@ graph TD
 #### Firebase 接続エラー
 
 ```bash
-# Firebase Emulator の起動確認
-firebase emulators:start
-
 # 環境変数の確認
 echo $FIREBASE_PROJECT_ID
+
+# Firebase プロジェクト接続確認
+firebase projects:list
 ```
 
 #### XRPL 接続エラー
