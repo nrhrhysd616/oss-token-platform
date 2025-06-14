@@ -52,18 +52,28 @@ cp .env.example .env
 ### 3. GitHub App設定
 
 1. [GitHub Developer Settings](https://github.com/settings/apps)でGitHub Appを作成
-2. 以下の権限を設定：
-   - Repository metadata: Read
-   - Repository contents: Read
-   - Issues: Read
-   - Pull requests: Read
-3. Private keyを生成・ダウンロード
-4. `.env`ファイルに設定：
+2. 以下の基本設定を設定:
+   - App name: OSS Token Platform
+   - Homepage URL: URLを設定（例: `https://oss-token-platform.vercel.app`）
+   - Identifying and authorizing users → Callback URL: Firebase AuthのGitHubプロバイダーのコールバックURLを設定
+   - Identifying and authorizing users → Request user authorization (OAuth) during installation: チェックを外す
+   - Identifying and authorizing users → Enable Device Flow: チェックを入れる
+   - Post installation → Setup URL (optional): ${ORIGIN}/api/github/installations/callback
+3. 以下の権限を設定：
+   - Repository Contents: Read
+   - Repository Discussions: Read
+   - Repository Issues: Read
+   - Repository Metadata: Mandatory
+   - Repository Pull requests: Read
+   - Account Email addresses: Read
+4. Private keyを生成・ダウンロード
+5. `.env`ファイルに設定：
    - `GITHUB_APP_ID`
    - `GITHUB_APP_PRIVATE_KEY`
    - `GITHUB_APP_CLIENT_ID`
    - `GITHUB_APP_CLIENT_SECRET`
    - `GITHUB_WEBHOOK_SECRET`
+6. GitHub Appは公開設定にしておくこと
 
 ### 4. Xaman API設定
 
@@ -72,6 +82,8 @@ cp .env.example .env
 3. `.env`ファイルに設定：
    - `XUMM_API_KEY`
    - `XUMM_API_SECRET`
+4. XamanのコールバックURLを設定（例: `https://oss-token-platform.vercel.app/api/xaman/callback`）
+5. その他コンソールでApplication detailsを設定
 
 ### 5. 開発サーバーの起動
 
