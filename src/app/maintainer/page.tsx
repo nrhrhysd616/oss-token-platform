@@ -259,7 +259,7 @@ export default function MaintainerDashboard() {
                   <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-gray-400 text-2xl">💝</span>
                   </div>
-                  <p className="text-gray-400">まだ寄付を受け取ってnません</p>
+                  <p className="text-gray-400">まだ寄付を受け取っていません</p>
                   <p className="text-gray-500 text-sm mt-2">
                     プロジェクトを登録して公開すると、寄付を受け取ることができます
                   </p>
