@@ -19,3 +19,6 @@
 ## コードの記述ルール
 
 - TypeScriptの型定義は`type`で行う
+- 関数やメソッドの引数や戻り値はできる限り型指定を行う
+- クラスのメソッドは`public`、`private`、`protected`を明示的に指定する
+- クラスのプロパティは`public`、`private`、`protected`を明示的に指定する
