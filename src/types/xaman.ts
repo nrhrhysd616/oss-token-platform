@@ -36,3 +36,25 @@ export type WalletLinkRequest = {
   completedAt?: Date
   walletAddress?: string
 }
+
+/**
+ * CheckCash通知データの型定義
+ */
+export type CheckCashNotificationData = {
+  checkId: string
+  tokenAmount: number
+  tokenCode: string
+  recipientAddress?: string
+  projectId: string
+}
+
+/**
+ * Xamanユーザートークンの型定義
+ */
+export type XamanUserToken = {
+  token: string
+  issuedAt: Date
+  expiresAt: Date
+  payloadUuid: string
+  createdAt: Date
+}

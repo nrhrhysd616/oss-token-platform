@@ -55,6 +55,7 @@ export type DonationRecord = {
   txHash: string
   destinationTag: number
   verificationHash: string
+  xamanPayloadUuid: string
   tokenIssued: boolean
   tokenAmount?: number
   tokenTxHash?: string

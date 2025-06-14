@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     // どれも見つからない場合
-    return NextResponse.json({ error: 'Payload not found in any system' }, { status: 404 })
+    return NextResponse.json({ error: 'Payload not found in any system' }, { status: 200 })
   } catch (error) {
     console.error('Failed to process Xaman callback:', error)
 
@@ -191,7 +191,7 @@ async function saveUserToken(
   try {
     await getAdminDb()
       .collection(FIRESTORE_COLLECTIONS.XAMAN_USER_TOKENS)
-      .doc(userToken.user_token)
+      .doc(payloadUuid)
       .set({
         token: userToken.user_token,
         issuedAt: new Date(userToken.token_issued * 1000),
@@ -199,7 +199,6 @@ async function saveUserToken(
         payloadUuid,
         createdAt: new Date(),
       })
-
     console.log('User token saved for future push notifications:', userToken.user_token)
   } catch (error) {
     console.error('Failed to save user token:', error)

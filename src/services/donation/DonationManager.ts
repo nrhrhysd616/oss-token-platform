@@ -210,6 +210,7 @@ export class DonationManager extends BaseService {
       txHash: xamanStatus.response.txid,
       destinationTag: request.destinationTag,
       verificationHash: request.verificationHash,
+      xamanPayloadUuid: request.xamanPayloadUuid!,
       tokenIssued: false,
       tokenIssueStatus: 'pending',
       createdAt: new Date(),

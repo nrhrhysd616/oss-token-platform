@@ -11,3 +11,4 @@ export {
   isXRPLFormat,
   formatTokenCodeForDisplay,
 } from './token-utils'
+export { generateCheckId, validateCheckId } from './check-utils'

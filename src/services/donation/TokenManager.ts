@@ -3,12 +3,15 @@
  */
 
 import { CheckCreate, IssuedCurrencyAmount } from 'xrpl'
+import { XummTypes } from 'xumm-sdk'
 import { getXRPLClient } from '@/lib/xrpl/client'
 import { getXRPLConfig } from '@/lib/xrpl/config'
 import { convertTokenCodeToXRPLFormat } from '@/lib/xrpl/token-utils'
+import { generateCheckId } from '@/lib/xrpl/check-utils'
 import { BaseService } from '../shared/BaseService'
 import { PricingService } from '../PricingService'
 import type { DonationRecord, TokenIssueStatus } from '@/types/donation'
+import type { CheckCashNotificationData, XamanUserToken } from '@/types/xaman'
 import { docPath } from '@/lib/firebase/collections'
 import { DonationServiceError } from '../DonationService'
 
@@ -28,6 +31,7 @@ export type TokenIssueRequest = {
 export type TokenIssueResult = {
   success: boolean
   txHash?: string
+  checkId?: string
   error?: string
   amount: string
   tokenCode: string
@@ -100,6 +104,34 @@ export class TokenManager extends BaseService {
         updateData
       )
 
+      // CreateCheck成功時にCheckCash通知を送信
+      if (issueResult.success && issueResult.checkId && donationRecord.xamanPayloadUuid) {
+        const userToken = await this.getDocumentByPath<XamanUserToken>(
+          docPath.xamanUserToken(donationRecord.xamanPayloadUuid)
+        )
+
+        if (userToken) {
+          // CheckCash通知を送信（正しいCheckIDを使用）
+          const notificationData: CheckCashNotificationData = {
+            checkId: issueResult.checkId, // 正しく生成されたCheckID
+            tokenAmount: roundedTokenAmount,
+            tokenCode,
+            // recipientAddress: donationRecord.donorAddress,
+            projectId: donationRecord.projectId,
+          }
+
+          await this.sendCheckCashNotification(userToken.token, notificationData)
+        } else {
+          console.warn(
+            `⚠️ No valid user token found for payload: ${donationRecord.xamanPayloadUuid} (donation: ${donationRecord.id})`
+          )
+        }
+      } else if (issueResult.success && issueResult.checkId && !donationRecord.xamanPayloadUuid) {
+        console.warn(
+          `⚠️ No payload UUID found in donation record: ${donationRecord.id} - CheckCash notification skipped`
+        )
+      }
+
       console.log(
         `✅ Token issue ${issueResult.success ? 'completed' : 'failed'} for donation record id: ${donationRecord.id} (${roundedTokenAmount} tokens)`
       )
@@ -133,6 +165,30 @@ export class TokenManager extends BaseService {
       console.error('Total supply check error:', error)
       return 0
     }
+  }
+
+  // === CHECK CASH OPERATIONS ===
+
+  /**
+   * CheckCash署名依頼通知を送信
+   */
+  private static async sendCheckCashNotification(
+    userToken: string,
+    notificationData: CheckCashNotificationData
+  ): Promise<void> {
+    const checkCashTx: XummTypes.XummJsonTransaction = {
+      TransactionType: 'CheckCash',
+      CheckID: notificationData.checkId,
+    }
+
+    const pushPayload: XummTypes.XummPostPayloadBodyJson = {
+      user_token: userToken,
+      txjson: checkCashTx,
+    }
+
+    const result = await this.createXamanPayload(pushPayload)
+
+    console.log('CheckCash notification result:', result)
   }
 
   // === PRIVATE UTILITIES ===
@@ -185,9 +241,20 @@ export class TokenManager extends BaseService {
       // メタデータから結果を確認
       const meta = result.result.meta as any
       if (meta.TransactionResult === 'tesSUCCESS') {
+        // 送信されたトランザクションからシーケンス番号を取得
+        const sequence = result.result.tx_json.Sequence
+
+        // 正しいCheckIDを生成
+        const checkId = generateCheckId(issuerWallet.address, sequence!)
+
+        console.log(
+          `✅ CheckCreate successful. TxHash: ${result.result.hash}, CheckID: ${checkId}, Sequence: ${sequence}`
+        )
+
         return {
           success: true,
           txHash: result.result.hash,
+          checkId: checkId,
           amount: request.amount.toString(),
           tokenCode,
           recipientAddress: request.recipientAddress,
