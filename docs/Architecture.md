@@ -66,17 +66,15 @@ graph TB
 
 ### フロントエンド
 
-- **Next.js 15.3.3**: React フレームワーク（App Router使用）
+- **Next.js**: React フレームワーク（App Router使用）
 - **TypeScript**: 型安全性の確保
-- **Tailwind CSS 4.1.10**: スタイリング
-- **React Hook Form**: フォーム管理
+- **Tailwind CSS**: スタイリング
 - **React Hot Toast**: 通知システム
 
 ### バックエンド
 
 - **Next.js API Routes**: サーバーサイドAPI
 - **Firebase Admin SDK**: サーバーサイド認証・データベース操作
-- **Vercel Edge Functions**: エッジコンピューティング
 
 ### データベース・認証
 
@@ -97,9 +95,7 @@ graph TB
 
 ### CI/CD・インフラ
 
-- **GitHub Actions**: CI/CD パイプライン
 - **Vercel**: ホスティング・デプロイ
-- **Firebase Hosting**: 静的ファイル配信
 
 ## データベース設計
 
@@ -356,42 +352,11 @@ const qualityScore = {
 ### フロントエンド
 
 - Next.js App Router による自動コード分割
-- 画像最適化（next/image）
-- 静的生成（SSG）の活用
-- クライアントサイドキャッシュ
-
-### バックエンド
-
-- Firestore インデックス最適化
-- API レスポンスキャッシュ
-- Edge Functions による低レイテンシ
-- バッチ処理による効率化
 
 ### データベース
 
-- 複合インデックスの設計
+- Firestore インデックス最適化
 - クエリ最適化
-- データ正規化とデノーマライゼーションのバランス
-
-## 監視・ログ
-
-### アプリケーション監視
-
-- Vercel Analytics
-- Firebase Performance Monitoring
-- カスタムメトリクス収集
-
-### エラー追跡
-
-- Next.js エラーハンドリング
-- Firebase Crashlytics
-- 構造化ログ出力
-
-### XRPL 監視
-
-- トランザクション監視
-- ウォレット残高監視
-- ネットワーク状態監視
 
 ## デプロイメント
 
@@ -421,19 +386,6 @@ graph LR
     end
 ```
 
-### CI/CD パイプライン
-
-```mermaid
-graph TD
-    A[Git Push] --> B[GitHub Actions]
-    B --> C[Lint & Test]
-    C --> D[Build]
-    D --> E[Deploy to Vercel]
-    E --> F[Firebase Deploy]
-    F --> G[E2E Test]
-    G --> H[Production Ready]
-```
-
 ## 拡張性・スケーラビリティ
 
 ### 水平スケーリング
@@ -447,13 +399,6 @@ graph TD
 - Edge Functions の活用
 - データベースクエリ最適化
 - キャッシュ戦略の改善
-
-### 将来の拡張計画
-
-- マルチチェーン対応
-- ガバナンス機能
-- NFT 連携
-- DeFi プロトコル統合
 
 ## 開発ガイドライン
 
