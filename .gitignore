@@ -188,3 +188,5 @@ dist
 .DS_Store
 
 *storybook.log
+.vercel
+.env*.local
