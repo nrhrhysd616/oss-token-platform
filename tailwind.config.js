@@ -5,6 +5,32 @@ export default {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    // アクセント色のクラス
+    'text-red-500',
+    'text-yellow-500',
+    'bg-red-500',
+    'bg-yellow-500',
+    'border-red-500',
+    'border-yellow-500',
+    'hover:bg-red-600',
+    'hover:bg-yellow-600',
+    'hover:text-red-600',
+    'hover:text-yellow-600',
+    'focus:border-red-500',
+    'focus:border-yellow-500',
+    'focus:ring-red-500',
+    'focus:ring-yellow-500',
+    // 透明度付きクラス
+    'bg-red-500/20',
+    'bg-yellow-500/20',
+    'border-red-500/20',
+    'border-yellow-500/20',
+    'hover:border-red-500/50',
+    'hover:border-yellow-500/50',
+    'hover:shadow-red-500/10',
+    'hover:shadow-yellow-500/10',
+  ],
   theme: {
     extend: {
       colors: {

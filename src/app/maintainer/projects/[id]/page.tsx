@@ -3,8 +3,10 @@
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/firebase/auth-context'
+import { useTheme } from '@/lib/theme-context'
 import { MaintainerProject } from '@/types/project'
 import { formatDateJP, formatDateTimeJP } from '@/lib/firebase/utils'
+import { getAccentClasses, getThemeButtonClasses, getThemeLinkClasses } from '@/lib/theme-utils'
 
 type MaintainerProjectResponse = {
   project: MaintainerProject
@@ -17,9 +19,15 @@ export default function MaintainerProjectDetailPage({
 }) {
   const { id } = use(params)
   const { user } = useAuth()
+  const { colorTheme } = useTheme()
   const [project, setProject] = useState<MaintainerProject | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // テーマに基づくスタイル
+  const { text: accentText, bg: accentBg } = getAccentClasses(colorTheme)
+  const buttonClasses = getThemeButtonClasses(colorTheme)
+  const linkClasses = getThemeLinkClasses(colorTheme)
 
   const fetchProject = async () => {
     if (!user) return
@@ -84,7 +92,9 @@ export default function MaintainerProjectDetailPage({
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+              <div
+                className={`animate-spin rounded-full h-8 w-8 border-b-2 ${accentBg.replace('bg-', 'border-')} mx-auto mb-4`}
+              ></div>
               <p className="text-gray-400">プロジェクトを読み込み中...</p>
             </div>
           </div>
@@ -103,7 +113,7 @@ export default function MaintainerProjectDetailPage({
               <p>{error}</p>
               <Link
                 href="/maintainer/projects"
-                className="mt-4 inline-block bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-md font-medium transition-colors"
+                className={`mt-4 inline-block ${buttonClasses} px-6 py-2 rounded-md`}
               >
                 プロジェクト一覧に戻る
               </Link>
@@ -169,7 +179,7 @@ export default function MaintainerProjectDetailPage({
                     href={project.repositoryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-yellow-400 hover:text-yellow-300 flex items-center"
+                    className={`${linkClasses} flex items-center`}
                   >
                     <svg
                       className="w-4 h-4 mr-2"
@@ -206,7 +216,7 @@ export default function MaintainerProjectDetailPage({
                     <label className="block text-sm font-medium text-gray-400 mb-1">
                       トークンコード
                     </label>
-                    <div className="text-yellow-400 font-mono text-lg">{project.tokenCode}</div>
+                    <div className={`${accentText} font-mono text-lg`}>{project.tokenCode}</div>
                   </div>
                 )}
 
@@ -242,7 +252,7 @@ export default function MaintainerProjectDetailPage({
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-yellow-400 font-semibold">
+                        <div className={`${accentText} font-semibold`}>
                           {donation.xrpAmount} XRP
                         </div>
                         <a
@@ -270,7 +280,7 @@ export default function MaintainerProjectDetailPage({
               <h2 className="text-xl font-semibold mb-4">統計情報</h2>
               <div className="space-y-4">
                 <div className="text-center p-4 bg-gray-800 rounded-md">
-                  <div className="text-2xl font-bold text-yellow-400">
+                  <div className={`text-2xl font-bold ${accentText}`}>
                     {project.stats.totalXrpDonations} XRP
                   </div>
                   <div className="text-sm text-gray-400">総寄付額</div>

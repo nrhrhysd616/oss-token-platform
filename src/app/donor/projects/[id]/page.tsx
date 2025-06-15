@@ -7,14 +7,28 @@ import { PublicProject } from '@/types/project'
 import { formatDateJP } from '@/lib/firebase/utils'
 import { useDonation } from '@/hooks/useDonation'
 import DonationQRModal from '@/components/DonationQRModal'
+import { useTheme } from '@/lib/theme-context'
+import {
+  getAccentClasses,
+  getThemeButtonClasses,
+  getThemeLinkClasses,
+  getThemeInputClasses,
+} from '@/lib/theme-utils'
 
 export default function DonorProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
+  const { colorTheme } = useTheme()
   const [project, setProject] = useState<PublicProject | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [donationXrpAmount, setDonationXrpAmount] = useState('')
   const [showDonationModal, setShowDonationModal] = useState(false)
+
+  // テーマに基づくスタイル
+  const { text: accentText, bg: accentBg, bgOpacity, borderOpacity } = getAccentClasses(colorTheme)
+  const buttonClasses = getThemeButtonClasses(colorTheme)
+  const linkClasses = getThemeLinkClasses(colorTheme)
+  const inputClasses = getThemeInputClasses(colorTheme)
 
   // 寄付フック
   const {
@@ -129,7 +143,9 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+              <div
+                className={`animate-spin rounded-full h-8 w-8 border-b-2 ${accentBg.replace('bg-', 'border-')} mx-auto mb-4`}
+              ></div>
               <p className="text-gray-400">プロジェクトを読み込み中...</p>
             </div>
           </div>
@@ -148,7 +164,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
               <p>{error}</p>
               <Link
                 href="/donor/projects"
-                className="mt-4 inline-block bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-md font-medium transition-colors"
+                className={`mt-4 inline-block ${buttonClasses} px-6 py-2 rounded-md`}
               >
                 プロジェクト一覧に戻る
               </Link>
@@ -203,7 +219,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                     href={project.repositoryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-yellow-400 hover:text-yellow-300 flex items-center"
+                    className={`${linkClasses} flex items-center`}
                   >
                     <svg
                       className="w-4 h-4 mr-2"
@@ -240,10 +256,10 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                     <label className="block text-sm font-medium text-gray-400 mb-1">
                       プロジェクトトークン
                     </label>
-                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-4">
+                    <div className={`${bgOpacity} border ${borderOpacity} rounded-md p-4`}>
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-yellow-400 font-mono text-lg">
+                          <div className={`${accentText} font-mono text-lg`}>
                             {project.tokenCode}
                           </div>
                           <div className="text-sm text-gray-400">
@@ -251,7 +267,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-yellow-400 font-semibold text-lg">
+                          <div className={`${accentText} font-semibold text-lg`}>
                             {project.stats.currentPrice.toFixed(6)} XRP
                           </div>
                           <div className="text-sm text-gray-400">現在価格</div>
@@ -363,14 +379,14 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                     placeholder="10"
                     value={donationXrpAmount}
                     onChange={e => setDonationXrpAmount(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+                    className={`w-full px-3 py-2 ${inputClasses}`}
                   />
                 </div>
 
                 {donationXrpAmount && parseFloat(donationXrpAmount) > 0 && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
+                  <div className={`${bgOpacity} border ${borderOpacity} rounded-md p-3`}>
                     <div className="text-sm text-gray-300">想定受け取りトークン数:</div>
-                    <div className="text-yellow-400 font-semibold">
+                    <div className={`${accentText} font-semibold`}>
                       {(parseFloat(donationXrpAmount) / project.stats.currentPrice).toFixed(6)}{' '}
                       {project.tokenCode}
                     </div>
@@ -380,7 +396,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
                 <button
                   onClick={handleDonation}
                   disabled={!donationXrpAmount || parseFloat(donationXrpAmount) <= 0}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-black disabled:text-gray-400 px-4 py-3 rounded-md font-medium transition-colors"
+                  className={`w-full ${buttonClasses} disabled:bg-gray-600 disabled:cursor-not-allowed disabled:text-gray-400 px-4 py-3 rounded-md`}
                 >
                   寄付する
                 </button>
@@ -396,7 +412,7 @@ export default function DonorProjectDetailPage({ params }: { params: Promise<{ i
               <h2 className="text-xl font-semibold mb-4">統計情報</h2>
               <div className="space-y-4">
                 <div className="text-center p-4 bg-gray-800 rounded-md">
-                  <div className="text-2xl font-bold text-yellow-400">
+                  <div className={`text-2xl font-bold ${accentText}`}>
                     {project.stats.totalXrpDonations} XRP
                   </div>
                   <div className="text-sm text-gray-400">総寄付額</div>

@@ -4,12 +4,32 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PublicProject } from '@/types/project'
 import { PaginatedResult } from '@/services/shared/BaseService'
+import { useTheme } from '@/lib/theme-context'
+import { getAccentClasses, getThemeButtonClasses, getThemeInputClasses } from '@/lib/theme-utils'
 
 export default function DonorProjectsPage() {
+  const { colorTheme } = useTheme()
   const [projects, setProjects] = useState<PublicProject[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+
+  // テーマに基づくスタイル
+  const {
+    text: accentText,
+    bg: accentBg,
+    bgOpacity,
+    borderOpacity,
+    border,
+  } = getAccentClasses(colorTheme)
+  const buttonClasses = getThemeButtonClasses(colorTheme)
+  const inputClasses = getThemeInputClasses(colorTheme)
+
+  // ホバー効果用のクラス
+  const hoverBorderClass =
+    colorTheme === 'red' ? 'hover:border-red-500/50' : 'hover:border-yellow-500/50'
+  const hoverShadowClass =
+    colorTheme === 'red' ? 'hover:shadow-red-500/10' : 'hover:shadow-yellow-500/10'
 
   const fetchProjects = async () => {
     try {
@@ -52,7 +72,9 @@ export default function DonorProjectsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+              <div
+                className={`animate-spin rounded-full h-8 w-8 border-b-2 ${accentBg.replace('bg-', 'border-')} mx-auto mb-4`}
+              ></div>
               <p className="text-gray-400">プロジェクトを読み込み中...</p>
             </div>
           </div>
@@ -68,7 +90,7 @@ export default function DonorProjectsPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">
             <span className="text-white">OSS プロジェクトに</span>
-            <span className="text-yellow-500">寄付しよう</span>
+            <span className={accentText}>寄付しよう</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             オープンソースプロジェクトを支援して、独自トークンを受け取りましょう。
@@ -98,7 +120,7 @@ export default function DonorProjectsPage() {
                 placeholder="プロジェクトを検索..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+                className={`w-full pl-10 pr-4 py-3 ${inputClasses}`}
               />
             </div>
           </div>
@@ -154,7 +176,7 @@ export default function DonorProjectsPage() {
                 <Link
                   key={project.id}
                   href={`/donor/projects/${project.id}`}
-                  className="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-yellow-500/50 hover:shadow-lg hover:shadow-yellow-500/10 transition-all duration-200"
+                  className={`bg-gray-900 border border-gray-800 rounded-lg p-6 ${hoverBorderClass} hover:shadow-lg ${hoverShadowClass} transition-all duration-200`}
                 >
                   <div className="mb-4">
                     <h3 className="text-xl font-semibold mb-2 truncate">{project.name}</h3>
@@ -183,7 +205,7 @@ export default function DonorProjectsPage() {
                     {/* 統計情報 */}
                     <div className="grid grid-cols-2 gap-4 pt-3 border-t border-gray-800">
                       <div className="text-center">
-                        <div className="text-yellow-400 font-semibold">
+                        <div className={`${accentText} font-semibold`}>
                           {project.stats.totalXrpDonations} XRP
                         </div>
                         <div className="text-xs text-gray-500">総寄付額</div>
@@ -196,16 +218,16 @@ export default function DonorProjectsPage() {
 
                     {/* トークン情報 */}
                     {project.tokenCode && (
-                      <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
+                      <div className={`${bgOpacity} border ${borderOpacity} rounded-md p-3`}>
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-yellow-400 font-mono text-sm">
+                            <div className={`${accentText} font-mono text-sm`}>
                               {project.tokenCode}
                             </div>
                             <div className="text-xs text-gray-400">トークン</div>
                           </div>
                           <div className="text-right">
-                            <div className="text-yellow-400 font-semibold">
+                            <div className={`${accentText} font-semibold`}>
                               {project.stats.currentPrice} XRP
                             </div>
                             <div className="text-xs text-gray-400">現在価格</div>
@@ -216,7 +238,7 @@ export default function DonorProjectsPage() {
 
                     {/* 寄付ボタン */}
                     <div className="pt-2">
-                      <div className="w-full bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-md font-medium transition-colors text-center">
+                      <div className={`w-full ${buttonClasses} px-4 py-2 rounded-md text-center`}>
                         🎁 寄付する
                       </div>
                     </div>
@@ -233,21 +255,21 @@ export default function DonorProjectsPage() {
             <h2 className="text-2xl font-semibold mb-4">寄付の仕組み</h2>
             <div className="grid md:grid-cols-3 gap-6 text-sm">
               <div>
-                <div className="text-yellow-500 text-2xl mb-2">💰</div>
+                <div className={`${accentText} text-2xl mb-2`}>💰</div>
                 <h3 className="font-semibold mb-2">XRPで寄付</h3>
                 <p className="text-gray-400">
                   XRPLネットワークを使用して、簡単かつ低コストで寄付できます
                 </p>
               </div>
               <div>
-                <div className="text-yellow-500 text-2xl mb-2">🪙</div>
+                <div className={`${accentText} text-2xl mb-2`}>🪙</div>
                 <h3 className="font-semibold mb-2">トークンを受け取り</h3>
                 <p className="text-gray-400">
                   寄付額に応じてプロジェクト独自のトークンを受け取れます
                 </p>
               </div>
               <div>
-                <div className="text-yellow-500 text-2xl mb-2">📈</div>
+                <div className={`${accentText} text-2xl mb-2`}>📈</div>
                 <h3 className="font-semibold mb-2">価値の成長</h3>
                 <p className="text-gray-400">
                   プロジェクトの成長とともにトークンの価値も上昇する可能性があります

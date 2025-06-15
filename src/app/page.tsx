@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Header from '@/components/Header'
 import { useAuth } from '@/lib/firebase/auth-context'
 import { useTheme } from '@/lib/theme-context'
+import { getAccentClasses, getThemeButtonClasses } from '@/lib/theme-utils'
 
 export default function Home() {
   const { user, loading, currentMode, signInWithGithub } = useAuth()
@@ -13,10 +14,12 @@ export default function Home() {
   const router = useRouter()
 
   // カラーテーマに基づくスタイル
-  const accentColor = colorTheme === 'red' ? 'text-red-500' : 'text-yellow-500'
-  const buttonBg =
-    colorTheme === 'red' ? 'bg-red-500 hover:bg-red-600' : 'bg-yellow-500 hover:bg-yellow-600'
-  const accentBg = colorTheme === 'red' ? 'bg-red-500/20' : 'bg-yellow-500/20'
+  const {
+    text: accentColor,
+    bgOpacity: accentBg,
+    borderOpacity: accentBorder,
+  } = getAccentClasses(colorTheme)
+  const buttonBg = getThemeButtonClasses(colorTheme)
 
   // ログイン済みユーザーで現在のモードがある場合はダッシュボードにリダイレクト
   // currentModeがnullの場合はリダイレクトしない（モード選択を促すため）
@@ -98,7 +101,7 @@ export default function Home() {
             {!user && (
               <button
                 onClick={signInWithGithub}
-                className={`${buttonBg} text-black px-8 py-4 rounded-lg text-lg font-semibold transition-colors shadow-lg`}
+                className={`${buttonBg} px-8 py-4 rounded-lg text-lg shadow-lg`}
               >
                 GitHubでログインして始める
               </button>
@@ -204,18 +207,10 @@ export default function Home() {
                 </div>
               </div>
 
-              <div
-                className={`${accentBg} border ${colorTheme === 'red' ? 'border-red-500/20' : 'border-yellow-500/20'} rounded-md p-3 mb-4`}
-              >
+              <div className={`${accentBg} border ${accentBorder} rounded-md p-3 mb-4`}>
                 <div className="flex items-start">
-                  <span
-                    className={`${colorTheme === 'red' ? 'text-red-400' : 'text-yellow-400'} mr-2 mt-0.5`}
-                  >
-                    ⚠
-                  </span>
-                  <p
-                    className={`${colorTheme === 'red' ? 'text-red-400' : 'text-yellow-400'} text-sm`}
-                  >
+                  <span className={`${accentColor} mr-2 mt-0.5`}>⚠</span>
+                  <p className={`${accentColor} text-sm`}>
                     <strong>ウォレット連携が必要:</strong>{' '}
                     寄付受け取り用のXRPLウォレット連携が必要です
                   </p>
@@ -250,11 +245,7 @@ export default function Home() {
                 <div
                   className={`w-12 h-12 ${accentBg} rounded-lg flex items-center justify-center mx-auto mb-4`}
                 >
-                  <span
-                    className={`${colorTheme === 'red' ? 'text-red-400' : 'text-yellow-400'} text-2xl`}
-                  >
-                    ⚡
-                  </span>
+                  <span className={`${accentColor} text-2xl`}>⚡</span>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">高速・低コスト</h3>
                 <p className="text-gray-400">XRPLネットワークを使用した高速かつ低コストな取引</p>
@@ -263,11 +254,7 @@ export default function Home() {
                 <div
                   className={`w-12 h-12 ${accentBg} rounded-lg flex items-center justify-center mx-auto mb-4`}
                 >
-                  <span
-                    className={`${colorTheme === 'red' ? 'text-red-400' : 'text-yellow-400'} text-2xl`}
-                  >
-                    🔗
-                  </span>
+                  <span className={`${accentColor} text-2xl`}>🔗</span>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">GitHub連携</h3>
                 <p className="text-gray-400">GitHubリポジトリと直接連携した透明性の高いシステム</p>
@@ -276,11 +263,7 @@ export default function Home() {
                 <div
                   className={`w-12 h-12 ${accentBg} rounded-lg flex items-center justify-center mx-auto mb-4`}
                 >
-                  <span
-                    className={`${colorTheme === 'red' ? 'text-red-400' : 'text-yellow-400'} text-2xl`}
-                  >
-                    🌱
-                  </span>
+                  <span className={`${accentColor} text-2xl`}>🌱</span>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">持続可能な支援</h3>
                 <p className="text-gray-400">トークンエコノミーによる長期的なOSS支援モデル</p>

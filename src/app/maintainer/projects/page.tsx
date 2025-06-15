@@ -3,16 +3,23 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/firebase/auth-context'
+import { useTheme } from '@/lib/theme-context'
 import { Project, ProjectStatus } from '@/types/project'
 import { formatDateJP } from '@/lib/firebase/utils'
 import { PaginatedResult } from '@/services/shared/BaseService'
+import { getAccentClasses, getThemeButtonClasses } from '@/lib/theme-utils'
 
 export default function MaintainerProjectsPage() {
   const { user } = useAuth()
+  const { colorTheme } = useTheme()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all')
+
+  // テーマに基づくスタイル
+  const { text: accentText, bg: accentBg, bgHover: accentBgHover } = getAccentClasses(colorTheme)
+  const buttonClasses = getThemeButtonClasses(colorTheme)
 
   const fetchProjects = async () => {
     if (!user) return
@@ -80,7 +87,9 @@ export default function MaintainerProjectsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+              <div
+                className={`animate-spin rounded-full h-8 w-8 border-b-2 ${accentBg.replace('bg-', 'border-')} mx-auto mb-4`}
+              ></div>
               <p className="text-gray-400">プロジェクトを読み込み中...</p>
             </div>
           </div>
@@ -98,10 +107,7 @@ export default function MaintainerProjectsPage() {
             <h1 className="text-3xl font-bold mb-2">プロジェクト管理</h1>
             <p className="text-gray-400">あなたが管理するプロジェクトの一覧です</p>
           </div>
-          <Link
-            href="/maintainer/projects/new"
-            className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-3 rounded-md font-medium transition-colors"
-          >
+          <Link href="/maintainer/projects/new" className={`${buttonClasses} px-6 py-3 rounded-md`}>
             新しいプロジェクトを作成
           </Link>
         </div>
@@ -113,7 +119,7 @@ export default function MaintainerProjectsPage() {
               onClick={() => setStatusFilter('all')}
               className={`px-4 py-2 rounded-md transition-colors ${
                 statusFilter === 'all'
-                  ? 'bg-yellow-500 text-black'
+                  ? `${accentBg} text-white`
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
@@ -123,7 +129,7 @@ export default function MaintainerProjectsPage() {
               onClick={() => setStatusFilter('draft')}
               className={`px-4 py-2 rounded-md transition-colors ${
                 statusFilter === 'draft'
-                  ? 'bg-yellow-500 text-black'
+                  ? `${accentBg} text-white`
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
@@ -133,7 +139,7 @@ export default function MaintainerProjectsPage() {
               onClick={() => setStatusFilter('active')}
               className={`px-4 py-2 rounded-md transition-colors ${
                 statusFilter === 'active'
-                  ? 'bg-yellow-500 text-black'
+                  ? `${accentBg} text-white`
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
@@ -143,7 +149,7 @@ export default function MaintainerProjectsPage() {
               onClick={() => setStatusFilter('suspended')}
               className={`px-4 py-2 rounded-md transition-colors ${
                 statusFilter === 'suspended'
-                  ? 'bg-yellow-500 text-black'
+                  ? `${accentBg} text-white`
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
@@ -181,7 +187,7 @@ export default function MaintainerProjectsPage() {
             <p className="text-gray-400 mb-6">最初のプロジェクトを作成してみましょう</p>
             <Link
               href="/maintainer/projects/new"
-              className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-3 rounded-md font-medium transition-colors inline-block"
+              className={`${buttonClasses} px-6 py-3 rounded-md inline-block`}
             >
               プロジェクトを作成
             </Link>
@@ -220,7 +226,7 @@ export default function MaintainerProjectsPage() {
                   </div>
 
                   {project.tokenCode && (
-                    <div className="flex items-center text-yellow-400">
+                    <div className={`flex items-center ${accentText}`}>
                       <svg
                         className="w-4 h-4 mr-2"
                         fill="none"

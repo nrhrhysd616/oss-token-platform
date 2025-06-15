@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
+import AuthGuard from '@/components/AuthGuard'
 import { useAuth } from '@/lib/firebase/auth-context'
-import { UserRole } from '@/types/user'
 import { useTheme } from '@/lib/theme-context'
+import { getAccentClasses } from '@/lib/theme-utils'
+import type { UserRole } from '@/types/user'
 
 export default function ModeSelectPage() {
   const { user, userRoles, currentMode, switchMode, updateUserRoles, loading } = useAuth()
@@ -16,9 +18,11 @@ export default function ModeSelectPage() {
   const [error, setError] = useState<string | null>(null)
 
   // カラーテーマに基づくスタイル
-  const accentBg = colorTheme === 'red' ? 'bg-red-500/20' : 'bg-yellow-500/20'
-  const accentBorder = colorTheme === 'red' ? 'border-red-500/20' : 'border-yellow-500/20'
-  const accentText = colorTheme === 'red' ? 'text-red-400' : 'text-yellow-400'
+  const {
+    text: accentText,
+    bgOpacity: accentBg,
+    borderOpacity: accentBorder,
+  } = getAccentClasses(colorTheme)
 
   const handleModeSelect = async (mode: UserRole) => {
     if (!user) return
