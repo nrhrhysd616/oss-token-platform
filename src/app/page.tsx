@@ -108,7 +108,7 @@ export default function Home() {
           {/* 役割選択セクション */}
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             {/* 寄付者向け */}
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 hover:border-blue-500/50 transition-colors">
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 hover:border-blue-500/50 transition-colors flex flex-col h-full">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-blue-400 text-3xl">🎁</span>
@@ -147,25 +147,27 @@ export default function Home() {
                 </div>
               </div>
 
-              {user ? (
-                <Link
-                  href="/donor"
-                  className="block w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors text-center"
-                >
-                  寄付者ダッシュボードへ
-                </Link>
-              ) : (
-                <button
-                  onClick={signInWithGithub}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                >
-                  GitHubでログインして寄付を始める
-                </button>
-              )}
+              <div className="mt-auto">
+                {user ? (
+                  <Link
+                    href="/donor"
+                    className="block w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors text-center"
+                  >
+                    寄付者ダッシュボードへ
+                  </Link>
+                ) : (
+                  <button
+                    onClick={signInWithGithub}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    GitHubでログインして寄付を始める
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* OSSメンテナー向け */}
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 hover:border-green-500/50 transition-colors">
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 hover:border-green-500/50 transition-colors flex flex-col h-full">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-green-400 text-3xl">🛠</span>
@@ -220,21 +222,23 @@ export default function Home() {
                 </div>
               </div>
 
-              {user ? (
-                <Link
-                  href="/maintainer"
-                  className="block w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors text-center"
-                >
-                  メンテナーダッシュボードへ
-                </Link>
-              ) : (
-                <button
-                  onClick={signInWithGithub}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                >
-                  GitHubでログインしてプロジェクト登録
-                </button>
-              )}
+              <div className="mt-auto">
+                {user ? (
+                  <Link
+                    href="/maintainer"
+                    className="block w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors text-center"
+                  >
+                    メンテナーダッシュボードへ
+                  </Link>
+                ) : (
+                  <button
+                    onClick={signInWithGithub}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    GitHubでログインしてプロジェクト登録
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

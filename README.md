@@ -91,8 +91,11 @@ cp .env.example .env
 # 依存関係のインストール
 bun install
 
-# Firebase Emulatorの起動
-bun run firebase:emulators:start
+# Firestoreのインデックスをデプロイ
+bun firebase deploy --only firestore:indexes
+
+# Firestoreのマスタデータをセットアップ
+bun run setup:pricing
 
 # 開発サーバーの起動
 bun run dev
