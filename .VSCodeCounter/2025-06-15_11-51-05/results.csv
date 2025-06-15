@@ -1,0 +1,140 @@
+"filename", "language", "TypeScript", "JSON", "TypeScript JSX", "PostCSS", "JavaScript", "JSON with Comments", "YAML", "TOML", "Markdown", "comment", "blank", "total"
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.github/ISSUE_TEMPLATE/bug.yml", "YAML", 0, 0, 0, 0, 0, 0, 40, 0, 0, 1, 1, 42
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.github/ISSUE_TEMPLATE/feature.yml", "YAML", 0, 0, 0, 0, 0, 0, 44, 0, 0, 1, 1, 46
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.github/workflows/ci.yml", "YAML", 0, 0, 0, 0, 0, 0, 95, 0, 0, 0, 6, 101
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.markdownlint.json", "JSON", 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/README.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 118, 19, 52, 189
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/bun.lock", "JSON with Comments", 0, 0, 0, 0, 0, 1386, 0, 0, 0, 0, 1328, 2714
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/bunfig.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 2, 8
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/commitlint.config.js", "JavaScript", 0, 0, 0, 0, 23, 0, 0, 0, 0, 2, 1, 26
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/Architecture.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 364, 0, 106, 470
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/MVP.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 99, 0, 35, 134
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/Specification.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 142, 0, 64, 206
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250524-01-FirebaseAuthとGitHub連携について.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 37, 0, 20, 57
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250527-01-ライセンス発行機能について.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 28, 66
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250603-01-寄付フローとトークン発行システムについて.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 84, 0, 32, 116
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250604-01-XamanWebSocket待機処理について.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 67, 0, 33, 100
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250606-02-寄付フローにおけるウォレット連携要件の見直し.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 60, 0, 31, 91
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250613-01-寄付統計データの事前集計による最適化について.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 38, 116
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Proposed-20250606-01-プライベートリポジトリ化対応について.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 32, 98
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Proposed-20250611-01-寄付履歴におけるRLUSD換算方式の改善について.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 102, 0, 54, 156
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Template.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 20, 50
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/firestore-indexes.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 312, 0, 117, 429
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/pricing-algorithm-implementation.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 194, 0, 64, 258
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/eslint.config.js", "JavaScript", 0, 0, 0, 0, 22, 0, 0, 0, 0, 4, 2, 28
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/firebase.json", "JSON", 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/firestore.indexes.json", "JSON", 0, 221, 0, 0, 0, 0, 0, 0, 0, 0, 1, 222
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/index.ts", "TypeScript", 30, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9, 42
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/next-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2, 6
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/next.config.js", "JavaScript", 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 2, 7
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/package.json", "JSON", 0, 83, 0, 0, 0, 0, 0, 0, 0, 0, 1, 84
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/playwright.config.ts", "TypeScript", 34, 0, 0, 0, 0, 0, 0, 0, 0, 31, 9, 74
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/postcss.config.js", "JavaScript", 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 1, 7
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/scripts/reset-auth.ts", "TypeScript", 40, 0, 0, 0, 0, 0, 0, 0, 0, 9, 17, 66
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/scripts/reset-confirm.ts", "TypeScript", 75, 0, 0, 0, 0, 0, 0, 0, 0, 9, 17, 101
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/scripts/setup-pricing-data.ts", "TypeScript", 124, 0, 0, 0, 0, 0, 0, 0, 0, 14, 13, 151
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/donor/stats/route.ts", "TypeScript", 105, 0, 0, 0, 0, 0, 0, 0, 0, 22, 22, 149
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/app/route.ts", "TypeScript", 32, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 37
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/installations/callback/route.ts", "TypeScript", 88, 0, 0, 0, 0, 0, 0, 0, 0, 9, 13, 110
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/installations/route.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 0, 0, 0, 81, 8, 134
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/repositories/route.ts", "TypeScript", 50, 0, 0, 0, 0, 0, 0, 0, 0, 4, 9, 63
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/maintainer/stats/route.ts", "TypeScript", 85, 0, 0, 0, 0, 0, 0, 0, 0, 17, 20, 122
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/management/projects/[id]/route.ts", "TypeScript", 137, 0, 0, 0, 0, 0, 0, 0, 0, 58, 33, 228
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/management/projects/route.ts", "TypeScript", 74, 0, 0, 0, 0, 0, 0, 0, 0, 10, 19, 103
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/projects/[id]/route.ts", "TypeScript", 22, 0, 0, 0, 0, 0, 0, 0, 0, 5, 9, 36
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/projects/route.ts", "TypeScript", 30, 0, 0, 0, 0, 0, 0, 0, 0, 6, 8, 44
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/callback/route.ts", "TypeScript", 150, 0, 0, 0, 0, 0, 0, 0, 0, 31, 27, 208
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/donations/[requestId]/route.ts", "TypeScript", 33, 0, 0, 0, 0, 0, 0, 0, 0, 6, 10, 49
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/donations/create/route.ts", "TypeScript", 47, 0, 0, 0, 0, 0, 0, 0, 0, 6, 10, 63
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/wallets/link-status/route.ts", "TypeScript", 75, 0, 0, 0, 0, 0, 0, 0, 0, 12, 17, 104
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/wallets/route.ts", "TypeScript", 50, 0, 0, 0, 0, 0, 0, 0, 0, 12, 15, 77
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/layout.tsx", "TypeScript JSX", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 2, 15
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/page.tsx", "TypeScript JSX", 0, 0, 281, 0, 0, 0, 0, 0, 0, 9, 14, 304
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/projects/[id]/page.tsx", "TypeScript JSX", 0, 0, 417, 0, 0, 0, 0, 0, 0, 25, 38, 480
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/projects/page.tsx", "TypeScript JSX", 0, 0, 230, 0, 0, 0, 0, 0, 0, 13, 20, 263
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/globals.css", "PostCSS", 0, 0, 0, 5, 0, 0, 0, 0, 0, 1, 2, 8
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/layout.tsx", "TypeScript JSX", 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 4, 26
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/layout.tsx", "TypeScript JSX", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 2, 15
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/page.tsx", "TypeScript JSX", 0, 0, 250, 0, 0, 0, 0, 0, 0, 8, 17, 275
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/[id]/edit/page.tsx", "TypeScript JSX", 0, 0, 109, 0, 0, 0, 0, 0, 0, 2, 15, 126
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/[id]/page.tsx", "TypeScript JSX", 0, 0, 297, 0, 0, 0, 0, 0, 0, 7, 25, 329
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/new/page.tsx", "TypeScript JSX", 0, 0, 86, 0, 0, 0, 0, 0, 0, 5, 12, 103
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/page.tsx", "TypeScript JSX", 0, 0, 227, 0, 0, 0, 0, 0, 0, 4, 22, 253
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/mode-select/page.tsx", "TypeScript JSX", 0, 0, 296, 0, 0, 0, 0, 0, 0, 8, 20, 324
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/page.tsx", "TypeScript JSX", 0, 0, 266, 0, 0, 0, 0, 0, 0, 12, 17, 295
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/wallet-required/page.tsx", "TypeScript JSX", 0, 0, 247, 0, 0, 0, 0, 0, 0, 13, 22, 282
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/AuthGuard.tsx", "TypeScript JSX", 0, 0, 30, 0, 0, 0, 0, 0, 0, 3, 8, 41
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/DonationQRModal.tsx", "TypeScript JSX", 0, 0, 233, 0, 0, 0, 0, 0, 0, 28, 25, 286
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/GitHubAppSetup.tsx", "TypeScript JSX", 0, 0, 225, 0, 0, 0, 0, 0, 0, 5, 20, 250
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/Header.tsx", "TypeScript JSX", 0, 0, 126, 0, 0, 0, 0, 0, 0, 8, 11, 145
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/ModeSelector.tsx", "TypeScript JSX", 0, 0, 163, 0, 0, 0, 0, 0, 0, 4, 12, 179
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/ToastManager.tsx", "TypeScript JSX", 0, 0, 31, 0, 0, 0, 0, 0, 0, 5, 5, 41
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/WalletLinkQRModal.tsx", "TypeScript JSX", 0, 0, 205, 0, 0, 0, 0, 0, 0, 17, 22, 244
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/WalletStatus.tsx", "TypeScript JSX", 0, 0, 122, 0, 0, 0, 0, 0, 0, 4, 14, 140
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/forms/ProjectEditForm.tsx", "TypeScript JSX", 0, 0, 274, 0, 0, 0, 0, 0, 0, 18, 29, 321
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/forms/ProjectRegistrationForm.tsx", "TypeScript JSX", 0, 0, 567, 0, 0, 0, 0, 0, 0, 39, 51, 657
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useDonation.ts", "TypeScript", 123, 0, 0, 0, 0, 0, 0, 0, 0, 3, 18, 144
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useGitHubApp.ts", "TypeScript", 84, 0, 0, 0, 0, 0, 0, 0, 0, 6, 14, 104
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useStats.ts", "TypeScript", 135, 0, 0, 0, 0, 0, 0, 0, 0, 9, 28, 172
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useToastFromCookie.ts", "TypeScript", 21, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 35
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useWallet.ts", "TypeScript", 173, 0, 0, 0, 0, 0, 0, 0, 0, 26, 15, 214
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useXamanWebSocket.ts", "TypeScript", 90, 0, 0, 0, 0, 0, 0, 0, 0, 2, 19, 111
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/admin.ts", "TypeScript", 48, 0, 0, 0, 0, 0, 0, 0, 0, 16, 10, 74
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/auth-context.tsx", "TypeScript JSX", 0, 0, 185, 0, 0, 0, 0, 0, 0, 18, 29, 232
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/client.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 16
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/collections.ts", "TypeScript", 39, 0, 0, 0, 0, 0, 0, 0, 0, 121, 7, 167
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/config.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2, 15
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/utils.ts", "TypeScript", 75, 0, 0, 0, 0, 0, 0, 0, 0, 32, 13, 120
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/github/app.ts", "TypeScript", 133, 0, 0, 0, 0, 0, 0, 0, 0, 12, 24, 169
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/github/installation.ts", "TypeScript", 65, 0, 0, 0, 0, 0, 0, 0, 0, 9, 15, 89
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/calculator.ts", "TypeScript", 67, 0, 0, 0, 0, 0, 0, 0, 0, 23, 18, 108
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/normalizer.ts", "TypeScript", 123, 0, 0, 0, 0, 0, 0, 0, 0, 122, 33, 278
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/quality-metrics.ts", "TypeScript", 186, 0, 0, 0, 0, 0, 0, 0, 0, 33, 40, 259
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/rate-converter.ts", "TypeScript", 74, 0, 0, 0, 0, 0, 0, 0, 0, 36, 26, 136
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/theme-context.tsx", "TypeScript JSX", 0, 0, 25, 0, 0, 0, 0, 0, 0, 4, 8, 37
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/toast-utils.ts", "TypeScript", 65, 0, 0, 0, 0, 0, 0, 0, 0, 23, 17, 105
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/admin.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 0, 7, 5, 26
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/health.ts", "TypeScript", 49, 0, 0, 0, 0, 0, 0, 0, 0, 12, 11, 72
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/index.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/signature-verification.ts", "TypeScript", 26, 0, 0, 0, 0, 0, 0, 0, 0, 22, 8, 56
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/check-utils.ts", "TypeScript", 42, 0, 0, 0, 0, 0, 0, 0, 0, 38, 15, 95
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/client.ts", "TypeScript", 189, 0, 0, 0, 0, 0, 0, 0, 0, 57, 49, 295
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/config.ts", "TypeScript", 152, 0, 0, 0, 0, 0, 0, 0, 0, 43, 38, 233
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/index.ts", "TypeScript", 10, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2, 15
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/token-utils.ts", "TypeScript", 79, 0, 0, 0, 0, 0, 0, 0, 0, 52, 21, 152
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/DonationService.ts", "TypeScript", 96, 0, 0, 0, 0, 0, 0, 0, 0, 68, 26, 190
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/PricingService.ts", "TypeScript", 196, 0, 0, 0, 0, 0, 0, 0, 0, 45, 35, 276
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/ProjectService.ts", "TypeScript", 306, 0, 0, 0, 0, 0, 0, 0, 0, 101, 58, 465
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/QualityScoreService.ts", "TypeScript", 231, 0, 0, 0, 0, 0, 0, 0, 0, 43, 45, 319
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/WalletLinkService.ts", "TypeScript", 168, 0, 0, 0, 0, 0, 0, 0, 0, 52, 35, 255
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/donation/DonationHistoryManager.ts", "TypeScript", 109, 0, 0, 0, 0, 0, 0, 0, 0, 38, 27, 174
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/donation/DonationManager.ts", "TypeScript", 247, 0, 0, 0, 0, 0, 0, 0, 0, 48, 42, 337
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/donation/TokenManager.ts", "TypeScript", 214, 0, 0, 0, 0, 0, 0, 0, 0, 51, 45, 310
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/shared/BaseService.ts", "TypeScript", 330, 0, 0, 0, 0, 0, 0, 0, 0, 80, 66, 476
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/shared/ServiceError.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 20
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/donation.ts", "TypeScript", 54, 0, 0, 0, 0, 0, 0, 0, 0, 27, 9, 90
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/github.ts", "TypeScript", 33, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 40
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/pricing.ts", "TypeScript", 62, 0, 0, 0, 0, 0, 0, 0, 0, 33, 11, 106
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/project.ts", "TypeScript", 44, 0, 0, 0, 0, 0, 0, 0, 0, 15, 8, 67
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/stats.ts", "TypeScript", 31, 0, 0, 0, 0, 0, 0, 0, 0, 9, 7, 47
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/toast.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 18
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/user.ts", "TypeScript", 42, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6, 51
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/xaman.ts", "TypeScript", 37, 0, 0, 0, 0, 0, 0, 0, 0, 18, 6, 61
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/donation.ts", "TypeScript", 23, 0, 0, 0, 0, 0, 0, 0, 0, 12, 8, 43
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/index.ts", "TypeScript", 4, 0, 0, 0, 0, 0, 0, 0, 0, 7, 5, 16
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/project.ts", "TypeScript", 73, 0, 0, 0, 0, 0, 0, 0, 0, 30, 16, 119
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/xaman.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 10, 7, 28
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/xrpl.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 13
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/stylelint.config.js", "JavaScript", 0, 0, 0, 0, 24, 0, 0, 0, 0, 21, 1, 46
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/styles.css", "PostCSS", 0, 0, 0, 21, 0, 0, 0, 0, 0, 1, 3, 25
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tailwind.config.js", "JavaScript", 0, 0, 0, 0, 24, 0, 0, 0, 0, 1, 1, 26
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/auth-utils.test.ts", "TypeScript", 307, 0, 0, 0, 0, 0, 0, 0, 0, 15, 66, 388
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/check-utils.test.ts", "TypeScript", 61, 0, 0, 0, 0, 0, 0, 0, 0, 5, 21, 87
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/helpers/balance-checker.ts", "TypeScript", 110, 0, 0, 0, 0, 0, 0, 0, 0, 17, 19, 146
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/helpers/rate-limiter.ts", "TypeScript", 34, 0, 0, 0, 0, 0, 0, 0, 0, 13, 9, 56
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/index.test.ts", "TypeScript", 34, 0, 0, 0, 0, 0, 0, 0, 0, 13, 15, 62
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/token-utils.test.ts", "TypeScript", 137, 0, 0, 0, 0, 0, 0, 0, 0, 3, 29, 169
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/xrpl-client.test.ts", "TypeScript", 181, 0, 0, 0, 0, 0, 0, 0, 0, 10, 45, 236
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/xrpl-config.test.ts", "TypeScript", 210, 0, 0, 0, 0, 0, 0, 0, 0, 5, 62, 277
+"/Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 36, 0, 0, 0, 32, 1, 69
+"Total", "-", 6826, 314, 4940, 26, 102, 1422, 179, 3, 1791, 2203, 4037, 21843

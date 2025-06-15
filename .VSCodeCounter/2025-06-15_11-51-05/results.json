@@ -1,0 +1,830 @@
+{
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/shared/ServiceError.ts": {
+    "language": "TypeScript",
+    "code": 16,
+    "comment": 3,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/DonationService.ts": {
+    "language": "TypeScript",
+    "code": 96,
+    "comment": 68,
+    "blank": 26
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/WalletLinkService.ts": {
+    "language": "TypeScript",
+    "code": 168,
+    "comment": 52,
+    "blank": 35
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/shared/BaseService.ts": {
+    "language": "TypeScript",
+    "code": 330,
+    "comment": 80,
+    "blank": 66
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/ProjectService.ts": {
+    "language": "TypeScript",
+    "code": 306,
+    "comment": 101,
+    "blank": 58
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/donation/DonationHistoryManager.ts": {
+    "language": "TypeScript",
+    "code": 109,
+    "comment": 38,
+    "blank": 27
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/QualityScoreService.ts": {
+    "language": "TypeScript",
+    "code": 231,
+    "comment": 43,
+    "blank": 45
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/firestore.indexes.json": {
+    "language": "JSON",
+    "code": 221,
+    "comment": 0,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/PricingService.ts": {
+    "language": "TypeScript",
+    "code": 196,
+    "comment": 45,
+    "blank": 35
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/donation/TokenManager.ts": {
+    "language": "TypeScript",
+    "code": 214,
+    "comment": 51,
+    "blank": 45
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.markdownlint.json": {
+    "language": "JSON",
+    "code": 4,
+    "comment": 0,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/toast-utils.ts": {
+    "language": "TypeScript",
+    "code": 65,
+    "comment": 23,
+    "blank": 17
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/services/donation/DonationManager.ts": {
+    "language": "TypeScript",
+    "code": 247,
+    "comment": 48,
+    "blank": 42
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/normalizer.ts": {
+    "language": "TypeScript",
+    "code": 123,
+    "comment": 122,
+    "blank": 33
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/github/installation.ts": {
+    "language": "TypeScript",
+    "code": 65,
+    "comment": 9,
+    "blank": 15
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/rate-converter.ts": {
+    "language": "TypeScript",
+    "code": 74,
+    "comment": 36,
+    "blank": 26
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/calculator.ts": {
+    "language": "TypeScript",
+    "code": 67,
+    "comment": 23,
+    "blank": 18
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/DonationQRModal.tsx": {
+    "language": "TypeScript JSX",
+    "code": 233,
+    "comment": 28,
+    "blank": 25
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useToastFromCookie.ts": {
+    "language": "TypeScript",
+    "code": 21,
+    "comment": 7,
+    "blank": 7
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/AuthGuard.tsx": {
+    "language": "TypeScript JSX",
+    "code": 30,
+    "comment": 3,
+    "blank": 8
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/pricing/quality-metrics.ts": {
+    "language": "TypeScript",
+    "code": 186,
+    "comment": 33,
+    "blank": 40
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/user.ts": {
+    "language": "TypeScript",
+    "code": 42,
+    "comment": 3,
+    "blank": 6
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useGitHubApp.ts": {
+    "language": "TypeScript",
+    "code": 84,
+    "comment": 6,
+    "blank": 14
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/index.ts": {
+    "language": "TypeScript",
+    "code": 4,
+    "comment": 7,
+    "blank": 5
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/donation.ts": {
+    "language": "TypeScript",
+    "code": 54,
+    "comment": 27,
+    "blank": 9
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/xaman.ts": {
+    "language": "TypeScript",
+    "code": 37,
+    "comment": 18,
+    "blank": 6
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/check-utils.ts": {
+    "language": "TypeScript",
+    "code": 42,
+    "comment": 38,
+    "blank": 15
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/pricing.ts": {
+    "language": "TypeScript",
+    "code": 62,
+    "comment": 33,
+    "blank": 11
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/xrpl.ts": {
+    "language": "TypeScript",
+    "code": 7,
+    "comment": 3,
+    "blank": 3
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/Header.tsx": {
+    "language": "TypeScript JSX",
+    "code": 126,
+    "comment": 8,
+    "blank": 11
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useXamanWebSocket.ts": {
+    "language": "TypeScript",
+    "code": 90,
+    "comment": 2,
+    "blank": 19
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useWallet.ts": {
+    "language": "TypeScript",
+    "code": 173,
+    "comment": 26,
+    "blank": 15
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/ToastManager.tsx": {
+    "language": "TypeScript JSX",
+    "code": 31,
+    "comment": 5,
+    "blank": 5
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/token-utils.ts": {
+    "language": "TypeScript",
+    "code": 79,
+    "comment": 52,
+    "blank": 21
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/WalletLinkQRModal.tsx": {
+    "language": "TypeScript JSX",
+    "code": 205,
+    "comment": 17,
+    "blank": 22
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/github/app.ts": {
+    "language": "TypeScript",
+    "code": 133,
+    "comment": 12,
+    "blank": 24
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/ModeSelector.tsx": {
+    "language": "TypeScript JSX",
+    "code": 163,
+    "comment": 4,
+    "blank": 12
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/index.ts": {
+    "language": "TypeScript",
+    "code": 10,
+    "comment": 3,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/stats.ts": {
+    "language": "TypeScript",
+    "code": 31,
+    "comment": 9,
+    "blank": 7
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/WalletStatus.tsx": {
+    "language": "TypeScript JSX",
+    "code": 122,
+    "comment": 4,
+    "blank": 14
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useStats.ts": {
+    "language": "TypeScript",
+    "code": 135,
+    "comment": 9,
+    "blank": 28
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/donation.ts": {
+    "language": "TypeScript",
+    "code": 23,
+    "comment": 12,
+    "blank": 8
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/client.ts": {
+    "language": "TypeScript",
+    "code": 189,
+    "comment": 57,
+    "blank": 49
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/xaman.ts": {
+    "language": "TypeScript",
+    "code": 11,
+    "comment": 10,
+    "blank": 7
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/toast.ts": {
+    "language": "TypeScript",
+    "code": 11,
+    "comment": 3,
+    "blank": 4
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/layout.tsx": {
+    "language": "TypeScript JSX",
+    "code": 22,
+    "comment": 0,
+    "blank": 4
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/validations/project.ts": {
+    "language": "TypeScript",
+    "code": 73,
+    "comment": 30,
+    "blank": 16
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/github.ts": {
+    "language": "TypeScript",
+    "code": 33,
+    "comment": 3,
+    "blank": 4
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 266,
+    "comment": 12,
+    "blank": 17
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/hooks/useDonation.ts": {
+    "language": "TypeScript",
+    "code": 123,
+    "comment": 3,
+    "blank": 18
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xrpl/config.ts": {
+    "language": "TypeScript",
+    "code": 152,
+    "comment": 43,
+    "blank": 38
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/GitHubAppSetup.tsx": {
+    "language": "TypeScript JSX",
+    "code": 225,
+    "comment": 5,
+    "blank": 20
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/types/project.ts": {
+    "language": "TypeScript",
+    "code": 44,
+    "comment": 15,
+    "blank": 8
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/globals.css": {
+    "language": "PostCSS",
+    "code": 5,
+    "comment": 1,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/stylelint.config.js": {
+    "language": "JavaScript",
+    "code": 24,
+    "comment": 21,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/postcss.config.js": {
+    "language": "JavaScript",
+    "code": 6,
+    "comment": 0,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 250,
+    "comment": 8,
+    "blank": 17
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/eslint.config.js": {
+    "language": "JavaScript",
+    "code": 22,
+    "comment": 4,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/playwright.config.ts": {
+    "language": "TypeScript",
+    "code": 34,
+    "comment": 31,
+    "blank": 9
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/index.ts": {
+    "language": "TypeScript",
+    "code": 30,
+    "comment": 3,
+    "blank": 9
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/firebase.json": {
+    "language": "JSON",
+    "code": 6,
+    "comment": 0,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/commitlint.config.js": {
+    "language": "JavaScript",
+    "code": 23,
+    "comment": 2,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tsconfig.json": {
+    "language": "JSON with Comments",
+    "code": 36,
+    "comment": 32,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/theme-context.tsx": {
+    "language": "TypeScript JSX",
+    "code": 25,
+    "comment": 4,
+    "blank": 8
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/forms/ProjectRegistrationForm.tsx": {
+    "language": "TypeScript JSX",
+    "code": 567,
+    "comment": 39,
+    "blank": 51
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/components/forms/ProjectEditForm.tsx": {
+    "language": "TypeScript JSX",
+    "code": 274,
+    "comment": 18,
+    "blank": 29
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/mode-select/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 296,
+    "comment": 8,
+    "blank": 20
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/health.ts": {
+    "language": "TypeScript",
+    "code": 49,
+    "comment": 12,
+    "blank": 11
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/admin.ts": {
+    "language": "TypeScript",
+    "code": 14,
+    "comment": 7,
+    "blank": 5
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/auth-context.tsx": {
+    "language": "TypeScript JSX",
+    "code": 185,
+    "comment": 18,
+    "blank": 29
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/layout.tsx": {
+    "language": "TypeScript JSX",
+    "code": 13,
+    "comment": 0,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/signature-verification.ts": {
+    "language": "TypeScript",
+    "code": 26,
+    "comment": 22,
+    "blank": 8
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/collections.ts": {
+    "language": "TypeScript",
+    "code": 39,
+    "comment": 121,
+    "blank": 7
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/admin.ts": {
+    "language": "TypeScript",
+    "code": 48,
+    "comment": 16,
+    "blank": 10
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 281,
+    "comment": 9,
+    "blank": 14
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/xaman/index.ts": {
+    "language": "TypeScript",
+    "code": 3,
+    "comment": 0,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/client.ts": {
+    "language": "TypeScript",
+    "code": 7,
+    "comment": 5,
+    "blank": 4
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/layout.tsx": {
+    "language": "TypeScript JSX",
+    "code": 13,
+    "comment": 0,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 227,
+    "comment": 4,
+    "blank": 22
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/config.ts": {
+    "language": "TypeScript",
+    "code": 9,
+    "comment": 4,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/wallet-required/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 247,
+    "comment": 13,
+    "blank": 22
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/lib/firebase/utils.ts": {
+    "language": "TypeScript",
+    "code": 75,
+    "comment": 32,
+    "blank": 13
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/scripts/reset-confirm.ts": {
+    "language": "TypeScript",
+    "code": 75,
+    "comment": 9,
+    "blank": 17
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/scripts/setup-pricing-data.ts": {
+    "language": "TypeScript",
+    "code": 124,
+    "comment": 14,
+    "blank": 13
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/scripts/reset-auth.ts": {
+    "language": "TypeScript",
+    "code": 40,
+    "comment": 9,
+    "blank": 17
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/projects/route.ts": {
+    "language": "TypeScript",
+    "code": 30,
+    "comment": 6,
+    "blank": 8
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/projects/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 230,
+    "comment": 13,
+    "blank": 20
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/%5Bid%5D/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 297,
+    "comment": 7,
+    "blank": 25
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.github/workflows/ci.yml": {
+    "language": "YAML",
+    "code": 95,
+    "comment": 0,
+    "blank": 6
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/app/route.ts": {
+    "language": "TypeScript",
+    "code": 32,
+    "comment": 1,
+    "blank": 4
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/%5Bid%5D/edit/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 109,
+    "comment": 2,
+    "blank": 15
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/repositories/route.ts": {
+    "language": "TypeScript",
+    "code": 50,
+    "comment": 4,
+    "blank": 9
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/package.json": {
+    "language": "JSON",
+    "code": 83,
+    "comment": 0,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/management/projects/route.ts": {
+    "language": "TypeScript",
+    "code": 74,
+    "comment": 10,
+    "blank": 19
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.github/ISSUE_TEMPLATE/feature.yml": {
+    "language": "YAML",
+    "code": 44,
+    "comment": 1,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/next-env.d.ts": {
+    "language": "TypeScript",
+    "code": 0,
+    "comment": 4,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/projects/%5Bid%5D/route.ts": {
+    "language": "TypeScript",
+    "code": 22,
+    "comment": 5,
+    "blank": 9
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/installations/route.ts": {
+    "language": "TypeScript",
+    "code": 45,
+    "comment": 81,
+    "blank": 8
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/donor/projects/%5Bid%5D/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 417,
+    "comment": 25,
+    "blank": 38
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/bunfig.toml": {
+    "language": "TOML",
+    "code": 3,
+    "comment": 3,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/README.md": {
+    "language": "Markdown",
+    "code": 118,
+    "comment": 19,
+    "blank": 52
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/bun.lock": {
+    "language": "JSON with Comments",
+    "code": 1386,
+    "comment": 0,
+    "blank": 1328
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/donor/stats/route.ts": {
+    "language": "TypeScript",
+    "code": 105,
+    "comment": 22,
+    "blank": 22
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/.github/ISSUE_TEMPLATE/bug.yml": {
+    "language": "YAML",
+    "code": 40,
+    "comment": 1,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/github/installations/callback/route.ts": {
+    "language": "TypeScript",
+    "code": 88,
+    "comment": 9,
+    "blank": 13
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/next.config.js": {
+    "language": "JavaScript",
+    "code": 3,
+    "comment": 2,
+    "blank": 2
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/maintainer/projects/new/page.tsx": {
+    "language": "TypeScript JSX",
+    "code": 86,
+    "comment": 5,
+    "blank": 12
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/management/projects/%5Bid%5D/route.ts": {
+    "language": "TypeScript",
+    "code": 137,
+    "comment": 58,
+    "blank": 33
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tailwind.config.js": {
+    "language": "JavaScript",
+    "code": 24,
+    "comment": 1,
+    "blank": 1
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/styles.css": {
+    "language": "PostCSS",
+    "code": 21,
+    "comment": 1,
+    "blank": 3
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/token-utils.test.ts": {
+    "language": "TypeScript",
+    "code": 137,
+    "comment": 3,
+    "blank": 29
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/pricing-algorithm-implementation.md": {
+    "language": "Markdown",
+    "code": 194,
+    "comment": 0,
+    "blank": 64
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/maintainer/stats/route.ts": {
+    "language": "TypeScript",
+    "code": 85,
+    "comment": 17,
+    "blank": 20
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/check-utils.test.ts": {
+    "language": "TypeScript",
+    "code": 61,
+    "comment": 5,
+    "blank": 21
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/xrpl-config.test.ts": {
+    "language": "TypeScript",
+    "code": 210,
+    "comment": 5,
+    "blank": 62
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/firestore-indexes.md": {
+    "language": "Markdown",
+    "code": 312,
+    "comment": 0,
+    "blank": 117
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/index.test.ts": {
+    "language": "TypeScript",
+    "code": 34,
+    "comment": 13,
+    "blank": 15
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/xrpl-client.test.ts": {
+    "language": "TypeScript",
+    "code": 181,
+    "comment": 10,
+    "blank": 45
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/Architecture.md": {
+    "language": "Markdown",
+    "code": 364,
+    "comment": 0,
+    "blank": 106
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/Specification.md": {
+    "language": "Markdown",
+    "code": 142,
+    "comment": 0,
+    "blank": 64
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/helpers/rate-limiter.ts": {
+    "language": "TypeScript",
+    "code": 34,
+    "comment": 13,
+    "blank": 9
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/callback/route.ts": {
+    "language": "TypeScript",
+    "code": 150,
+    "comment": 31,
+    "blank": 27
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/auth-utils.test.ts": {
+    "language": "TypeScript",
+    "code": 307,
+    "comment": 15,
+    "blank": 66
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250527-01-%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9%E7%99%BA%E8%A1%8C%E6%A9%9F%E8%83%BD%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6.md": {
+    "language": "Markdown",
+    "code": 38,
+    "comment": 0,
+    "blank": 28
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/tests/helpers/balance-checker.ts": {
+    "language": "TypeScript",
+    "code": 110,
+    "comment": 17,
+    "blank": 19
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250613-01-%E5%AF%84%E4%BB%98%E7%B5%B1%E8%A8%88%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E4%BA%8B%E5%89%8D%E9%9B%86%E8%A8%88%E3%81%AB%E3%82%88%E3%82%8B%E6%9C%80%E9%81%A9%E5%8C%96%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6.md": {
+    "language": "Markdown",
+    "code": 78,
+    "comment": 0,
+    "blank": 38
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250606-02-%E5%AF%84%E4%BB%98%E3%83%95%E3%83%AD%E3%83%BC%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E3%82%A6%E3%82%A9%E3%83%AC%E3%83%83%E3%83%88%E9%80%A3%E6%90%BA%E8%A6%81%E4%BB%B6%E3%81%AE%E8%A6%8B%E7%9B%B4%E3%81%97.md": {
+    "language": "Markdown",
+    "code": 60,
+    "comment": 0,
+    "blank": 31
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Template.md": {
+    "language": "Markdown",
+    "code": 30,
+    "comment": 0,
+    "blank": 20
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250603-01-%E5%AF%84%E4%BB%98%E3%83%95%E3%83%AD%E3%83%BC%E3%81%A8%E3%83%88%E3%83%BC%E3%82%AF%E3%83%B3%E7%99%BA%E8%A1%8C%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6.md": {
+    "language": "Markdown",
+    "code": 84,
+    "comment": 0,
+    "blank": 32
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Proposed-20250606-01-%E3%83%97%E3%83%A9%E3%82%A4%E3%83%99%E3%83%BC%E3%83%88%E3%83%AA%E3%83%9D%E3%82%B8%E3%83%88%E3%83%AA%E5%8C%96%E5%AF%BE%E5%BF%9C%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6.md": {
+    "language": "Markdown",
+    "code": 66,
+    "comment": 0,
+    "blank": 32
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250604-01-XamanWebSocket%E5%BE%85%E6%A9%9F%E5%87%A6%E7%90%86%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6.md": {
+    "language": "Markdown",
+    "code": 67,
+    "comment": 0,
+    "blank": 33
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Approved-20250524-01-FirebaseAuth%E3%81%A8GitHub%E9%80%A3%E6%90%BA%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6.md": {
+    "language": "Markdown",
+    "code": 37,
+    "comment": 0,
+    "blank": 20
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/wallets/route.ts": {
+    "language": "TypeScript",
+    "code": 50,
+    "comment": 12,
+    "blank": 15
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/adr/Proposed-20250611-01-%E5%AF%84%E4%BB%98%E5%B1%A5%E6%AD%B4%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8BRLUSD%E6%8F%9B%E7%AE%97%E6%96%B9%E5%BC%8F%E3%81%AE%E6%94%B9%E5%96%84%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6.md": {
+    "language": "Markdown",
+    "code": 102,
+    "comment": 0,
+    "blank": 54
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/docs/MVP.md": {
+    "language": "Markdown",
+    "code": 99,
+    "comment": 0,
+    "blank": 35
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/donations/%5BrequestId%5D/route.ts": {
+    "language": "TypeScript",
+    "code": 33,
+    "comment": 6,
+    "blank": 10
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/wallets/link-status/route.ts": {
+    "language": "TypeScript",
+    "code": 75,
+    "comment": 12,
+    "blank": 17
+  },
+  "file:///Users/nrhrhysd616/Documents/Project/nrhrhysd616/oss-token-platform/src/app/api/xaman/donations/create/route.ts": {
+    "language": "TypeScript",
+    "code": 47,
+    "comment": 6,
+    "blank": 10
+  }
+}
