@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/firebase/auth-context'
 import { ThemeProvider } from '@/lib/theme-context'
+import EnvironmentBanner from '@/components/EnvironmentBanner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <body className={`${inter.className} bg-black text-white min-h-screen`}>
         <ThemeProvider>
+          <EnvironmentBanner />
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>
