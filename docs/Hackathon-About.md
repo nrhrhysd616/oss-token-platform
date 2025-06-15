@@ -133,7 +133,7 @@ sequenceDiagram
     R->>P: WebSocket通知
     P->>P: RLUSD換算・記録
     P->>R: トークンのCreateCheckTX発行
-    R->>X: トークン小切手自動送付
+    R->>D: トークン小切手自動送付
     X->>D: トークン小切手現金化通知
 
     Note over P,R: 全処理が3秒以内で完了
