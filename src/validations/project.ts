@@ -15,7 +15,7 @@ export const projectIdSchema = z.string().min(1, 'プロジェクトIDが必要�
 export const tokenCodeSchema = z
   .string()
   .min(1, 'トークンコードが必要です')
-  .max(10, 'トークンコードは10文字以内である必要があります')
+  .max(40, 'トークンコードは40文字以内である必要があります')
   .regex(/^[A-Z0-9]+$/, 'トークンコードは大文字の英数字のみ使用可能です')
 
 /**
@@ -36,7 +36,7 @@ export const projectCreateFormSchema = z.object({
   tokenCode: z
     .string()
     .min(1, 'トークンコードは必須です')
-    .max(10, 'トークンコードは10文字以内で入力してください')
+    .max(40, 'トークンコードは40文字以内で入力してください')
     .regex(/^[A-Z0-9]+$/, 'トークンコードは大文字の英数字のみ使用可能です'),
   donationUsages: z
     .array(

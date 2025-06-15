@@ -102,8 +102,8 @@ export default function ProjectRegistrationForm() {
   const generateTokenCode = (projectName: string): string => {
     // プロジェクト名から英数字のみを抽出し、大文字に変換
     const cleanName = projectName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
-    // 最大10文字に制限
-    return cleanName.substring(0, 10)
+    // 最大40文字に制限
+    return cleanName.substring(0, 40)
   }
 
   // トークンコード自動生成ボタンのハンドラー
@@ -524,6 +524,10 @@ export default function ProjectRegistrationForm() {
                   className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent uppercase"
                   placeholder="例: MYPROJECT"
                   style={{ textTransform: 'uppercase' }}
+                  onChange={e => {
+                    const upperValue = e.target.value.toUpperCase()
+                    setValue('tokenCode', upperValue)
+                  }}
                 />
                 <button
                   type="button"
@@ -539,7 +543,7 @@ export default function ProjectRegistrationForm() {
                 <p className="mt-2 text-sm text-red-400">{errors.tokenCode.message}</p>
               )}
               <p className="mt-2 text-sm text-gray-400">
-                プロジェクト固有のトークン識別子（大文字英数字、最大10文字）
+                プロジェクト固有のトークン識別子（大文字英数字、最大40文字）
               </p>
             </div>
           </div>
