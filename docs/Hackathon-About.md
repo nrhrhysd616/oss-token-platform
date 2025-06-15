@@ -36,10 +36,6 @@ graph TD
     D --> E[コミュニティ価値創造]
     E --> F[プロジェクト成長]
     F --> A
-
-    style B fill:#e1f5fe
-    style C fill:#f3e5f5
-    style D fill:#e8f5e8
 ```
 
 ### 核心原則
