@@ -79,15 +79,15 @@ export class DonationService extends BaseService {
   ): Promise<DonationRecord> {
     const donationRecord = await DonationManager.completeDonationRequest(requestId, xamanStatus)
 
-    // 寄付完了後、トークン自動発行処理を実行（非同期）
+    // 寄付完了後、トークン自動発行処理を実行
     // エラーが発生しても寄付完了処理は成功とする
-    this.processTokenIssueForDonation(donationRecord).catch(error => {
+    await this.processTokenIssueForDonation(donationRecord).catch(error => {
       console.error('Token auto-issue failed for donation:', donationRecord.id, error)
     })
 
-    // 寄付完了後、価格履歴を更新（非同期）
+    // 寄付完了後、価格履歴を更新
     // エラーが発生しても寄付完了処理は成功とする
-    PricingService.updatePriceHistory(donationRecord.projectId, 'donation').catch(error => {
+    await PricingService.updatePriceHistory(donationRecord.projectId, 'donation').catch(error => {
       console.error('Price update failed for donation:', donationRecord.id, error)
     })
     return donationRecord
