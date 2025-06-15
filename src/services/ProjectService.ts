@@ -88,7 +88,7 @@ export class ProjectService extends BaseService {
     }
 
     // 品質スコアを更新（非同期、失敗してもプロジェクト作成は成功）
-    QualityScoreService.updateQualityScore(createdProject).catch(qualityScoreError => {
+    await QualityScoreService.updateQualityScore(createdProject).catch(qualityScoreError => {
       console.error(
         `品質スコアの更新に失敗しました (プロジェクトID: ${createdProject.id}):`,
         qualityScoreError
@@ -273,7 +273,7 @@ export class ProjectService extends BaseService {
 
     if (updates.status === 'active') {
       // 品質スコアを更新（非同期、失敗してもプロジェクト更新は成功）
-      QualityScoreService.updateQualityScore(updatedProject!).catch(qualityScoreError => {
+      await QualityScoreService.updateQualityScore(updatedProject!).catch(qualityScoreError => {
         console.error(
           `品質スコアの更新に失敗しました (プロジェクトID: ${projectId}):`,
           qualityScoreError
